@@ -10,5 +10,7 @@ services:
       APP_URL: "https://${HOSPITAL_HOST}"
       HUB_API: "${HUB_API:-https://labpos-api.150.230.52.29.sslip.io}"                 # the Optix account hub
       HUB_APP_ID: "hospital"
+      ADSENSE_CLIENT: "${ADSENSE_CLIENT:-}"                                             # Google AdSense publisher id, ca-pub-XXXXXXXXXXXXXXXX (empty = no ads)
+      ADSENSE_SLOT_HOME: "${ADSENSE_SLOT_HOME:-}"                                       # ad unit id for the home-page slot
 volumes:
   hospital-data:

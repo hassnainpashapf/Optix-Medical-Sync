@@ -1,8 +1,7 @@
-/* Optix Medical Sync website: the pages. Look and feel (tokens, buttons, nav, footer, light/dark) come from optix-theme.css
+/* Optix Medical Sync website: the pages. Look and feel (tokens, buttons, nav, footer; light only) come from optix-theme.css
    (shared Optix theme, copied by scripts/sync-theme.mjs). This file only lays out the sections of this product's pages.
    Layout: dark stage (hero + 3D app stack) with a sticky WebGL helix behind it, then themed sections, a dark role carousel and a closing call to action. */
 :root{--on-dark:#e9efff;--on-dark-2:#b4c0e0;--ok-bg:#e2f7ef;--ok-fg:#0a7a4f;--bad-bg:#fde9e9;--bad-fg:#b93a3a;--warn-bg:#fff0d1;--warn-fg:#9a6200}
-:root[data-theme=dark]{--ok-bg:#0f3a2c;--ok-fg:#6fe3b0;--bad-bg:#3d1b26;--bad-fg:#ff9a90;--warn-bg:#3b2d0f;--warn-fg:#f7c76b}
 body{overflow-x:hidden}
 h1,h2,h3{line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.02em}
 h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
@@ -10,7 +9,6 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
 .center{text-align:center}.center h2,.center .sub{margin-left:auto;margin-right:auto}
 .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9fc0ff;background:rgba(127,176,255,.12);border:1px solid rgba(127,176,255,.28);padding:6px 12px;border-radius:99px;margin:0 0 18px}
 .eyebrow.dk{color:var(--blue);background:var(--tint);border-color:color-mix(in srgb,var(--blue) 25%,var(--line))}
-:root[data-theme=dark] .eyebrow.dk{color:#9fc0ff}
 .sub{max-width:640px;color:var(--on-dark-2);font-size:18px;margin:14px 0 0}.sub.dk{color:var(--muted)}
 .center .sub{margin-left:auto;margin-right:auto}
 .brand .suite{white-space:nowrap}
@@ -57,7 +55,6 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
 .explore,.demo,.light,.flow,.compare,.suite-sec,.pricing,.faq{position:relative;z-index:2;padding:96px 0;background:var(--bg)}
 .explore,.light,.compare,.faq{background:var(--surface);border-block:1px solid var(--line)}
 .demo,.pricing{background:linear-gradient(180deg,var(--bg),var(--tint))}
-:root[data-theme=dark] .demo,:root[data-theme=dark] .pricing{background:linear-gradient(180deg,var(--bg),#0d1736)}
 .explore h2,.light h2,.flow h2,.compare h2,.suite-sec h2,.faq h2{max-width:20em}
 .light h2,.flow h2{margin-bottom:44px}
 .explore h2{margin-bottom:40px}
@@ -114,7 +111,6 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
 /* feature cards */
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .fcard{position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px 28px;box-shadow:var(--shadow-1);transform-style:preserve-3d;will-change:transform;transition:box-shadow .25s,border-color .25s}
-:root[data-theme=dark] .fcard{background:var(--surface-2)}
 .fcard:hover{box-shadow:var(--shadow-2);border-color:color-mix(in srgb,var(--blue) 40%,var(--line))}
 .fcard .ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--tint),color-mix(in srgb,var(--teal) 22%,var(--surface)));margin-bottom:18px}
 .fcard .ic svg{width:22px;height:22px;fill:none;stroke:var(--blue);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -194,7 +190,6 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
 .faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px}
 .acc{display:grid;gap:10px}
 .acc details{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:0 18px;transition:border-color .2s,box-shadow .2s}
-:root[data-theme=dark] .acc details{background:var(--surface-2)}
 .acc details[open]{border-color:color-mix(in srgb,var(--blue) 40%,var(--line));box-shadow:var(--shadow-2)}
 .acc summary{list-style:none;cursor:pointer;padding:16px 28px 16px 0;font-weight:700;position:relative}
 .acc summary::-webkit-details-marker{display:none}
@@ -221,7 +216,6 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
 .page h1{font-size:clamp(30px,4.2vw,44px);letter-spacing:-.03em;line-height:1.12;margin:0 0 10px}
 .prose{font-size:16.5px;line-height:1.75;color:var(--text-2)}.prose h2{font-size:23px;color:var(--ink);letter-spacing:-.015em;margin:34px 0 10px}.prose p{margin:0 0 16px}.prose ul{margin:0 0 18px;padding-left:22px}.prose li{margin:7px 0}
 .prose a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:3px}.prose b{color:var(--ink)}
-:root[data-theme=dark] .prose a{color:#8fb2ff}
 
 /* reveal on scroll (only when JS runs) */
 .js .reveal{opacity:0;translate:0 26px;transition:opacity .7s ease,translate .7s ease}
@@ -262,9 +256,3 @@ h2{font-size:clamp(28px,3.6vw,42px);font-weight:700}
   .imgs img,.xp-pts li,.matrix .cell,.plan,.plan.skeleton{transition:none;animation:none}
 }
 
-/* dark mode: the shared ghost button is blue on blue, give it a lighter blue so it stays readable */
-:root[data-theme=dark] .btn.ghost:not(.light){color:#8fb2ff;border-color:#5b7fd6}
-:root[data-theme=dark] .btn.ghost:not(.light):hover{background:rgba(91,140,255,.16)}
-:root[data-theme=dark] .cmp-h .us,:root[data-theme=dark] .acc summary::after,:root[data-theme=dark] .steps .n{color:#8fb2ff}
-:root[data-theme=dark] .fcard .ic svg{stroke:#8fb2ff}
-:root[data-theme=dark] .gcard-x{color:#8fb2ff}

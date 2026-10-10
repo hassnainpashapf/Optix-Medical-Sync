@@ -1,4 +1,4 @@
-// Shared by every public page of the website (home, privacy, terms): theme toggle, mobile menu, scroll progress, back to top, ads.
+// Shared by every public page of the website (home, privacy, terms): mobile menu, scroll progress, back to top, ads.
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const nav = document.getElementById('nav');
 const $ = (id) => document.getElementById(id);
@@ -6,13 +6,6 @@ const totop = $('totop');
 function onScrollChrome() { nav.classList.toggle('stuck', scrollY > 8); totop.classList.toggle('show', scrollY > 700); }
 addEventListener('scroll', onScrollChrome, { passive: true }); onScrollChrome();
 totop.addEventListener('click', () => scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }));
-
-/* light / dark: same mechanism as every Optix site (data-theme on <html>, remembered in localStorage 'optix_theme') */
-$('themeBtn').addEventListener('click', () => {
-  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  try { localStorage.setItem('optix_theme', next); } catch { /* not remembered */ }
-});
 
 /* mobile menu */
 const links = $('links'), burger = $('burger');

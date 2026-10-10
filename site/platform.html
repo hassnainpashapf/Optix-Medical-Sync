@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Platform | Optix Medical Sync</title>
@@ -10,11 +11,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/optix-tokens.css">
-<script>try{var t=localStorage.getItem('optix_theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <style>
   /* Platform owner console: colours, radius and type are the shared Optix tokens (assets/optix-tokens.css). No ads here. */
   :root { --card: var(--surface); --ink2: var(--text-2); --ink3: var(--muted); --soft: var(--tint); --th: #f3f6fd; --hov: #f3f7ff; --good: #0a7a4f; --good-bg: #e2f7ef; --warn: #9a6200; --warn-bg: #fff0d1; --bad: #b42318; --bad-bg: #fde9e9; --lnk: #2a4fa8; --cred-bg: #fff9e8; --cred-ln: #f0dca0; --d: var(--font); --b: var(--font); }
-  :root[data-theme=dark] { --th: #0e1632; --hov: #16224b; --good: #6fe3b0; --good-bg: #0f3a2c; --warn: #f7c76b; --warn-bg: #3b2d0f; --bad: #ff8f84; --bad-bg: #3d1b26; --lnk: #9fc0ff; --cred-bg: #2b2410; --cred-ln: #5c4b1a; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--b); -webkit-font-smoothing: antialiased; }
   button { font: inherit; color: inherit; cursor: pointer; } [hidden] { display: none !important; }
@@ -52,7 +51,6 @@
   .u3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; } .u3 div { background: var(--th); border-radius: 10px; padding: 10px 12px; } .u3 small { color: var(--ink3); font-size: 11px; display: block; } .u3 b { font-family: var(--d); font-size: 18px; }
   .cred { background: var(--cred-bg); border: 1px solid var(--cred-ln); border-radius: 12px; padding: 12px 14px; margin-top: 10px; font-size: 13px; } .cred code { font-size: 14px; background: var(--surface); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--cred-ln); user-select: all; }
   .mail { white-space: pre-wrap; font-size: 12.5px; background: var(--th); border-radius: 10px; padding: 10px 12px; margin-top: 8px; max-height: 220px; overflow: auto; word-break: break-all; }
-  .themebtn { width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; } aside .who .themebtn { border: 1px solid rgba(255,255,255,.2); }
   .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px); background: #121a33; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13px; opacity: 0; transition: .25s; pointer-events: none; z-index: 60; } .toast.show { opacity: 1; transform: translate(-50%, 0); }
   @media (max-width: 1000px) { .app { grid-template-columns: minmax(0, 1fr); } aside { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; } aside .who { margin: 0 0 0 auto; border: 0; padding: 0; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .plans { grid-template-columns: minmax(0, 1fr); } main { padding: 20px 16px 50px; } }
   @media (prefers-reduced-motion: reduce) { .panel { animation: none; } .toast { transition: none; } }
@@ -80,7 +78,7 @@
     <button class="nav" data-v="plans">Plans and pricing</button>
     <button class="nav" data-v="mail">Email outbox</button>
     <button class="nav" data-v="audit">Platform log</button>
-    <div class="who"><span id="who"></span><button id="themeBtn" class="themebtn" type="button" aria-label="Switch light or dark theme">Light / dark</button><button id="out">Sign out</button></div>
+    <div class="who"><span id="who"></span><button id="out">Sign out</button></div>
   </aside>
   <main>
     <section id="v-ws">
@@ -112,7 +110,6 @@
 
 <script>
 (function () {
-  document.getElementById('themeBtn').addEventListener('click', function () { var n = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', n); try { localStorage.setItem('optix_theme', n); } catch (e) { /* not remembered */ } });
   var $ = function (i) { return document.getElementById(i); }, DATA = null, setup = false, cur = null, toastT;
   function api(m, u, b) { var o = { method: m, credentials: 'same-origin', headers: {} }; if (m !== 'GET') { o.headers['Content-Type'] = 'application/json'; o.body = JSON.stringify(b || {}); } return fetch(u, o).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; } return j; }); }); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

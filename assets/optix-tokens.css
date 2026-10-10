@@ -9,12 +9,5 @@
   --font:Inter,"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --grad-hero:radial-gradient(1200px 500px at 80% -10%,#274b9f55,transparent),linear-gradient(160deg,#0e1736,#16255a 70%,#1c3a86);
   --grad-text:linear-gradient(90deg,#7fb0ff,#7be0d4);
-  color-scheme:light;font-family:var(--font)
-}
-:root[data-theme=dark]{
-  --ink:#e8edfb;--text-2:#b4c0e0;--muted:#8d9bc2;--line:#27325a;
-  --bg:#0a1126;--surface:#111a3a;--surface-2:#0e1632;--tint:#1b2a5c;--chip:#18234a;--nav-bg:rgba(10,17,38,.82);
-  --shadow-1:0 1px 0 rgba(0,0,0,.3);--shadow-2:0 18px 40px rgba(0,0,0,.45);
-  --grad-hero:radial-gradient(1200px 500px at 80% -10%,#2a56c455,transparent),linear-gradient(160deg,#070d20,#101c4a 70%,#16307a);
-  color-scheme:dark
+  color-scheme:only light;font-family:var(--font)
 }

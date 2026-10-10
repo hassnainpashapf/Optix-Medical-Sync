@@ -5,6 +5,7 @@ Multi-tenant hospital management SaaS. One Node process (Node 24+, **no npm pack
 | URL | What |
 |---|---|
 | `/` | Marketing website (Three.js 3D scene, live pricing from the platform) |
+| `/privacy`, `/terms` | Privacy Policy and Terms of Use (disclose Google AdSense and cookies) |
 | `/signup` | A hospital creates its own workspace and Super Admin, 14-day free trial |
 | `/app` | The hospital app (sign in with workspace code, username, password) |
 | `/platform` | Platform owner panel (you): workspaces, plans and prices, email outbox, platform log |
@@ -42,6 +43,21 @@ This product keeps its own website, backend and data. People can sign in with th
 - `assets/optix-suite-sdk.js` is generated from the shared SDK: `node scripts/sync-sdk.mjs` (needs the `optix-suite-sdk` repo next to this one).
 - Tests: `npm test`. Docker: `Dockerfile`, `deploy/docker-compose.yml`.
 
+## Look and feel (shared Optix theme, light only)
+
+The website, sign-up page, platform panel and the hospital app share one look with every Optix product: `optix-suite-sdk/theme/optix-theme.css` is the source of truth. There is no dark mode. Copy it into this repo with `node scripts/sync-theme.mjs` (needs the `optix-suite-sdk` repo next to this one). It writes `site/optix-theme.css` and `site/consent.js` (website) and `assets/optix-tokens.css` (tokens only, used by the app, sign-up and platform pages). Do not edit those copies by hand.
+
+## Ads (Google AdSense, public pages only)
+
+Ads are off until you set a publisher id. Set these environment variables (in `deploy/docker-compose.yml` they are `ADSENSE_CLIENT` and `ADSENSE_SLOT_HOME`; put them in the `.env` next to the compose file) and restart:
+
+| Variable | Meaning |
+|---|---|
+| `ADSENSE_CLIENT` | Publisher id, `ca-pub-` plus digits. Turns on the consent banner, the "Ad choices" footer link and `/ads.txt` |
+| `ADSENSE_SLOT_HOME` | Ad unit id (digits) for the one slot on the home page |
+
+With both empty nothing from Google is loaded and `/ads.txt` returns 404. Ads load only after the visitor chooses (`site/consent.js`). Ads are **never** placed in `/app`, `/signup`, `/platform`, bills or reports (patient data; AdSense policy). The server hands the page its config from `/ads-config.js`.
+
 ## Configuration (environment variables)
 
 | Variable | Default | Meaning |
@@ -53,6 +69,7 @@ This product keeps its own website, backend and data. People can sign in with th
 | `TRUST_PROXY`, `SECURE_COOKIES` | off | Set to `1` behind an HTTPS reverse proxy |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_SECURE` | unset | Outgoing mail (465 = TLS, 587 = STARTTLS) |
 | `SUPPORT_EMAIL` | unset | Shown in the app's Plan page for upgrade requests |
+| `ADSENSE_CLIENT`, `ADSENSE_SLOT_HOME` | unset | Google AdSense (see Ads above) |
 | `HUB_API`, `HUB_APP_ID`, `HUB_DISABLED` | production hub, `hospital`, off | The Optix account hub (see above) |
 
 ## Before going public

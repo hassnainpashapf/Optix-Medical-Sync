@@ -1,7 +1,7 @@
 /* ==========================================================================
    Optix theme — ONE look for every Optix website and tool.
    Source of truth: optix-suite-sdk/theme/optix-theme.css (copied into each product by its sync script; do not edit the copies).
-   What it gives: design tokens (colours, radius, shadows, type), light + dark, buttons, chips, cards, form fields, modal, nav and footer.
+   What it gives: design tokens (colours, radius, shadows, type), LIGHT ONLY (no dark mode by design), buttons, chips, cards, form fields, modal, nav and footer.
    Products add their own accent with  --c  on a card, or  --accent  on the page. Everything else is shared.
    ========================================================================== */
 :root{
@@ -14,14 +14,7 @@
   --font:Inter,"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --grad-hero:radial-gradient(1200px 500px at 80% -10%,#274b9f55,transparent),linear-gradient(160deg,#0e1736,#16255a 70%,#1c3a86);
   --grad-text:linear-gradient(90deg,#7fb0ff,#7be0d4);
-  color-scheme:light;font-family:var(--font)
-}
-:root[data-theme=dark]{
-  --ink:#e8edfb;--text-2:#b4c0e0;--muted:#8d9bc2;--line:#27325a;
-  --bg:#0a1126;--surface:#111a3a;--surface-2:#0e1632;--tint:#1b2a5c;--chip:#18234a;--nav-bg:rgba(10,17,38,.82);
-  --shadow-1:0 1px 0 rgba(0,0,0,.3);--shadow-2:0 18px 40px rgba(0,0,0,.45);
-  --grad-hero:radial-gradient(1200px 500px at 80% -10%,#2a56c455,transparent),linear-gradient(160deg,#070d20,#101c4a 70%,#16307a);
-  color-scheme:dark
+  color-scheme:only light;font-family:var(--font)
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -60,7 +53,6 @@ img,svg{max-width:100%}
 .box input,.field{width:100%;margin-top:6px;padding:12px 14px;border-radius:var(--r-sm);border:1.5px solid var(--line);font:inherit;background:var(--surface-2);color:var(--ink)}
 .box input:focus,.field:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,109,246,.14);background:var(--surface)}
 .box .btn{margin-top:18px}.err{min-height:18px;margin-top:10px;color:var(--red);font-size:13px}
-:root[data-theme=dark] .err{color:#ff8f84}
 .link{display:block;margin:12px auto 0;border:0;background:none;color:var(--muted);font-weight:700;cursor:pointer}
 
 /* nav */
@@ -72,8 +64,6 @@ img,svg{max-width:100%}
 .links{display:flex;gap:22px;margin-left:18px;font-weight:600;font-size:14.5px;color:var(--text-2)}.links a{position:relative}.links a:hover{color:var(--blue)}
 .links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;border-radius:2px;background:var(--blue);transform:scaleX(0);transition:transform .2s}.links a:hover::after{transform:scaleX(1)}
 .nav-act{margin-left:auto;display:flex;gap:10px;align-items:center}.nav-act .who{font-size:13.5px;color:var(--muted)}
-.theme-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;padding:0}
-.theme-btn:hover{border-color:var(--blue);color:var(--blue)}
 .burger{display:none;margin-left:6px;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;padding:0;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .burger span{display:block;width:18px;height:2px;border-radius:2px;background:var(--ink);transition:transform .2s,opacity .2s}
 .burger[aria-expanded=true] span:nth-child(1){transform:translateY(6px) rotate(45deg)}.burger[aria-expanded=true] span:nth-child(2){opacity:0}.burger[aria-expanded=true] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
@@ -82,7 +72,6 @@ img,svg{max-width:100%}
 
 /* footer */
 .foot{background:#0e1736;color:#aab6dc;padding:46px 0 0;font-size:14px}.foot .brand{color:#fff}.foot .suite{color:#9fb0dc}.foot .muted{color:#97a6d2;max-width:340px;margin:12px 0 0}
-:root[data-theme=dark] .foot{background:#070c1d}
 .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:34px;padding-bottom:30px}.foot h5{margin:0 0 12px;color:#fff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 .flinks{display:grid;gap:9px}.flinks a:hover{color:#fff}
 .foot-base{border-top:1px solid rgba(255,255,255,.1);padding:16px 0 22px;font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.foot-base a:hover{color:#fff}
