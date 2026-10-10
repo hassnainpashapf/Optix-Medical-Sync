@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Nexura Care hospital management dashboard with a SQLite-backed API",
+  "description": "Optix Medical Sync: multi-tenant hospital management SaaS (Node + SQLite, no dependencies)",
   "scripts": {
     "start": "node server.mjs",
-    "reset-password": "node server.mjs --reset-password",
+    "reset-owner-password": "node server.mjs --reset-owner-password",
     "backup": "node server.mjs --backup"
   },
   "engines": { "node": ">=24" }

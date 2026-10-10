@@ -757,7 +757,7 @@
   .lg-main .lg-brand { display: none; }
   .lg-card h2 { margin: 0 0 4px; font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
   .lg-card p.sub { margin: 0 0 22px; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
-  .lg-role[hidden], .lg-card .fl[hidden], .lg-foot[hidden] { display: none; }
+  .lg-card .fl[hidden], .lg-foot[hidden] { display: none; }
   .lg-role { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 11px; border-radius: 999px; background: #fff4e8; color: #b45f12; font-size: 11.5px; font-weight: 600; margin-bottom: 14px; }
   .lg-role svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .lg-pw { position: relative; }
@@ -770,6 +770,8 @@
   .lg-card .pri:hover:not(:disabled) { background: #2559d4; }
   .lg-foot { margin-top: 22px; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
   .lg-foot a { color: var(--blue); text-decoration: none; }
+  .lg-foot a:hover { text-decoration: underline; }
+  .lg-foot + .lg-foot { margin-top: 8px; }
   .lg-err { color: var(--bad); font-size: 12px; min-height: 18px; margin: 0 0 6px; }
   @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-side { display: none; } .lg-main .lg-brand { display: flex; } }
   #userKw { position: relative; display: inline-block; }
@@ -842,6 +844,27 @@
   .tip2 b { font-weight: 600; }
   @media (max-width: 1000px) { .rep-grid { grid-template-columns: minmax(0, 1fr); } }
 
+
+  /* trial banner + plan page */
+  .tbanner { display: flex; align-items: center; gap: 12px; padding: 9px 28px 9px 20px; font-size: 12.5px; background: #eef3fd; color: #2a4fa8; border-top: 1px solid #dde7fb; flex: none; }
+  .tbanner[hidden] { display: none; }
+  .tbanner.warn { background: #fff4e8; color: #a8560f; border-color: #f6d9b8; } .tbanner.bad { background: #fde9e9; color: #b93a3a; border-color: #f6cdcd; }
+  .tbanner a { margin-left: auto; color: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+  .pl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .plan-c { border: 1px solid #e8ebf2; border-radius: 16px; padding: 18px 18px 16px; background: #fff; }
+  .plan-c.cur { border: 2px solid #2f6df0; box-shadow: 0 10px 30px rgba(47,109,240,.14); }
+  .plan-c h3 { margin: 0; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  .plan-c .tag2 { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: #2f6df0; color: #fff; }
+  .plan-c .price { font-size: 26px; font-weight: 600; margin: 10px 0 2px; letter-spacing: -.02em; } .plan-c .price small { font-size: 12px; font-weight: 400; color: var(--ink-3); }
+  .plan-c ul { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
+  .meter2 { margin: 14px 0; } .meter2 .mh { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 6px; } .meter2 .mh span { color: var(--ink-3); }
+  .meter2 .bar { height: 10px; background: #f1f3f7; border-radius: 6px; overflow: hidden; } .meter2 .bar i { display: block; height: 100%; background: linear-gradient(90deg, #4f8cff, #2f6df0); border-radius: 6px; }
+  .meter2.full .bar i { background: linear-gradient(90deg, #f0a35b, #d9531e); }
+  .ws-box { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+  .ws-box div { background: #f6f7fa; border-radius: 12px; padding: 12px 14px; } .ws-box small { display: block; color: var(--ink-3); font-size: 11px; } .ws-box b { display: block; font-size: 15px; font-weight: 500; margin-top: 3px; }
+  .chk { display: flex; align-items: center; gap: 10px; font-size: 12.5px; margin-bottom: 14px; } .chk input { width: 17px; height: 17px; accent-color: #2f6df0; }
+  @media (max-width: 900px) { .pl-grid, .ws-box { grid-template-columns: minmax(0, 1fr); } }
+
   @media (max-width: 1180px) { .pf { grid-template-columns: minmax(0, 1fr); } }
   @media (max-width: 760px) { .chips { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
@@ -905,6 +928,7 @@
     <div class="group">ADMIN</div>
     <nav class="nav">
       <a href="#users" data-ic="pts">Users</a>
+      <a href="#plan" data-ic="cash">Plan &amp; Usage</a>
       <a href="#audit" data-ic="shield">Audit Log</a>
     </nav>
   </aside>
@@ -924,6 +948,7 @@
         <svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
       </button></span>
     </header>
+    <div class="tbanner" id="tBanner" hidden></div>
 
     <main class="main" id="main">
       <div class="view" id="view-rep" hidden>
@@ -945,8 +970,17 @@
         <div class="head"><div><h1>Users</h1><p>People who can sign in, and what each role is allowed to do</p></div></div>
         <section class="card ap-card" style="padding-top:18px">
           <div class="tools" style="margin-top:0"><span class="sbox" style="font-size:12px;color:var(--ink-2);display:flex;align-items:center">Roles: Super Admin (everything), Doctor and Receptionist (appointments and patients), Accountant (transactions), Pharmacist (suppliers and stocks).</span><button class="btn-soft" id="usBackup" style="margin-left:auto">Back up now</button><button class="addbtn" id="usAdd" style="margin-left:0">Add User <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody id="usRows"></tbody></table></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody id="usRows"></tbody></table></div>
         </section>
+      </div>
+
+      <div class="view" id="view-plan" hidden>
+        <div class="head"><div><h1>Plan &amp; Usage</h1><p>Your workspace, its plan and how much of it you have used</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="ws-box"><div><small>Workspace</small><b id="wsName"></b></div><div><small>Workspace code (needed to sign in)</small><b id="wsCode"></b></div><div><small>Status</small><b id="wsStatus"></b></div></div>
+          <div id="wsMeters"></div>
+        </section>
+        <section class="card ap-card" style="padding-top:18px"><h2 style="margin:0 0 4px;font-size:16px;font-weight:600">Plans</h2><p style="margin:0 0 16px;font-size:12.5px;color:var(--ink-2)" id="plNote"></p><div class="pl-grid" id="plGrid"></div></section>
       </div>
 
       <div class="view" id="view-aud" hidden>
@@ -1370,6 +1404,8 @@
       <div class="dr-body thin" style="padding-top:20px">
         <div class="fl"><label class="lb" for="usN">Full name</label><input class="in" id="usN" autocomplete="off"></div>
         <div class="fl"><label class="lb" for="usU">Username</label><input class="in" id="usU" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. rita"></div>
+        <div class="fl"><label class="lb" for="usE"><span>Email <span class="opt">(for invites and password reset)</span></span></label><input class="in" id="usE" type="email" autocomplete="off"></div>
+        <label class="chk" id="usInvBox"><input type="checkbox" id="usInv" checked> Send an invite email so they choose their own password</label>
         <div class="fl"><label class="lb" for="usR">Role</label><select class="in sel" id="usR"></select></div>
         <div class="fl"><label class="lb" for="usP" id="usPl">Password</label><input class="in" id="usP" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>
         <div class="fl" id="usActBox"><span class="lb" id="usAl">Account</span><div class="rads" role="radiogroup" aria-labelledby="usAl"><label class="rad"><input type="radio" name="usS" value="1" checked><i></i>Active</label><label class="rad"><input type="radio" name="usS" value="0"><i></i>Locked</label></div></div>
@@ -1532,18 +1568,19 @@
   </aside>
   <div class="lg-main">
     <form class="lg-card" id="lgForm" novalidate>
-      <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#6f86d8" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg>Optix Medical Sync</div>
-      <span class="lg-role" id="lgRole"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6z"/></svg>Super Admin set-up</span>
-      <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Use your account to open the dashboard.</p>
-      <div class="fl" id="lgNameBox" hidden><label class="lb" for="lgName">Full name</label><input class="in" id="lgName" autocomplete="name"></div>
-      <div class="fl"><label class="lb" for="lgUser">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-      <div class="fl"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#6f86d8" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg> Optix Medical Sync</div>
+      <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Enter your workspace code and your account details.</p>
+      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="e.g. alpha-clinic"></div>
+      <div class="fl" id="lgUserBox"><label class="lb" for="lgUser" id="lgUserL">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div class="fl" id="lgPassBox"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
       <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
       <div class="lg-err" id="lgErr" role="alert"></div>
       <button class="pri" id="lgBtn" type="submit">Sign in</button>
-      <p class="lg-foot" id="lgFoot">Forgot your password? Ask a Super Admin to reset it.</p>
+      <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
+      <p class="lg-foot" id="lgBack" hidden><a href="#" id="lgBackA">Back to sign in</a></p>
     </form>
   </div>
+</div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -1679,6 +1716,7 @@ window.bootApp = function () {
   function renderDocs() {
     var pref = ['Dr/Amany Ahmed', 'Dr. Samir Khalil', 'Dr. Yasmin Farah', 'Dr. Amin Rashid'], show = pref.map(function (n) { return docStaff.filter(function (d) { return d.name === n; })[0]; }).filter(Boolean);
     if (show.length < 4) docStaff.forEach(function (d) { if (show.length < 4 && show.indexOf(d) < 0) show.push(d); });
+    if (!show.length) { dl.innerHTML = '<div class="empty" style="padding:26px 0">Add doctors in the Staff List to see who is available today.</div>'; document.getElementById('nAvail').textContent = '0 Doctor'; document.getElementById('nUnavail').textContent = '0 Doctor'; return; }
     dl.innerHTML = show.map(function (d) {
       var ok = worksToday(d);
       return '<div class="drow"><span class="pic">' + (d.photo ? '<img src="' + d.photo + '" alt="">' : faces[d.face]) + '</span><div class="nm"><b>' + d.name + '</b><small>' + d.sub + '</small></div><span class="tag ' + (ok ? 'ok' : 'no') + '">' + (ok ? 'Available' : 'Unavailable') + '</span></div>';
@@ -1697,10 +1735,10 @@ window.bootApp = function () {
     (typeof TXC === 'undefined' ? [] : TXC).forEach(function (x) { if (x.status === 'Paid' && x.dt.slice(0, 4) === y) cash[+x.dt.slice(5, 7) - 1] += x.amt; });
     (typeof TXS === 'undefined' ? [] : TXS).forEach(function (x) { if (x.status === 'Paid' && x.dt.slice(0, 4) === y) out[+x.dt.slice(5, 7) - 1] += x.amt; });
     months = []; for (i = 0; i < 12; i++) months.push({ name: MON[i], cash: cash[i], out: out[i] });
-    var mx = Math.max.apply(null, cash.concat([1])), rough = mx / 6, mag = Math.pow(10, Math.floor(Math.log10(rough))), f = rough / mag, step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag; axisMax = step * 6;
+    var mx = Math.max.apply(null, cash.concat([1])), rough = Math.max(mx / 6, 1000), mag = Math.pow(10, Math.floor(Math.log10(rough))), f = rough / mag, step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag; axisMax = step * 6;
     active = +TODAY.slice(5, 7) - 1; start = Math.max(0, Math.min(12 - VISIBLE, active - 3));
   }
-  function fmtK(n) { return n >= 1e6 ? +(n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? +(n / 1e3).toFixed(1) + 'k' : String(n); }
+  function fmtK(n) { return n >= 1e6 ? +(n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? +(n / 1e3).toFixed(1) + 'k' : String(Math.round(n)); }
   function tickPos(i) { return (i / 6 * 100) + '%'; }
   function renderChart() {
     buildMonthsIfNeeded();
@@ -1762,6 +1800,7 @@ window.bootApp = function () {
     Reports: [['chart', 'Reports']],
     Users: [['pts', 'Users']],
     'Audit Log': [['shield', 'Audit Log']],
+    'Plan & Usage': [['cash', 'Plan & Usage']],
     Stocks: [['box', 'Stocks']],
     Peripherals: [['print', 'Peripherals']],
     Dashboard: [['grid', 'Dashboard']]
@@ -1775,8 +1814,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1789,6 +1828,7 @@ window.bootApp = function () {
     if (vid === 'view-rep') renderReports2();
     if (vid === 'view-usr') loadUsers();
     if (vid === 'view-aud') loadAudit();
+    if (vid === 'view-plan') loadPlan();
     renderCrumb(key);
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
@@ -3204,7 +3244,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3336,24 +3376,26 @@ window.bootApp = function () {
   }
   function renderUsers() {
     $('usRows').innerHTML = USERS.map(function (u) {
-      return '<tr><td><div class="dcell"><span class="sthumb">' + avatarHtml(u.name) + '</span><div class="nm2"><b>' + esc(u.name) + (u.username === ME.username ? ' (you)' : '') + '</b></div></div></td><td>' + esc(u.username) + '</td><td><span class="pl ' + (u.role === 'Super Admin' ? 'warn' : 'good') + '">' + esc(u.role) + '</span></td><td><span class="pl ' + (u.active ? 'good' : 'bad') + '">' + (u.active ? 'Active' : 'Locked') + '</span></td><td>' + (u.created ? fmtDate(new Date(u.created).toISOString().slice(0, 10)) : '—') + '</td><td><span class="kw"><button class="kebab" data-id="' + u.id + '" aria-haspopup="true" aria-label="Actions for ' + esc(u.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
+      return '<tr><td><div class="dcell"><span class="sthumb">' + avatarHtml(u.name) + '</span><div class="nm2"><b>' + esc(u.name) + (u.username === ME.username ? ' (you)' : '') + '</b></div></div></td><td>' + esc(u.username) + '</td><td>' + esc(u.email || '—') + '</td><td><span class="pl ' + (u.role === 'Super Admin' ? 'warn' : 'good') + '">' + esc(u.role) + '</span></td><td><span class="pl ' + (u.active ? 'good' : 'bad') + '">' + (u.active ? 'Active' : 'Locked') + '</span></td><td>' + (u.created ? fmtDate(new Date(u.created).toISOString().slice(0, 10)) : '—') + '</td><td><span class="kw"><button class="kebab" data-id="' + u.id + '" aria-haspopup="true" aria-label="Actions for ' + esc(u.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
   }
   function openUsForm(u) {
     usEditId = u ? u.id : 0; $('usForm').reset(); $('usErr').textContent = ''; $('usWt').textContent = u ? 'Edit User' : 'Add User'; $('usU').disabled = !!u; $('usActBox').hidden = !u;
-    $('usPl').textContent = u ? 'New password (leave empty to keep the current one)' : 'Password';
-    if (u) { $('usN').value = u.name; $('usU').value = u.username; $('usR').value = u.role; $('usForm').elements.usS.value = String(u.active); }
+    $('usPl').textContent = u ? 'New password (leave empty to keep the current one)' : 'Password'; $('usInvBox').hidden = !!u; $('usInv').checked = true; syncInv();
+    if (u) { $('usE').value = u.email || ''; $('usN').value = u.name; $('usU').value = u.username; $('usR').value = u.role; $('usForm').elements.usS.value = String(u.active); }
     $('usW').hidden = false; $('usN').focus();
   }
+  function syncInv() { var inv = !$('usInvBox').hidden && $('usInv').checked; $('usP').closest('.fl').hidden = inv; }
+  $('usInv').addEventListener('change', syncInv);
   $('usAdd').addEventListener('click', function () { openUsForm(null); });
-  $('usRows').addEventListener('click', function (e) { var k = e.target.closest('.kebab'); if (!k) return; e.stopPropagation(); var u = USERS.filter(function (x) { return x.id === +k.dataset.id; })[0]; rowMenu(k, [['edit', 'Edit user']], function () { openUsForm(u); }); });
+  $('usRows').addEventListener('click', function (e) { var k = e.target.closest('.kebab'); if (!k) return; e.stopPropagation(); var u = USERS.filter(function (x) { return x.id === +k.dataset.id; })[0]; rowMenu(k, [['edit', 'Edit user']].concat(u.email ? [['invite', 'Send invite email']] : []), function (a) { if (a === 'invite') api('POST', '/api/users/' + u.id + '/invite').then(function () { toast('Invite sent to ' + u.email); }).catch(function (x) { toast(x.message); }); else openUsForm(u); }); });
   $('usForm').addEventListener('submit', function (e) {
-    e.preventDefault(); var er = $('usErr'); er.textContent = ''; var body = { name: $('usN').value.trim(), role: $('usR').value };
+    e.preventDefault(); var er = $('usErr'); er.textContent = ''; var body = { name: $('usN').value.trim(), role: $('usR').value, email: $('usE').value.trim() };
     if (body.name.length < 2) { er.textContent = 'Enter the full name.'; return; }
-    var req; if (usEditId) { body.active = $('usForm').elements.usS.value === '1'; if ($('usP').value) body.password = $('usP').value; req = api('PUT', '/api/users/' + usEditId, body); } else { body.username = $('usU').value.trim(); body.password = $('usP').value; req = api('POST', '/api/users', body); }
-    req.then(function () { $('usW').hidden = true; loadUsers(); toast(usEditId ? 'User saved' : 'User added'); }).catch(function (x) { er.textContent = x.message; });
+    var req; if (usEditId) { body.active = $('usForm').elements.usS.value === '1'; if ($('usP').value) body.password = $('usP').value; req = api('PUT', '/api/users/' + usEditId, body); } else { body.username = $('usU').value.trim(); body.invite = $('usInv').checked; if (!body.invite) body.password = $('usP').value; req = api('POST', '/api/users', body); }
+    req.then(function (r) { $('usW').hidden = true; loadUsers(); toast(usEditId ? 'User saved' : (r.invited ? 'Invite sent to ' + body.email : 'User added')); }).catch(function (x) { er.textContent = x.message; });
   });
-  $('usBackup').addEventListener('click', function () { api('POST', '/api/backup').then(function (r) { toast('Backup saved: data/backups/' + r.file); }).catch(function (x) { toast(x.message); }); });
+  $('usBackup').addEventListener('click', function () { api('POST', '/api/backup').then(function (r) { toast('Backup saved: ' + r.file); }).catch(function (x) { toast(x.message); }); });
   $('usW').addEventListener('mousedown', function (e) { if (e.target === this) this.hidden = true; });
 
   /* ---------- audit log (Super Admin) ---------- */
@@ -3377,9 +3419,36 @@ window.bootApp = function () {
   ['auQ', 'auU', 'auA'].forEach(function (id) { $(id).addEventListener('input', function () { auPage = 1; renderAudit(); }); $(id).addEventListener('change', function () { auPage = 1; renderAudit(); }); });
   $('auPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; auPage = +b.dataset.p; renderAudit(); });
 
+  /* ---------- workspace, plan and usage ---------- */
+  var WS = window.__WS || null, PLANS = [], SUPPORT = '';
+  function limTxt(n, unit) { return n < 0 ? 'Unlimited' : fmtNum(n) + (unit || ''); }
+  function mbTxt(b) { return b >= 1073741824 ? (b / 1073741824).toFixed(1) + ' GB' : (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + ' MB'; }
+  function applyWs(w) {
+    WS = w; var b = $('tBanner');
+    var locked = w && ((w.status === 'trial' && w.trialDaysLeft !== null && w.trialDaysLeft <= 0) || w.status === 'cancelled' || w.status === 'suspended');
+    ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { if (locked) document.body.classList.add('ro-' + c); });
+    if (!w) { b.hidden = true; return; }
+    var up = ROLE === 'Super Admin' ? '<a id="tbUp">Plan &amp; Usage</a>' : '';
+    if (w.status === 'trial') { var d = w.trialDaysLeft; b.className = 'tbanner' + (d <= 0 ? ' bad' : d <= 3 ? ' warn' : ''); b.innerHTML = (d <= 0 ? 'Your free trial has ended. The workspace is now read-only.' : 'Free trial: ' + d + ' day' + (d === 1 ? '' : 's') + ' left.') + up; b.hidden = false; }
+    else if (w.status === 'suspended') { b.className = 'tbanner bad'; b.textContent = 'This workspace is suspended.'; b.hidden = false; }
+    else b.hidden = true;
+    var tb = $('tbUp'); if (tb) tb.addEventListener('click', function () { go('Plan & Usage'); });
+  }
+  function meter(label, cur, max, fmt) { var pct = max < 0 ? 0 : Math.min(100, max ? cur / max * 100 : 0); return '<div class="meter2' + (max >= 0 && cur >= max ? ' full' : '') + '"><div class="mh"><b style="font-weight:500">' + label + '</b><span>' + fmt(cur) + ' of ' + (max < 0 ? 'unlimited' : fmt(max)) + '</span></div><div class="bar"><i style="width:' + (max < 0 ? 4 : pct) + '%"></i></div></div>'; }
+  function renderPlan() {
+    var w = WS; if (!w) return;
+    $('wsName').textContent = w.name; $('wsCode').textContent = w.slug; $('wsStatus').textContent = w.status === 'trial' ? (w.trialDaysLeft > 0 ? 'Free trial, ' + w.trialDaysLeft + ' days left' : 'Trial ended') : w.status.charAt(0).toUpperCase() + w.status.slice(1);
+    $('wsMeters').innerHTML = meter('Users', w.usage.users, w.plan.maxUsers, fmtNum) + meter('Patients', w.usage.patients, w.plan.maxPatients, fmtNum) + meter('File storage', w.usage.storage, w.plan.maxStorageMb < 0 ? -1 : w.plan.maxStorageMb * 1048576, mbTxt);
+    $('plNote').textContent = 'You are on the ' + w.plan.name + ' plan' + (w.status === 'trial' ? ' (free trial)' : '') + '. To change plan, ' + (SUPPORT ? 'email ' + SUPPORT + ' with your workspace code.' : 'contact the platform owner with your workspace code.');
+    $('plGrid').innerHTML = PLANS.map(function (p) { return '<div class="plan-c' + (p.id === w.plan.id ? ' cur' : '') + '"><h3>' + esc(p.name) + (p.id === w.plan.id ? '<span class="tag2">Current</span>' : '') + '</h3><div class="price">' + fmtNum(p.price) + ' <small>' + esc(p.currency) + ' / month</small></div><div style="font-size:12px;color:var(--ink-3)">' + esc(p.blurb) + '</div><ul><li>' + limTxt(p.max_users, ' users') + '</li><li>' + limTxt(p.max_patients, ' patients') + '</li><li>' + (p.max_storage_mb < 0 ? 'Unlimited' : mbTxt(p.max_storage_mb * 1048576)) + ' file storage</li></ul></div>'; }).join('');
+  }
+  function loadPlan() {
+    Promise.all([api('GET', '/api/account'), PLANS.length ? Promise.resolve(null) : api('GET', '/api/plans')]).then(function (r) { applyWs(r[0].workspace); if (r[1]) { PLANS = r[1].plans; SUPPORT = r[1].supportEmail || ''; } renderPlan(); }).catch(function (e) { toast(e.message); });
+  }
+
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
-  function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message !== 'signed out') { if (e.status === 403) toast(e.message); else saveFail(); } }); }
+  function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403) toast(e.message); else saveFail(); }); }
   function unpersist(col, id) { api('DELETE', '/api/records/' + col + '/' + encodeURIComponent(id)).catch(function (e) { if (e.message !== 'signed out') saveFail(); }); }
   function persistKV(id, v) { persist('kv', { id: id, v: v }); }
   function saveAppt(r, list) { r.list = list; if (!r.ord) r.ord = Date.now(); persist('appts', r); }
@@ -3398,7 +3467,12 @@ window.bootApp = function () {
     refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts();
   }
   function hydrate(srv) {
-    if (!srv || srv.empty) { seedServer(); rerenderAll(); return; }
+    if (!srv) { seedServer(); rerenderAll(); return; }
+    if (srv.empty && srv.seed) { seedServer(); rerenderAll(); return; }
+    if (srv.empty) {
+      docStaff = []; genStaffL = []; SUPS = []; STK = {}; TXC = []; TXS = []; DEVS = []; patients = []; approved = []; requests = []; uid = 0; sUid = 0; supUid = 0; ptUid = 0; stkUid = 0; devUid = 0; curPid = 0; supCur = null;
+      rerenderAll(); return;
+    }
     var C = srv.collections || {}, kv = {};
     (C.kv || []).forEach(function (o) { kv[o.id] = o.v; });
     patients = (C.patients || []).slice().sort(byOrd);
@@ -3416,7 +3490,8 @@ window.bootApp = function () {
   }
   hydrate(window.__SRV);
   (function () {
-    var u = window.__USER; if (u) { document.querySelector('.user b').textContent = u.name; document.querySelector('.user small').textContent = u.role; }
+    var u = window.__USER; if (u) { document.querySelector('.user b').textContent = u.name; document.querySelector('.user small').textContent = u.role + (window.__WS ? ' · ' + window.__WS.name : ''); }
+    applyWs(window.__WS);
     $('userBtn').addEventListener('click', function (e) {
       e.stopPropagation();
       rowMenu(this, [['pw', 'Change password'], ['out', 'Sign out']], function (a) {
@@ -3436,44 +3511,47 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
 </script>
 <script>
 (function () {
-  var $ = function (id) { return document.getElementById(id); }, setup = false;
-  function start(user) {
+  var $ = function (id) { return document.getElementById(id); }, mode = 'login', tokenInfo = null, TOKEN = new URLSearchParams(location.search).get('token') || '';
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) { return ''; } return ''; }
+  function start(r) {
     api('GET', '/api/data').then(function (srv) {
-      window.__SRV = srv; window.__USER = user; $('login').hidden = true; document.body.classList.remove('locked'); window.bootApp();
+      window.__SRV = srv; window.__USER = r.user; window.__WS = srv.workspace; store('nx_ws', srv.workspace.slug);
+      if (TOKEN) history.replaceState(null, '', '/app'); $('login').hidden = true; document.body.classList.remove('locked'); window.bootApp();
     }).catch(function (e) { showLogin('Could not load data: ' + e.message); });
   }
-  function mode(isSetup) {
-    setup = isSetup; $('lgRole').hidden = !isSetup; $('lgNameBox').hidden = !isSetup; $('lgPass2Box').hidden = !isSetup;
-    $('lgTitle').textContent = isSetup ? 'Create the Super Admin' : 'Sign in';
-    $('lgSub').textContent = isSetup ? 'This account controls everything: users, roles, backups and the audit log. You can add the rest of the staff after signing in.' : 'Use your account to open the dashboard.';
-    $('lgBtn').textContent = isSetup ? 'Create account and sign in' : 'Sign in'; $('lgFoot').hidden = isSetup;
-    $('lgPass').autocomplete = isSetup ? 'new-password' : 'current-password';
+  function setMode(m) {
+    mode = m; var login = m === 'login', forgot = m === 'forgot', tok = m === 'token';
+    $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login; $('lgBack').hidden = login;
+    $('lgTitle').textContent = login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
+    $('lgSub').textContent = login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
+    $('lgUserL').textContent = forgot ? 'Username or email' : 'Username';
+    $('lgBtn').textContent = login ? 'Sign in' : forgot ? 'Send reset link' : 'Save password and sign in';
+    $('lgPass').autocomplete = tok ? 'new-password' : 'current-password'; $('lgErr').textContent = '';
   }
-  function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; (setup ? $('lgName') : $('lgUser').value ? $('lgPass') : $('lgUser')).focus(); }
+  function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; var f = mode === 'token' ? $('lgPass') : !$('lgWs').value ? $('lgWs') : !$('lgUser').value ? $('lgUser') : $('lgPass'); f.focus(); }
   $('lgEye').addEventListener('click', function () { var on = $('lgPass').type === 'password'; $('lgPass').type = on ? 'text' : 'password'; this.setAttribute('aria-pressed', String(on)); this.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); });
+  $('lgForgot').addEventListener('click', function (e) { e.preventDefault(); setMode('forgot'); $('lgUser').focus(); });
+  $('lgBackA').addEventListener('click', function (e) { e.preventDefault(); if (TOKEN) { TOKEN = ''; history.replaceState(null, '', '/app'); } setMode('login'); });
   $('lgForm').addEventListener('submit', function (e) {
-    e.preventDefault(); var btn = $('lgBtn'), er = $('lgErr'); er.textContent = '';
-    var user = $('lgUser').value.trim(), pass = $('lgPass').value, req;
-    if (!user || !pass) { er.textContent = 'Enter your username and password.'; return; }
-    if (setup) {
-      if ($('lgName').value.trim().length < 2) { er.textContent = 'Enter your full name.'; $('lgName').focus(); return; }
-      if (pass.length < 8) { er.textContent = 'Use at least 8 characters for the password.'; $('lgPass').focus(); return; }
-      if (pass !== $('lgPass2').value) { er.textContent = 'The two passwords do not match.'; $('lgPass2').focus(); return; }
-      req = api('POST', '/api/setup', { name: $('lgName').value.trim(), username: user, password: pass });
-    } else req = api('POST', '/api/login', { username: user, password: pass });
+    e.preventDefault(); var btn = $('lgBtn'), er = $('lgErr'); er.textContent = ''; var ws = $('lgWs').value.trim().toLowerCase(), user = $('lgUser').value.trim(), pass = $('lgPass').value, req;
+    if (mode === 'login') { if (!ws || !user || !pass) { er.textContent = 'Enter the workspace code, username and password.'; return; } req = api('POST', '/api/login', { workspace: ws, username: user, password: pass }); }
+    else if (mode === 'forgot') { if (!ws || !user) { er.textContent = 'Enter the workspace code and your username or email.'; return; } btn.disabled = true; api('POST', '/api/forgot', { workspace: ws, identifier: user }).then(function () { er.style.color = '#2f7d32'; er.textContent = 'If that account has an email address, a reset link is on its way. It is valid for 1 hour.'; }).catch(function (x) { er.textContent = x.message; }).then(function () { btn.disabled = false; setTimeout(function () { er.style.color = ''; }, 100); }); return; }
+    else { if (pass.length < 8) { er.textContent = 'Use at least 8 characters for the password.'; return; } if (pass !== $('lgPass2').value) { er.textContent = 'The two passwords do not match.'; return; } req = api('POST', '/api/token', { t: TOKEN, password: pass }); }
     btn.disabled = true;
-    req.then(function (r) { $('lgPass').value = ''; $('lgPass2').value = ''; start(r.user); }).catch(function (err) { er.textContent = err.message; }).then(function () { btn.disabled = false; });
+    req.then(function (r) { $('lgPass').value = ''; $('lgPass2').value = ''; start(r); }).catch(function (err) { er.textContent = err.message; }).then(function () { btn.disabled = false; });
   });
-  api('GET', '/api/session').then(function (r) { start(r.user); }).catch(function (e) {
-    if (e.status !== 401) { showLogin('Cannot reach the server. Start it with "npm start" and reload.'); return; }
-    api('GET', '/api/setup').then(function (r) { mode(!!r.needed); showLogin(); }).catch(function () { mode(false); showLogin(); });
+  var qws = new URLSearchParams(location.search).get('ws'); $('lgWs').value = (qws || store('nx_ws') || '').toLowerCase();
+  if (TOKEN) {
+    api('GET', '/api/token?t=' + encodeURIComponent(TOKEN)).then(function (r) { tokenInfo = r; setMode('token'); showLogin(); }).catch(function (e) { TOKEN = ''; setMode('login'); showLogin(e.message); });
+  } else api('GET', '/api/session').then(function (r) { start(r); }).catch(function (e) {
+    if (e.status === 401) { setMode('login'); showLogin(); } else showLogin('Cannot reach the server. Start it with "npm start" and reload.');
   });
 })();
 </script>

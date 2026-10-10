@@ -234,3 +234,15 @@ function renderRoles() {
 }
 rtabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { roleNow = b.dataset.r; renderRoles(); } });
 renderRoles();
+
+/* ---------- pricing from the platform (/api/plans) ---------- */
+(function () {
+  const box = document.getElementById('plans'); if (!box) return;
+  const lim = (n, u) => (n < 0 ? 'Unlimited ' + u : n.toLocaleString('en-US') + ' ' + u);
+  const sto = (mb) => (mb >= 1000 ? (mb / 1000).toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' GB' : mb + ' MB');
+  fetch('/api/plans').then((r) => r.json()).then((d) => {
+    document.getElementById('priceSub').textContent = `Every plan starts with a ${d.trialDays}-day free trial. No card needed.`;
+    const mid = Math.floor(d.plans.length / 2);
+    box.innerHTML = d.plans.map((p, i) => `<article class="plan${i === mid ? ' pop' : ''}"><h3>${p.name}</h3><p class="bl">${p.blurb}</p><div class="pr">${p.price.toLocaleString('en-US')} <small>${p.currency} / month</small></div><ul><li>${lim(p.max_users, 'staff users')}</li><li>${lim(p.max_patients, 'patients')}</li><li>${sto(p.max_storage_mb)} of file storage</li><li>All modules, roles and reports</li><li>Audit log and daily backups</li></ul><a class="btn" href="/signup">Start free trial</a></article>`).join('');
+  }).catch(() => { box.innerHTML = '<p class="fine" style="grid-column:1/-1;text-align:center">Pricing could not be loaded. Please refresh.</p>'; });
+})();

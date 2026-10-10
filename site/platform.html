@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Platform | Optix Medical Sync</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a1230'/%3E%3Cpath d='M8 6c8 4 8 8 0 12s-8 8 0 8M24 6c-8 4-8 8 0 12s8 8 0 8' stroke='%234f8cff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #f4f7fd; --card: #fff; --ink: #121a33; --ink2: #5a678a; --ink3: #8b94a8; --line: #e6ebf5; --blue: #2f6df0; --soft: #e8f0ff; --good: #1f7a3a; --good-bg: #e6f7ec; --warn: #a8560f; --warn-bg: #fff4e8; --bad: #b93a3a; --bad-bg: #fde9e9; --d: "Sora", system-ui, sans-serif; --b: "DM Sans", system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--b); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; } [hidden] { display: none !important; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #36d1c4; outline-offset: 2px; }
+  .gate { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(700px 400px at 80% 0%, #dfe9ff, transparent 70%), var(--bg); }
+  .gcard { width: min(400px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px; box-shadow: 0 30px 70px rgba(31,64,140,.14); }
+  .gcard h1 { font-family: var(--d); font-size: 22px; margin: 6px 0 4px; } .gcard p { margin: 0 0 18px; color: var(--ink2); font-size: 13.5px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--soft); color: #2a4fa8; letter-spacing: .04em; text-transform: uppercase; }
+  .fl { margin-bottom: 13px; } .fl label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 5px; }
+  input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 0 12px; height: 42px; font: inherit; color: var(--ink); } textarea { height: 76px; padding: 10px 12px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: #9db8f3; outline: 0; box-shadow: 0 0 0 3px #e7eefc; }
+  .btn { height: 42px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font-weight: 500; } .btn:hover { background: #f4f7fd; }
+  .btn.pri { background: var(--blue); border-color: var(--blue); color: #fff; } .btn.pri:hover { background: #2559d4; } .btn.dng { color: var(--bad); border-color: #f2c4c4; } .btn.dng:hover { background: var(--bad-bg); } .btn:disabled { opacity: .6; cursor: default; }
+  .btn.sm { height: 34px; padding: 0 12px; font-size: 13px; }
+  .err { color: var(--bad); font-size: 13px; min-height: 18px; margin: 4px 0 8px; }
+  .app { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
+  aside { background: #0b1433; color: #cfdcff; padding: 22px 14px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+  aside .brand { font-family: var(--d); font-weight: 600; color: #fff; padding: 4px 10px 18px; font-size: 16px; display: flex; align-items: center; gap: 9px; } aside .brand small { display: block; font-family: var(--b); font-weight: 400; color: #8fa3d8; font-size: 11px; }
+  aside button.nav { text-align: left; border: 0; background: none; border-radius: 10px; padding: 10px 12px; color: #b9c8ee; font-size: 14px; } aside button.nav:hover { background: rgba(255,255,255,.07); } aside button.nav.on { background: rgba(79,140,255,.22); color: #fff; }
+  aside .who { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; } aside .who button { margin-top: 8px; width: 100%; border: 1px solid rgba(255,255,255,.2); background: none; color: #cfdcff; border-radius: 8px; height: 34px; }
+  main { padding: 26px 30px 60px; min-width: 0; }
+  h2 { font-family: var(--d); font-size: 22px; margin: 0 0 4px; } .lead { color: var(--ink2); margin: 0 0 22px; }
+  .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; } .kpi small { color: var(--ink3); font-size: 12px; display: block; } .kpi b { font-family: var(--d); font-size: 26px; font-weight: 600; display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 18px; }
+  .tools { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; } .tools input { max-width: 320px; } .tools select { width: 170px; }
+  .tw { overflow-x: auto; } table { width: 100%; border-collapse: collapse; min-width: 820px; } th { text-align: left; font-weight: 500; font-size: 12px; color: var(--ink3); padding: 8px 12px; background: #f7f9fe; white-space: nowrap; } th:first-child { border-radius: 10px 0 0 10px; } th:last-child { border-radius: 0 10px 10px 0; }
+  td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; } tr:last-child td { border-bottom: 0; } td small { display: block; color: var(--ink3); font-size: 12px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; } .pill.trial { background: var(--soft); color: #2a4fa8; } .pill.active { background: var(--good-bg); color: var(--good); } .pill.suspended { background: var(--warn-bg); color: var(--warn); } .pill.cancelled { background: var(--bad-bg); color: var(--bad); } .pill.sent { background: var(--good-bg); color: var(--good); } .pill.logged { background: var(--soft); color: #2a4fa8; } .pill.failed { background: var(--bad-bg); color: var(--bad); }
+  .row { cursor: pointer; } .row:hover td { background: #f7faff; }
+  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } .pc h3 { margin: 0 0 12px; font-family: var(--d); font-size: 16px; } .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hint { color: var(--ink3); font-size: 12px; margin-top: 4px; }
+  .drawer { position: fixed; inset: 0; z-index: 30; background: rgba(15,22,50,.4); display: flex; justify-content: flex-end; } .drawer .panel { width: min(460px, 100%); background: #fff; padding: 22px 24px; overflow-y: auto; animation: in .22s ease; } @keyframes in { from { transform: translateX(30px); opacity: 0; } }
+  .panel h3 { font-family: var(--d); margin: 0; font-size: 19px; } .panel .meta { color: var(--ink2); font-size: 13px; margin: 2px 0 16px; } .panel h4 { margin: 20px 0 8px; font-size: 13px; color: var(--ink2); text-transform: uppercase; letter-spacing: .05em; }
+  .u3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; } .u3 div { background: #f4f7fd; border-radius: 10px; padding: 10px 12px; } .u3 small { color: var(--ink3); font-size: 11px; display: block; } .u3 b { font-family: var(--d); font-size: 18px; }
+  .cred { background: #fff9e8; border: 1px solid #f0dca0; border-radius: 12px; padding: 12px 14px; margin-top: 10px; font-size: 13px; } .cred code { font-size: 14px; background: #fff; padding: 2px 6px; border-radius: 6px; border: 1px solid #f0dca0; user-select: all; }
+  .mail { white-space: pre-wrap; font-size: 12.5px; background: #f7f9fe; border-radius: 10px; padding: 10px 12px; margin-top: 8px; max-height: 220px; overflow: auto; word-break: break-all; }
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px); background: #121a33; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13px; opacity: 0; transition: .25s; pointer-events: none; z-index: 60; } .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (max-width: 1000px) { .app { grid-template-columns: minmax(0, 1fr); } aside { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; } aside .who { margin: 0 0 0 auto; border: 0; padding: 0; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .plans { grid-template-columns: minmax(0, 1fr); } main { padding: 20px 16px 50px; } }
+  @media (prefers-reduced-motion: reduce) { .panel { animation: none; } .toast { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate" hidden>
+  <form class="gcard" id="gf" novalidate>
+    <span class="badge" id="gBadge">Platform owner</span>
+    <h1 id="gTitle">Sign in</h1><p id="gSub">This area is for the owner of the Optix Medical Sync platform.</p>
+    <div class="fl" id="gNameB" hidden><label for="gName">Full name</label><input id="gName" autocomplete="name"></div>
+    <div class="fl"><label for="gUser">Username</label><input id="gUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+    <div class="fl"><label for="gPass">Password</label><input id="gPass" type="password" autocomplete="current-password"></div>
+    <div class="fl" id="gPass2B" hidden><label for="gPass2">Repeat password <span class="hint">(at least 10 characters)</span></label><input id="gPass2" type="password" autocomplete="new-password"></div>
+    <div class="err" id="gErr" role="alert"></div>
+    <button class="btn pri" id="gBtn" style="width:100%" type="submit">Sign in</button>
+  </form>
+</div>
+
+<div class="app" id="app" hidden>
+  <aside>
+    <div class="brand"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M8 5c9 4.5 9 9 0 13.5S-1 25 8 28M24 5c-9 4.5-9 9 0 13.5S33 25 24 28" fill="none" stroke="#6aa0ff" stroke-width="2.6" stroke-linecap="round"/></svg><div>Optix Medical Sync<small>Platform owner</small></div></div>
+    <button class="nav on" data-v="ws">Workspaces</button>
+    <button class="nav" data-v="plans">Plans and pricing</button>
+    <button class="nav" data-v="mail">Email outbox</button>
+    <button class="nav" data-v="audit">Platform log</button>
+    <div class="who"><span id="who"></span><button id="out">Sign out</button></div>
+  </aside>
+  <main>
+    <section id="v-ws">
+      <h2>Workspaces</h2><p class="lead">Every hospital on the platform, its plan and how much it uses.</p>
+      <div class="kpis" id="kpis"></div>
+      <div class="card">
+        <div class="tools"><input id="q" type="search" placeholder="Search name, code or email" aria-label="Search workspaces"><select id="fs" aria-label="Status"><option value="">All statuses</option><option>trial</option><option>active</option><option>suspended</option><option>cancelled</option></select><span style="flex:1"></span><button class="btn sm" id="bk">Back up everything</button></div>
+        <div class="tw"><table><thead><tr><th>Workspace</th><th>Plan</th><th>Status</th><th>Users</th><th>Patients</th><th>Storage</th><th>Created</th><th>Last active</th></tr></thead><tbody id="rows"></tbody></table></div>
+        <div class="hint" id="emptyW" hidden style="padding:18px 4px">No workspaces yet. They appear here when a hospital signs up at <b>/signup</b>.</div>
+      </div>
+    </section>
+    <section id="v-plans" hidden>
+      <h2>Plans and pricing</h2><p class="lead">These values are shown on the public website and enforced inside every workspace. Use -1 for unlimited.</p>
+      <div class="plans" id="planBox"></div>
+    </section>
+    <section id="v-mail" hidden>
+      <h2>Email outbox</h2><p class="lead" id="mailLead"></p>
+      <div class="card tw"><table><thead><tr><th>When</th><th>To</th><th>Subject</th><th>Workspace</th><th>Status</th></tr></thead><tbody id="mailRows"></tbody></table></div>
+    </section>
+    <section id="v-audit" hidden>
+      <h2>Platform log</h2><p class="lead">Actions taken by owners and by the system.</p>
+      <div class="card tw"><table><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Workspace or ref</th><th>Details</th></tr></thead><tbody id="auditRows"></tbody></table></div>
+    </section>
+  </main>
+</div>
+
+<div class="drawer" id="dw" hidden><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var $ = function (i) { return document.getElementById(i); }, DATA = null, setup = false, cur = null, toastT;
+  function api(m, u, b) { var o = { method: m, credentials: 'same-origin', headers: {} }; if (m !== 'GET') { o.headers['Content-Type'] = 'application/json'; o.body = JSON.stringify(b || {}); } return fetch(u, o).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; } return j; }); }); }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 2600); }
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function fd(ts) { if (!ts) return 'never'; var d = new Date(ts); return d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear(); }
+  function ft(ts) { var d = new Date(ts); return fd(ts) + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function mb(b) { return b >= 1073741824 ? (b / 1073741824).toFixed(1) + ' GB' : (b / 1048576).toFixed(1) + ' MB'; }
+  function num(n) { return Math.round(n).toLocaleString('en-US'); }
+
+  /* ---- gate ---- */
+  function gate(isSetup) {
+    setup = isSetup; $('app').hidden = true; $('gate').hidden = false;
+    $('gTitle').textContent = isSetup ? 'Create the platform owner' : 'Sign in'; $('gSub').textContent = isSetup ? 'This is the first run. This account controls every workspace, plan and price.' : 'This area is for the owner of the Optix Medical Sync platform.';
+    $('gNameB').hidden = !isSetup; $('gPass2B').hidden = !isSetup; $('gBtn').textContent = isSetup ? 'Create owner account' : 'Sign in'; $('gPass').autocomplete = isSetup ? 'new-password' : 'current-password';
+    (isSetup ? $('gName') : $('gUser')).focus();
+  }
+  $('gf').addEventListener('submit', function (e) {
+    e.preventDefault(); var er = $('gErr'); er.textContent = ''; var u = $('gUser').value.trim(), p = $('gPass').value, req;
+    if (!u || !p) { er.textContent = 'Enter your username and password.'; return; }
+    if (setup) { if ($('gName').value.trim().length < 2) { er.textContent = 'Enter your full name.'; return; } if (p.length < 10) { er.textContent = 'Use at least 10 characters.'; return; } if (p !== $('gPass2').value) { er.textContent = 'The two passwords do not match.'; return; } req = api('POST', '/api/platform/setup', { name: $('gName').value.trim(), username: u, password: p }); }
+    else req = api('POST', '/api/platform/login', { username: u, password: p });
+    $('gBtn').disabled = true; req.then(function (r) { $('gPass').value = ''; $('gPass2').value = ''; enter(r.owner); }).catch(function (x) { er.textContent = x.message; }).then(function () { $('gBtn').disabled = false; });
+  });
+  function enter(owner) { $('gate').hidden = true; $('app').hidden = false; $('who').textContent = owner.name; load(); }
+  $('out').addEventListener('click', function () { api('POST', '/api/platform/logout').then(function () { location.reload(); }); });
+  api('GET', '/api/platform/state').then(function (s) { if (s.owner) enter(s.owner); else gate(s.needsSetup); }).catch(function () { gate(false); $('gErr').textContent = 'Cannot reach the server.'; });
+
+  /* ---- nav ---- */
+  document.querySelectorAll('aside .nav').forEach(function (b) { b.addEventListener('click', function () { document.querySelectorAll('aside .nav').forEach(function (x) { x.classList.toggle('on', x === b); }); ['ws', 'plans', 'mail', 'audit'].forEach(function (v) { $('v-' + v).hidden = v !== b.dataset.v; }); if (b.dataset.v === 'mail') loadMail(); if (b.dataset.v === 'audit') loadAudit(); }); });
+
+  /* ---- workspaces ---- */
+  function load() { api('GET', '/api/platform/overview').then(function (d) { DATA = d; renderOverview(); renderPlans(); }).catch(function (e) { if (e.status === 401) location.reload(); else toast(e.message); }); }
+  function renderOverview() {
+    var s = DATA.stats; $('kpis').innerHTML = [['Workspaces', s.total], ['On trial', s.trial], ['Paying', s.active], ['Suspended', s.suspended], ['Monthly revenue', num(s.mrr) + ' ' + s.currency]].map(function (k) { return '<div class="kpi"><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('');
+    var q = $('q').value.trim().toLowerCase(), f = $('fs').value, l = DATA.tenants.filter(function (t) { return (!f || t.status === f) && (!q || (t.name + ' ' + t.id + ' ' + t.ownerEmail).toLowerCase().indexOf(q) > -1); });
+    $('rows').innerHTML = l.map(function (t) {
+      var st = t.status === 'trial' ? (t.trialDaysLeft > 0 ? 'trial · ' + t.trialDaysLeft + 'd left' : 'trial ended') : t.status;
+      return '<tr class="row" data-id="' + esc(t.id) + '" tabindex="0"><td><b>' + esc(t.name) + '</b><small>' + esc(t.id) + ' · ' + esc(t.ownerEmail || 'no email') + '</small></td><td>' + esc(t.plan) + '</td><td><span class="pill ' + t.status + '">' + esc(st) + '</span></td><td>' + t.usage.users + '</td><td>' + num(t.usage.patients) + '</td><td>' + mb(t.usage.storage) + '</td><td>' + fd(t.created) + '</td><td>' + fd(t.lastActive) + '</td></tr>';
+    }).join(''); $('emptyW').hidden = DATA.tenants.length > 0;
+  }
+  $('q').addEventListener('input', function () { if (DATA) renderOverview(); }); $('fs').addEventListener('change', function () { if (DATA) renderOverview(); });
+  $('rows').addEventListener('click', function (e) { var r = e.target.closest('.row'); if (r) openT(r.dataset.id); });
+  $('rows').addEventListener('keydown', function (e) { if (e.key === 'Enter') { var r = e.target.closest('.row'); if (r) openT(r.dataset.id); } });
+  $('bk').addEventListener('click', function () { this.disabled = true; var b = this; api('POST', '/api/platform/backup').then(function (r) { toast('Backed up ' + r.files.length + ' databases'); }).catch(function (x) { toast(x.message); }).then(function () { b.disabled = false; }); });
+
+  function openT(id) {
+    var t = DATA.tenants.filter(function (x) { return x.id === id; })[0]; if (!t) return; cur = t;
+    $('panel').innerHTML = '<div style="display:flex;justify-content:space-between;align-items:start"><div><h3>' + esc(t.name) + '</h3><div class="meta">' + esc(t.id) + ' · created ' + fd(t.created) + ' · ' + esc(t.ownerEmail || 'no email') + '</div></div><button class="btn sm" id="px">Close</button></div>' +
+      '<div class="u3"><div><small>Users</small><b>' + t.usage.users + '</b></div><div><small>Patients</small><b>' + num(t.usage.patients) + '</b></div><div><small>Storage</small><b>' + mb(t.usage.storage) + '</b></div></div>' +
+      '<h4>Plan and status</h4><div class="g2"><div class="fl"><label for="tp">Plan</label><select id="tp">' + DATA.plans.map(function (p) { return '<option value="' + p.id + '"' + (p.id === t.plan ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select></div><div class="fl"><label for="ts">Status</label><select id="ts">' + ['trial', 'active', 'suspended', 'cancelled'].map(function (s) { return '<option' + (s === t.status ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></div></div>' +
+      '<div class="fl"><label for="td">Add trial days <span class="hint">(negative removes days)</span></label><input id="td" type="number" value="0" step="1"></div>' +
+      '<div class="fl"><label for="tn">Notes (only you see this)</label><textarea id="tn" maxlength="500">' + esc(t.notes) + '</textarea></div><div class="err" id="pe"></div>' +
+      '<div style="display:flex;gap:8px"><button class="btn pri" id="ps">Save changes</button></div>' +
+      '<h4>Support</h4><button class="btn sm" id="pr">Reset the workspace Super Admin password</button><div id="pcred"></div><div class="hint">Shows a new temporary password once. Share it with the hospital, they can change it after signing in.</div>' +
+      '<h4>Danger zone</h4><div class="fl"><label for="dc">Type <b>' + esc(t.id) + '</b> to delete this workspace and all its data</label><input id="dc" autocomplete="off"></div><button class="btn dng sm" id="pd">Delete workspace</button>';
+    $('dw').hidden = false;
+  }
+  function closeT() { $('dw').hidden = true; }
+  $('dw').addEventListener('mousedown', function (e) { if (e.target === this) closeT(); }); document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeT(); });
+  $('panel').addEventListener('click', function (e) {
+    var id = e.target.id, er = $('pe'); if (!id) return;
+    if (id === 'px') closeT();
+    if (id === 'ps') { var b = { plan: $('tp').value, status: $('ts').value, notes: $('tn').value }, d = +$('td').value; if (d) b.addTrialDays = d; er.textContent = ''; api('PUT', '/api/platform/tenants/' + cur.id, b).then(function () { toast('Saved'); closeT(); load(); }).catch(function (x) { er.textContent = x.message; }); }
+    if (id === 'pr') api('POST', '/api/platform/tenants/' + cur.id + '/reset-admin').then(function (r) { $('pcred').innerHTML = '<div class="cred">New credentials for <b>' + esc(cur.id) + '</b><br>Username: <code>' + esc(r.username) + '</code><br>Password: <code>' + esc(r.password) + '</code></div>'; }).catch(function (x) { er.textContent = x.message; });
+    if (id === 'pd') { if ($('dc').value !== cur.id) { er.textContent = 'Type the workspace code exactly to confirm.'; return; } api('DELETE', '/api/platform/tenants/' + cur.id, { confirm: $('dc').value }).then(function () { toast('Workspace deleted'); closeT(); load(); }).catch(function (x) { er.textContent = x.message; }); }
+  });
+
+  /* ---- plans ---- */
+  function renderPlans() {
+    $('planBox').innerHTML = DATA.plans.map(function (p) {
+      return '<div class="card pc" data-id="' + p.id + '"><h3>' + esc(p.name) + '</h3><div class="fl"><label>Name</label><input data-f="name" value="' + esc(p.name) + '"></div><div class="g2"><div class="fl"><label>Price per month</label><input data-f="price" type="number" min="0" value="' + p.price + '"></div><div class="fl"><label>Currency</label><input data-f="currency" value="' + esc(p.currency) + '" maxlength="5"></div></div>' +
+        '<div class="g2"><div class="fl"><label>Max users</label><input data-f="max_users" type="number" value="' + p.max_users + '"></div><div class="fl"><label>Max patients</label><input data-f="max_patients" type="number" value="' + p.max_patients + '"></div></div><div class="fl"><label>File storage (MB)</label><input data-f="max_storage_mb" type="number" value="' + p.max_storage_mb + '"></div><div class="fl"><label>Short description</label><input data-f="blurb" value="' + esc(p.blurb) + '" maxlength="120"></div><button class="btn pri sm" data-save>Save plan</button></div>';
+    }).join('');
+  }
+  $('planBox').addEventListener('click', function (e) { var b = e.target.closest('[data-save]'); if (!b) return; var c = b.closest('.pc'), body = {}; c.querySelectorAll('[data-f]').forEach(function (i) { body[i.dataset.f] = i.type === 'number' ? +i.value : i.value; }); api('PUT', '/api/platform/plans/' + c.dataset.id, body).then(function () { toast('Plan saved. The website now shows it.'); load(); }).catch(function (x) { toast(x.message); }); });
+
+  /* ---- outbox + log ---- */
+  function loadMail() {
+    $('mailLead').textContent = DATA && DATA.mail.configured ? 'Messages are sent through your SMTP server. This list shows what was sent and what failed.' : 'SMTP is not configured (set SMTP_HOST, SMTP_USER, SMTP_PASS and SMTP_FROM), so emails are only recorded here. You can open a message and copy its link by hand.';
+    api('GET', '/api/platform/outbox').then(function (r) { $('mailRows').innerHTML = r.rows.map(function (m) { return '<tr class="row" data-i="' + m.id + '"><td>' + ft(m.ts) + '</td><td>' + esc(m.to_addr) + '</td><td>' + esc(m.subject) + '</td><td>' + esc(m.tenant_id || '') + '</td><td><span class="pill ' + m.status + '">' + m.status + '</span>' + (m.error ? '<small>' + esc(m.error) + '</small>' : '') + '</td></tr><tr hidden data-b="' + m.id + '"><td colspan="5"><div class="mail">' + esc(m.body) + '</div></td></tr>'; }).join('') || '<tr><td colspan="5" class="hint">No emails yet.</td></tr>'; }).catch(function (x) { toast(x.message); });
+  }
+  $('mailRows').addEventListener('click', function (e) { var r = e.target.closest('tr[data-i]'); if (!r) return; var b = $('mailRows').querySelector('tr[data-b="' + r.dataset.i + '"]'); if (b) b.hidden = !b.hidden; });
+  function loadAudit() { api('GET', '/api/platform/audit').then(function (r) { $('auditRows').innerHTML = r.rows.map(function (a) { return '<tr><td>' + ft(a.ts) + '</td><td>' + esc(a.who) + '</td><td>' + esc(a.action) + '</td><td>' + esc(a.ref || '') + '</td><td>' + esc(a.summary || '') + '</td></tr>'; }).join('') || '<tr><td colspan="5" class="hint">Nothing yet.</td></tr>'; }).catch(function (x) { toast(x.message); }); }
+})();
+</script>
+</body>
+</html>

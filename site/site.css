@@ -231,3 +231,22 @@ h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 600; }
   .sim-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .sim-row { grid-template-columns: minmax(0, 1fr); } .frame3d { transform: none !important; }
 }
 @media (prefers-reduced-motion: reduce) { .mq-track { animation: none; } .frame3d { transition: none; transform: none; } .imgs img, .xp-pts li, .matrix .cell { transition: none; animation: none; } }
+
+/* ---- SaaS: pricing + nav ---- */
+.signin { color: var(--on-dark-2); text-decoration: none; font-size: 14.5px; padding: 0 4px; transition: color .2s; } .signin:hover { color: #fff; }
+.pricing { position: relative; z-index: 2; padding: 110px 0; background: linear-gradient(180deg, var(--paper), #eaf1ff); }
+.pricing h2 { margin-bottom: 4px; }
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 48px auto 0; max-width: 1020px; text-align: left; align-items: stretch; }
+.plan { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 30px 28px 28px; display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; }
+.plan:hover { transform: translateY(-6px); box-shadow: 0 34px 70px rgba(31,64,140,.16); }
+.plan.pop { border: 2px solid #4f8cff; box-shadow: 0 30px 70px rgba(47,109,240,.2); }
+.plan.pop::before { content: "Most popular"; position: absolute; top: -13px; left: 28px; background: linear-gradient(135deg, #4f8cff, #2f6df0); color: #fff; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 999px; }
+.plan h3 { font-size: 20px; } .plan .bl { color: var(--muted); font-size: 14.5px; margin: 6px 0 0; min-height: 44px; }
+.plan .pr { font-family: var(--display); font-size: 42px; font-weight: 600; margin: 18px 0 2px; letter-spacing: -.02em; } .plan .pr small { font-family: var(--body); font-size: 14px; font-weight: 400; color: var(--muted); }
+.plan ul { list-style: none; padding: 0; margin: 18px 0 26px; display: grid; gap: 10px; flex: 1; font-size: 15px; }
+.plan li { padding-left: 28px; position: relative; } .plan li::before { content: ""; position: absolute; left: 0; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #dff7f3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23137a70' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center / 11px no-repeat; }
+.plan .btn { width: 100%; } .plan:not(.pop) .btn { background: #eef3ff; color: #2a4fa8; box-shadow: none; } .plan:not(.pop) .btn:hover { background: #e0eaff; }
+.plan.skeleton { min-height: 420px; background: linear-gradient(100deg, #f1f5ff 30%, #fff 50%, #f1f5ff 70%) 0 0 / 200% 100%; animation: sk 1.3s linear infinite; } @keyframes sk { to { background-position: -200% 0; } }
+.fine { margin: 28px auto 0; max-width: 560px; color: var(--muted); font-size: 14px; }
+@media (max-width: 900px) { .plans { grid-template-columns: minmax(0, 1fr); max-width: 460px; } .signin { display: none; } }
+@media (prefers-reduced-motion: reduce) { .plan, .plan.skeleton { transition: none; animation: none; } }

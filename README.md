@@ -1,59 +1,52 @@
-# Nexura Care
+# Optix Medical Sync
 
-Hospital dashboard (appointments, staff, calendar, suppliers, stocks, transactions, peripherals) with a real backend.
+Multi-tenant hospital management SaaS. One Node process (Node 24+, **no npm packages**), SQLite storage.
 
-- **Server:** `server.mjs`, plain Node (24+), no npm packages. Uses the built-in `node:sqlite`.
-- **Database:** `data/nexura.db` (SQLite). Created on first start and filled with the demo data once.
-- **First run:** open the app in the browser. With no users yet it shows **Create the Super Admin**: you choose the name, username and password. (Or set `ADMIN_PASSWORD` to create an `admin` Super Admin on start, for unattended installs.)
+| URL | What |
+|---|---|
+| `/` | Marketing website (Three.js 3D scene, live pricing from the platform) |
+| `/signup` | A hospital creates its own workspace and Super Admin, 14-day free trial |
+| `/app` | The hospital app (sign in with workspace code, username, password) |
+| `/platform` | Platform owner panel (you): workspaces, plans and prices, email outbox, platform log |
 
-## Website
+## How it is built
 
-`/` is the marketing site (`site/`, with a Three.js 3D scene, vendored in `site/vendor/`). The app itself is at `/app`.
-Behind a reverse proxy with HTTPS set `TRUST_PROXY=1`, `SECURE_COOKIES=1` and `ALLOWED_HOSTS=your.domain`.
+- **Tenants:** every hospital (workspace) has its **own SQLite file and uploads folder** in `data/tenants/<code>/`. A user session is bound to one workspace, so data cannot mix.
+- **Platform database:** `data/platform.db` holds workspaces, plans, sessions, invite and reset tokens, the email outbox and the platform owner.
+- **Roles inside a workspace:** Super Admin, Doctor, Receptionist, Accountant, Pharmacist. Enforced on the server (a restricted role never receives data it may not read).
+- **Plans and limits:** Starter, Clinic, Hospital (edit prices and limits in the platform panel; the website reads them). Limits on users, patients and file storage are enforced on the server. After the trial a workspace is read-only until a plan is set. The owner can suspend, extend trials or change plans. **There is no payment gateway yet**, plans are changed by the owner.
+- **Email:** invites, password reset and welcome mails. Set the SMTP variables below; without them mails are only recorded in the outbox (the owner can open one and copy its link).
+- **Backups:** every workspace and the platform database are copied to `backups/` folders on start and every 24 hours (last 7 kept).
+- **Audit logs:** per workspace (Super Admin) and for the platform (owner).
 
 ## Run
 
 ```
-npm start                 # http://localhost:3000
-npm run reset-password    # prints a new admin password
-npm run backup            # copies the database to data/backups/
+npm start                       # http://localhost:3000
+npm run backup                  # back up the platform and every workspace now
+npm run reset-owner-password    # new platform owner password
 ```
 
-Options (environment variables): `PORT`, `HOST` (default 127.0.0.1), `DATA_DIR`, `ADMIN_PASSWORD`, `ALLOWED_HOSTS`.
+First run: open **/platform** and create the platform owner. Then hospitals can sign up at **/signup**.
 
-## Roles
+The first start migrates an older single-hospital database (`data/nexura.db`) into a workspace called `demo`. If it has no user, open /platform, open the workspace and use **Reset the workspace Super Admin password**.
 
-Sign in as `admin` (Super Admin) and open **Users** to add people. Each role only sees and changes what it needs:
+## Configuration (environment variables)
 
-| Role | Can change | Can only view |
+| Variable | Default | Meaning |
 |---|---|---|
-| Super Admin | everything, users, audit log, backups | |
-| Doctor, Receptionist | appointments, patients | staff list |
-| Accountant | transactions | appointments, patients, staff, suppliers, stocks |
-| Pharmacist | suppliers, stocks | peripherals, staff list |
+| `PORT`, `HOST` | `3000`, `127.0.0.1` | Listen address |
+| `DATA_DIR` | `./data` | Where all databases and uploads live |
+| `ALLOWED_HOSTS` | `localhost:PORT` | Comma list of accepted Host headers (set to your domain in production) |
+| `APP_URL` | from request | Public base URL used in emails (for example `https://app.example.com`) |
+| `TRUST_PROXY`, `SECURE_COOKIES` | off | Set to `1` behind an HTTPS reverse proxy |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_SECURE` | unset | Outgoing mail (465 = TLS, 587 = STARTTLS) |
+| `SUPPORT_EMAIL` | unset | Shown in the app's Plan page for upgrade requests |
 
-The server enforces this (a restricted role gets `403` and never receives data it cannot read); the screens just hide what is not allowed.
+## Before going public
 
-## What the app does
-
-- **Notifications (bell):** pending requests, today's appointments, unpaid finished visits, low stock, devices out of service or due for service, failed and pending payments. Each item opens the right page.
-- **Search (sidebar):** patients, doctors, upcoming appointments and suppliers, with arrow keys and Enter.
-- **Reports:** revenue, purchases, net, completion rate, monthly chart, visit types, busiest doctors, top services, CSV export.
-- **Audit log:** every create, update and delete, plus sign-ins, with who and when (Super Admin only).
-- **Print:** appointment slip (reservation details) and payment receipt (transactions).
-- **Backups:** the server saves a copy of the database to `data/backups/` at start and every 24 hours (last 7 kept). `npm run backup` makes one on demand.
-
-- **Patients:** list, search, add, edit, delete (blocked while the patient has appointments). Each profile shows the patient's own appointments on a calendar and their reports.
-- **Appointments:** requests are approved or rejected, approved ones are edited or cancelled. A booking is refused when the doctor already has an appointment at that time, does not work that weekday, or the slot overlaps the 1 to 2 pm break.
-- **Calendar:** built from the approved appointments (day, week, month). Click a card for the reservation details, change its status, or edit it.
-- **Dashboard:** every number (doctors, patients, appointments, pending requests, available doctors today, cash flow) is calculated from the stored data.
-- **Files:** appointment attachments and patient reports are uploaded to `data/uploads/` (max 10MB each) and downloaded through the app.
-- Staff, suppliers, stocks, transactions and peripherals can be added, edited and removed.
-
-## Notes
-
-- Every change you make in the app (approve/reject, add/remove, status changes, calendar reservation edits) is saved to the database straight away.
-- To start again from the demo data, stop the server and delete the `data/` folder.
-- The server listens on 127.0.0.1 only. Put it behind HTTPS (and set `ALLOWED_HOSTS`) before exposing it on a network.
-- Doctor photos are stored in the database. Uploaded files live in `data/uploads/` and are listed in the `files` table.
-- `data/backup-before-v2/` is a copy of the first (demo-only) database from before patients, calendar linking and uploads existed.
+- Put it behind HTTPS (nginx, Caddy or Cloudflare) and set `TRUST_PROXY=1`, `SECURE_COOKIES=1`, `ALLOWED_HOSTS`, `APP_URL`.
+- Set up SMTP so invites and password resets are delivered.
+- Check the placeholder prices in the platform panel.
+- Keep `data/` backed up off the server.
+- Planned, not built: payment gateway, SMS reminders, per-tenant custom domains.

@@ -25,10 +25,12 @@
     <a href="#explore">Modules</a>
     <a href="#demo">Try it</a>
     <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
     <a href="#security">Security</a>
     <a href="#faq">FAQ</a>
   </nav>
-  <a class="btn btn-sm" href="/app">Open the app</a>
+  <a class="signin" href="/app">Sign in</a>
+  <a class="btn btn-sm" href="/signup">Start free trial</a>
 </header>
 
 <main id="top">
@@ -41,7 +43,7 @@
         <h1>Every patient, doctor and payment, <em>in sync.</em></h1>
         <p class="lead">Appointments, calendars, patient records, billing, stock and reports live in one secure system. No double-booked doctors. No lost paperwork.</p>
         <div class="cta">
-          <a class="btn" href="/app">Open the app</a>
+          <a class="btn" href="/signup">Start free trial</a>
           <a class="btn btn-ghost" href="#showcase">See how it looks</a>
         </div>
         <ul class="proof" aria-label="What is included">
@@ -196,11 +198,23 @@
     </ul>
   </section>
 
+  <section class="pricing" id="pricing">
+    <div class="wrap center">
+      <p class="eyebrow dk">Pricing</p>
+      <h2>Simple plans that grow with you</h2>
+      <p class="sub dk" id="priceSub">Every plan starts with a free trial. No card needed.</p>
+      <div class="plans" id="plans" aria-live="polite"><div class="plan skeleton"></div><div class="plan skeleton"></div><div class="plan skeleton"></div></div>
+      <p class="fine">Prices are per workspace, per month. Want to talk first? Start a trial and ask from inside the app.</p>
+    </div>
+  </section>
+
   <section class="light faq" id="faq">
     <div class="wrap faq-grid">
       <div><p class="eyebrow dk">Questions</p><h2>Straight answers</h2><p class="sub dk">Short, factual, and about what the software does today.</p></div>
       <div class="acc">
-        <details open><summary>Where is my data stored?</summary><p>In one SQLite database file on the server you run it on, plus a folder for uploaded files. Nothing is sent to an outside service.</p></details>
+        <details open><summary>Is my hospital's data separate from others?</summary><p>Yes. Every workspace has its own database file and its own uploads folder. A user can only ever reach the workspace they signed in to.</p></details>
+        <details><summary>How does the free trial work?</summary><p>Create a workspace and use every feature for the trial period. When it ends the workspace becomes read-only until a plan is chosen. Nothing is deleted.</p></details>
+        <details><summary>Where is my data stored?</summary><p>In SQLite database files on the server that runs the platform, plus a folder per workspace for uploaded files. Nothing is sent to an outside service.</p></details>
         <details><summary>What do I need to run it?</summary><p>Node.js 24 or newer. There are no packages to install. Start it with one command and open it in a browser.</p></details>
         <details><summary>Who can see what?</summary><p>There are five roles: Super Admin, Doctor, Receptionist, Accountant and Pharmacist. The server enforces them, so a restricted role never receives data it may not read.</p></details>
         <details><summary>Can I see who changed something?</summary><p>Yes. The audit log records every create, update and delete, plus sign-ins, with the user and the time. Only a Super Admin can open it.</p></details>
@@ -214,8 +228,8 @@
   <section class="final">
     <div class="wrap center">
       <h2>See it working</h2>
-      <p class="sub dk">Sign in and explore every module.</p>
-      <a class="btn" href="/app">Open the app</a>
+      <p class="sub dk">Create a workspace in a minute and explore every module with sample data.</p>
+      <a class="btn" href="/signup">Start free trial</a>
     </div>
   </section>
 </main>
@@ -223,7 +237,7 @@
 <footer class="foot">
   <div class="wrap foot-in">
     <div><b>Optix Medical Sync</b><span>Hospital management</span></div>
-    <nav aria-label="Footer"><a href="#explore">Modules</a><a href="#demo">Try it</a><a href="#features">Features</a><a href="#security">Security</a><a href="#faq">FAQ</a><a href="/app">Open the app</a></nav>
+    <nav aria-label="Footer"><a href="#explore">Modules</a><a href="#demo">Try it</a><a href="#features">Features</a><a href="#security">Security</a><a href="#faq">FAQ</a><a href="/signup">Start free trial</a><a href="/app">Sign in</a></nav>
   </div>
 </footer>
 
