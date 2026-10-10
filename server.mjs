@@ -527,10 +527,22 @@ async function api(req, res, url) {
   return tenantApi(req, res, p, m, auth);
 }
 
+/* Google AdSense (public marketing pages only; never inside /app, /signup or /platform).
+   Set ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX (and ADSENSE_SLOT_HOME=<ad unit id>) in the environment. Empty = no ads, no Google scripts, no ads.txt. */
+const ADSENSE_CLIENT = /^ca-pub-\d{6,20}$/.test(process.env.ADSENSE_CLIENT || '') ? process.env.ADSENSE_CLIENT : '';
+const ADS = { client: ADSENSE_CLIENT, slots: { home: /^\d{6,20}$/.test(process.env.ADSENSE_SLOT_HOME || '') ? process.env.ADSENSE_SLOT_HOME : '' } };
+function sendAdsTxt(req, res) {
+  if (!ADSENSE_CLIENT) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
+  return send(res, 200, req.method === 'HEAD' ? undefined : `google.com, ${ADSENSE_CLIENT.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'max-age=3600' });
+}
+
 function serveStatic(req, res, url) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Method not allowed');
   const p = url.pathname; let rel = null;
+  if (p === '/ads.txt') return sendAdsTxt(req, res);
+  if (p === '/ads-config.js') return send(res, 200, req.method === 'HEAD' ? undefined : `window.OPTIX_ADS=${JSON.stringify(ADS).replace(/</g, '\\u003c')};`, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-cache' });
   if (p === '/') rel = 'site/index.html'; else if (p === '/app' || p === '/app/') rel = 'index.html'; else if (p === '/signup') rel = 'site/signup.html'; else if (p === '/platform' || p === '/platform/') rel = 'site/platform.html';
+  else if (p === '/privacy' || p === '/privacy/') rel = 'site/privacy.html'; else if (p === '/terms' || p === '/terms/') rel = 'site/terms.html';
   else if (/^\/assets\/[\w.-]+$/.test(p)) rel = p.slice(1); else if (/^\/site\/[\w./-]+$/.test(p) && !p.includes('..')) rel = p.slice(1);
   if (!rel) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
   const file = path.join(ROOT, rel);

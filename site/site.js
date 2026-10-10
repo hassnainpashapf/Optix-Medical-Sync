@@ -1,14 +1,11 @@
-// Optix Medical Sync website: WebGL double helix behind the dark stage, CSS 3D app stack, tilt cards, reveal on scroll.
+// Optix Medical Sync home page: WebGL double helix behind the dark stage, CSS 3D app stack, tilt cards, reveal on scroll, module explorer, booking demo, roles, pricing.
+// The parts every public page shares (theme toggle, menu, progress bar, ads) are in chrome.js.
 import * as THREE from '/site/vendor/three.module.min.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const nav = document.getElementById('nav');
 const stage = document.getElementById('stage');
 
 /* ---------- page chrome ---------- */
-function onScrollChrome() { nav.classList.toggle('scrolled', scrollY > 30); }
-addEventListener('scroll', onScrollChrome, { passive: true }); onScrollChrome();
-
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(el); });
 
@@ -144,11 +141,7 @@ if (renderer) {
   if (reduced) { frame(0.016); addEventListener('scroll', () => frame(0), { passive: true }); } else loop();
 }
 
-/* ---------- v2: progress, counters, explorer, demo, roles ---------- */
-const prog = document.getElementById('progress');
-function onProg() { const h = document.documentElement.scrollHeight - innerHeight; prog.style.transform = `scaleX(${h > 0 ? Math.min(1, scrollY / h) : 0})`; }
-addEventListener('scroll', onProg, { passive: true }); onProg();
-
+/* ---------- v2: counters, explorer, demo, roles ---------- */
 function runCount(el) {
   const to = +el.dataset.count, suf = el.dataset.suf || '';
   if (reduced || to === 0) { el.textContent = to + suf; return; }
