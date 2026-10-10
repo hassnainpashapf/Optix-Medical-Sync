@@ -4,7 +4,7 @@ Hospital dashboard (appointments, staff, calendar, suppliers, stocks, transactio
 
 - **Server:** `server.mjs`, plain Node (24+), no npm packages. Uses the built-in `node:sqlite`.
 - **Database:** `data/nexura.db` (SQLite). Created on first start and filled with the demo data once.
-- **Login:** user `admin`. The password is printed in the terminal on the first start (also in `data/server.log`).
+- **First run:** open the app in the browser. With no users yet it shows **Create the Super Admin**: you choose the name, username and password. (Or set `ADMIN_PASSWORD` to create an `admin` Super Admin on start, for unattended installs.)
 
 ## Website
 

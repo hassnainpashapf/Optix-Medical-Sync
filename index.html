@@ -737,17 +737,41 @@
 
   /* sign-in + user menu */
   .locked .frame { visibility: hidden; }
-  .login { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; background: linear-gradient(180deg, var(--page) 0%, var(--page-2) 100%); }
+  .login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); background: #fff; }
   .login[hidden] { display: none; }
-  .lg-card { width: min(380px, 100%); background: #fff; border: 1px solid #e3e9f6; border-radius: 20px; padding: 28px 26px 24px; box-shadow: 0 20px 60px rgba(40,70,140,.12); }
+  .lg-side { position: relative; overflow: hidden; color: #e9efff; padding: 44px 52px; display: flex; flex-direction: column; justify-content: space-between; background: radial-gradient(700px 500px at 85% 10%, #1f46b0 0%, transparent 65%), radial-gradient(500px 400px at 0% 100%, rgba(54,209,196,.22), transparent 65%), linear-gradient(160deg, #070d27, #0b1744); }
+  .lg-side .lg-brand { margin: 0; color: #fff; font-size: 19px; }
+  .lg-side h1 { margin: 0 0 14px; font-size: 38px; line-height: 1.12; font-weight: 600; letter-spacing: -.02em; max-width: 12em; }
+  .lg-side h1 em { font-style: normal; background: linear-gradient(100deg, #6aa0ff, #36d1c4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lg-side p { margin: 0; color: #a9b8e3; font-size: 15px; max-width: 28em; line-height: 1.55; }
+  .lg-points { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 12px; font-size: 14px; color: #cfdcff; }
+  .lg-points li { display: flex; gap: 12px; align-items: center; }
+  .lg-points i { width: 28px; height: 28px; border-radius: 9px; background: rgba(255,255,255,.1); display: grid; place-items: center; flex: none; }
+  .lg-points svg { width: 15px; height: 15px; fill: none; stroke: #7fb0ff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .lg-orb { position: absolute; right: -120px; bottom: -120px; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(110,160,255,.3); box-shadow: 0 0 0 60px rgba(110,160,255,.05), 0 0 0 130px rgba(110,160,255,.04); animation: orb 14s ease-in-out infinite; }
+  @keyframes orb { 50% { transform: translate(-18px, -14px) scale(1.04); } }
+  .lg-main { display: grid; place-items: center; padding: 32px 24px; overflow-y: auto; }
+  .lg-card { width: min(380px, 100%); }
   .lg-brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; margin-bottom: 22px; }
   .lg-brand svg { width: 26px; height: 30px; }
-  .lg-card h2 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
-  .lg-card p.sub { margin: 0 0 18px; font-size: 13px; color: var(--ink-2); }
-  .lg-card .pri { width: 100%; height: 44px; border: 0; border-radius: 10px; background: #2f6df0; color: #fff; font-size: 13px; font-weight: 500; margin-top: 4px; }
+  .lg-main .lg-brand { display: none; }
+  .lg-card h2 { margin: 0 0 4px; font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+  .lg-card p.sub { margin: 0 0 22px; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+  .lg-role[hidden], .lg-card .fl[hidden], .lg-foot[hidden] { display: none; }
+  .lg-role { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 11px; border-radius: 999px; background: #fff4e8; color: #b45f12; font-size: 11.5px; font-weight: 600; margin-bottom: 14px; }
+  .lg-role svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .lg-pw { position: relative; }
+  .lg-pw .in { padding-right: 46px; }
+  .lg-eye { position: absolute; right: 4px; top: 4px; width: 34px; height: 34px; border: 0; background: none; border-radius: 8px; color: var(--ink-3); display: grid; place-items: center; padding: 0; }
+  .lg-eye:hover { background: #f1f4fa; color: var(--ink); }
+  .lg-eye svg { width: 18px; height: 18px; }
+  .lg-card .pri { width: 100%; height: 46px; border: 0; border-radius: 10px; background: #2f6df0; color: #fff; font-size: 13.5px; font-weight: 500; margin-top: 4px; }
   .lg-card .pri:disabled { opacity: .6; cursor: default; }
   .lg-card .pri:hover:not(:disabled) { background: #2559d4; }
+  .lg-foot { margin-top: 22px; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+  .lg-foot a { color: var(--blue); text-decoration: none; }
   .lg-err { color: var(--bad); font-size: 12px; min-height: 18px; margin: 0 0 6px; }
+  @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-side { display: none; } .lg-main .lg-brand { display: flex; } }
   #userKw { position: relative; display: inline-block; }
   #userKw .menu { top: 56px; right: 0; min-width: 190px; }
 
@@ -1500,14 +1524,26 @@
   </div>
 </div>
 <div class="login" id="login" hidden>
-  <form class="lg-card" id="lgForm" novalidate>
-    <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#5b6fb0" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg>Nexura Care</div>
-    <h2>Sign in</h2><p class="sub" id="lgSub">Use your admin account to open the dashboard.</p>
-    <div class="fl"><label class="lb" for="lgUser">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false" value="admin"></div>
-    <div class="fl"><label class="lb" for="lgPass">Password</label><input class="in" id="lgPass" type="password" autocomplete="current-password"></div>
-    <div class="lg-err" id="lgErr" role="alert"></div>
-    <button class="pri" id="lgBtn" type="submit">Sign in</button>
-  </form>
+  <aside class="lg-side">
+    <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#6f86d8" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg>Optix Medical Sync</div>
+    <div><h1>Every patient, doctor and payment, <em>in sync.</em></h1><p>Appointments, calendars, records, billing and stock in one secure hospital system.</p>
+      <ul class="lg-points"><li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>No double-booked doctors</li><li><i><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6z"/></svg></i>Access by role, enforced on the server</li><li><i><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></i>Every change written to an audit log</li></ul></div>
+    <div class="lg-orb" aria-hidden="true"></div>
+  </aside>
+  <div class="lg-main">
+    <form class="lg-card" id="lgForm" novalidate>
+      <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#6f86d8" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg>Optix Medical Sync</div>
+      <span class="lg-role" id="lgRole"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6z"/></svg>Super Admin set-up</span>
+      <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Use your account to open the dashboard.</p>
+      <div class="fl" id="lgNameBox" hidden><label class="lb" for="lgName">Full name</label><input class="in" id="lgName" autocomplete="name"></div>
+      <div class="fl"><label class="lb" for="lgUser">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div class="fl"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
+      <div class="lg-err" id="lgErr" role="alert"></div>
+      <button class="pri" id="lgBtn" type="submit">Sign in</button>
+      <p class="lg-foot" id="lgFoot">Forgot your password? Ask a Super Admin to reset it.</p>
+    </form>
+  </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -3407,20 +3443,37 @@ window.bootApp = function () {
 </script>
 <script>
 (function () {
-  var $ = function (id) { return document.getElementById(id); };
+  var $ = function (id) { return document.getElementById(id); }, setup = false;
   function start(user) {
     api('GET', '/api/data').then(function (srv) {
       window.__SRV = srv; window.__USER = user; $('login').hidden = true; document.body.classList.remove('locked'); window.bootApp();
     }).catch(function (e) { showLogin('Could not load data: ' + e.message); });
   }
-  function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; $('lgPass').focus(); }
+  function mode(isSetup) {
+    setup = isSetup; $('lgRole').hidden = !isSetup; $('lgNameBox').hidden = !isSetup; $('lgPass2Box').hidden = !isSetup;
+    $('lgTitle').textContent = isSetup ? 'Create the Super Admin' : 'Sign in';
+    $('lgSub').textContent = isSetup ? 'This account controls everything: users, roles, backups and the audit log. You can add the rest of the staff after signing in.' : 'Use your account to open the dashboard.';
+    $('lgBtn').textContent = isSetup ? 'Create account and sign in' : 'Sign in'; $('lgFoot').hidden = isSetup;
+    $('lgPass').autocomplete = isSetup ? 'new-password' : 'current-password';
+  }
+  function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; (setup ? $('lgName') : $('lgUser').value ? $('lgPass') : $('lgUser')).focus(); }
+  $('lgEye').addEventListener('click', function () { var on = $('lgPass').type === 'password'; $('lgPass').type = on ? 'text' : 'password'; this.setAttribute('aria-pressed', String(on)); this.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); });
   $('lgForm').addEventListener('submit', function (e) {
-    e.preventDefault(); var btn = $('lgBtn'); $('lgErr').textContent = ''; btn.disabled = true;
-    api('POST', '/api/login', { username: $('lgUser').value.trim(), password: $('lgPass').value }).then(function (r) { $('lgPass').value = ''; start(r.user); })
-      .catch(function (err) { $('lgErr').textContent = err.message; }).then(function () { btn.disabled = false; });
+    e.preventDefault(); var btn = $('lgBtn'), er = $('lgErr'); er.textContent = '';
+    var user = $('lgUser').value.trim(), pass = $('lgPass').value, req;
+    if (!user || !pass) { er.textContent = 'Enter your username and password.'; return; }
+    if (setup) {
+      if ($('lgName').value.trim().length < 2) { er.textContent = 'Enter your full name.'; $('lgName').focus(); return; }
+      if (pass.length < 8) { er.textContent = 'Use at least 8 characters for the password.'; $('lgPass').focus(); return; }
+      if (pass !== $('lgPass2').value) { er.textContent = 'The two passwords do not match.'; $('lgPass2').focus(); return; }
+      req = api('POST', '/api/setup', { name: $('lgName').value.trim(), username: user, password: pass });
+    } else req = api('POST', '/api/login', { username: user, password: pass });
+    btn.disabled = true;
+    req.then(function (r) { $('lgPass').value = ''; $('lgPass2').value = ''; start(r.user); }).catch(function (err) { er.textContent = err.message; }).then(function () { btn.disabled = false; });
   });
   api('GET', '/api/session').then(function (r) { start(r.user); }).catch(function (e) {
-    if (e.status === 401) showLogin(); else { showLogin('Cannot reach the server. Start it with "npm start" and reload.'); }
+    if (e.status !== 401) { showLogin('Cannot reach the server. Start it with "npm start" and reload.'); return; }
+    api('GET', '/api/setup').then(function (r) { mode(!!r.needed); showLogin(); }).catch(function () { mode(false); showLogin(); });
   });
 })();
 </script>

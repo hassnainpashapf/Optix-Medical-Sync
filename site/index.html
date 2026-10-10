@@ -15,16 +15,18 @@
 </head>
 <body>
 
+<div class="progress" id="progress" aria-hidden="true"></div>
 <header class="nav" id="nav">
   <a class="brand" href="#top" aria-label="Optix Medical Sync, back to top">
     <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><path d="M8 5c9 4.5 9 9 0 13.5S-1 25 8 28M24 5c-9 4.5-9 9 0 13.5S33 25 24 28" fill="none" stroke="url(#g1)" stroke-width="2.6" stroke-linecap="round"/><path d="M11 10h10M10 16h12M11 22h10" stroke="#9bb8ff" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4f8cff"/><stop offset="1" stop-color="#36d1c4"/></linearGradient></defs></svg>
     <span>Optix <b>Medical Sync</b></span>
   </a>
   <nav class="links" aria-label="Sections">
-    <a href="#showcase">The app</a>
+    <a href="#explore">Modules</a>
+    <a href="#demo">Try it</a>
     <a href="#features">Features</a>
-    <a href="#flow">How it works</a>
     <a href="#security">Security</a>
+    <a href="#faq">FAQ</a>
   </nav>
   <a class="btn btn-sm" href="/app">Open the app</a>
 </header>
@@ -43,7 +45,7 @@
           <a class="btn btn-ghost" href="#showcase">See how it looks</a>
         </div>
         <ul class="proof" aria-label="What is included">
-          <li><b>11</b> connected modules</li>
+          <li><b data-count="11">11</b> connected modules</li>
           <li><b>5</b> staff roles</li>
           <li><b>1</b> database you own</li>
         </ul>
@@ -70,6 +72,64 @@
     </section>
   </section>
 
+  <div class="marquee" aria-hidden="true"><div class="mq-track">
+    <span>Appointments</span><span>Doctors calendar</span><span>Patient records</span><span>Lab reports</span><span>Billing</span><span>Receipts</span><span>Suppliers</span><span>Stock levels</span><span>Equipment service</span><span>Reports</span><span>Audit log</span><span>Backups</span>
+    <span>Appointments</span><span>Doctors calendar</span><span>Patient records</span><span>Lab reports</span><span>Billing</span><span>Receipts</span><span>Suppliers</span><span>Stock levels</span><span>Equipment service</span><span>Reports</span><span>Audit log</span><span>Backups</span>
+  </div></div>
+
+  <section class="explore" id="explore">
+    <div class="wrap">
+      <p class="eyebrow dk">Modules</p>
+      <h2>Eleven screens. One source of truth.</h2>
+      <div class="xp">
+        <div class="xp-tabs" role="tablist" aria-label="Modules">
+          <button role="tab" class="on" data-i="0" aria-selected="true"><b>Appointments</b><span>Requests, approvals, 3-step booking</span></button>
+          <button role="tab" data-i="1" aria-selected="false"><b>Calendar</b><span>Day, week and month by doctor</span></button>
+          <button role="tab" data-i="2" aria-selected="false"><b>Patients</b><span>Profiles, history, lab reports</span></button>
+          <button role="tab" data-i="3" aria-selected="false"><b>Billing</b><span>Insurance split, receipts, export</span></button>
+          <button role="tab" data-i="4" aria-selected="false"><b>Stock</b><span>Suppliers and low-stock alerts</span></button>
+          <button role="tab" data-i="5" aria-selected="false"><b>Staff</b><span>Doctors, working days and hours</span></button>
+          <button role="tab" data-i="6" aria-selected="false"><b>Audit log</b><span>Who changed what, and when</span></button>
+        </div>
+        <div class="xp-view">
+          <div class="frame3d" id="frame3d">
+            <div class="bar"><i></i><i></i><i></i><span id="xpUrl">/app · Appointments</span></div>
+            <div class="imgs" id="xpImgs">
+              <img class="on" src="/site/img/app-appts.jpg" alt="Appointments list with approvals" loading="lazy">
+              <img src="/site/img/app-cal.jpg" alt="Doctors calendar" loading="lazy">
+              <img src="/site/img/app-pts.jpg" alt="Patients list" loading="lazy">
+              <img src="/site/img/app-tx.jpg" alt="Transactions with receipts" loading="lazy">
+              <img src="/site/img/app-stock.jpg" alt="Stock table with low items" loading="lazy">
+              <img src="/site/img/app-staff.jpg" alt="Staff list with working days" loading="lazy">
+              <img src="/site/img/app-aud.jpg" alt="Audit log" loading="lazy">
+            </div>
+          </div>
+          <ul class="xp-pts" id="xpPts"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" id="demo">
+    <div class="wrap demo-grid">
+      <div>
+        <p class="eyebrow dk">Try it</p>
+        <h2>A double booking is refused before it happens</h2>
+        <p class="sub dk">This is the real rule the app applies. Pick a doctor, a visit type and a time. The slot must be free, on a working day, and clear of the 1 to 2 pm break.</p>
+        <ul class="ticks"><li>Checks the doctor's existing appointments</li><li>Knows each doctor's working days</li><li>Visit length changes by visit type</li></ul>
+      </div>
+      <div class="sim" id="sim" aria-label="Booking check demo">
+        <div class="sim-row">
+          <label>Doctor<select id="simDoc"><option value="0">Dr. Sarah Ali (Cardiology)</option><option value="1">Dr. Tariq Al-Hakim (Orthopedics)</option><option value="2">Dr. Amir Al-Farsi (Neurology)</option></select></label>
+          <label>Visit<select id="simVis"><option value="45">Consultation, 45 min</option><option value="30">Follow-up, 30 min</option><option value="45">Check-up, 45 min</option></select></label>
+        </div>
+        <div class="sim-days" id="simDays" role="group" aria-label="Day"></div>
+        <div class="sim-grid" id="simGrid" role="group" aria-label="Time slots"></div>
+        <div class="sim-msg" id="simMsg" role="status" aria-live="polite">Choose a time to check it.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="light" id="features">
     <div class="wrap">
       <p class="eyebrow dk">Features</p>
@@ -84,6 +144,16 @@
         <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><h3>Reports that add up</h3><p>Revenue, purchases, completion rate, busiest doctors and top services, with CSV export.</p></article>
         <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15zM10 21h4"/></svg></span><h3>Alerts and search</h3><p>A notification bell for what needs attention, and one search box for patients, doctors, visits and suppliers.</p></article>
       </div>
+    </div>
+  </section>
+
+  <section class="band" aria-label="In numbers">
+    <div class="wrap band-in">
+      <div><b data-count="11">0</b><span>connected modules</span></div>
+      <div><b data-count="5">0</b><span>staff roles</span></div>
+      <div><b data-count="10" data-suf="MB">0</b><span>per attached file</span></div>
+      <div><b data-count="7">0</b><span>daily backups kept</span></div>
+      <div><b data-count="0">0</b><span>outside services needed</span></div>
     </div>
   </section>
 
@@ -114,11 +184,31 @@
         <article class="rcard" style="--i:4"><h3>Pharmacist</h3><p>Suppliers and stock. Reads devices.</p></article>
       </div>
     </div>
+    <div class="wrap">
+      <div class="matrix-h"><h3>What each role can do</h3><p>Pick a role. The server applies exactly this.</p></div>
+      <div class="rtabs" id="rtabs" role="tablist" aria-label="Roles"></div>
+      <div class="matrix" id="matrix"></div>
+    </div>
     <ul class="trust wrap">
       <li><b>Audit log</b><span>Who created, changed or deleted what, and when.</span></li>
       <li><b>Daily backups</b><span>The database is copied automatically, last seven kept.</span></li>
       <li><b>Your data, your server</b><span>One database file you host and control.</span></li>
     </ul>
+  </section>
+
+  <section class="light faq" id="faq">
+    <div class="wrap faq-grid">
+      <div><p class="eyebrow dk">Questions</p><h2>Straight answers</h2><p class="sub dk">Short, factual, and about what the software does today.</p></div>
+      <div class="acc">
+        <details open><summary>Where is my data stored?</summary><p>In one SQLite database file on the server you run it on, plus a folder for uploaded files. Nothing is sent to an outside service.</p></details>
+        <details><summary>What do I need to run it?</summary><p>Node.js 24 or newer. There are no packages to install. Start it with one command and open it in a browser.</p></details>
+        <details><summary>Who can see what?</summary><p>There are five roles: Super Admin, Doctor, Receptionist, Accountant and Pharmacist. The server enforces them, so a restricted role never receives data it may not read.</p></details>
+        <details><summary>Can I see who changed something?</summary><p>Yes. The audit log records every create, update and delete, plus sign-ins, with the user and the time. Only a Super Admin can open it.</p></details>
+        <details><summary>What if something goes wrong?</summary><p>The database is copied to a backups folder on every start and once a day. The last seven copies are kept, and a Super Admin can also back up on demand.</p></details>
+        <details><summary>Does it send SMS or email reminders?</summary><p>Not yet. That needs a messaging provider account, so it is planned rather than included.</p></details>
+        <details><summary>Does it work on a phone?</summary><p>The app is designed for desktop and tablet screens. This website is fully responsive.</p></details>
+      </div>
+    </div>
   </section>
 
   <section class="final">
@@ -131,9 +221,9 @@
 </main>
 
 <footer class="foot">
-  <div class="wrap">
-    <span>Optix Medical Sync</span>
-    <span>Hospital management</span>
+  <div class="wrap foot-in">
+    <div><b>Optix Medical Sync</b><span>Hospital management</span></div>
+    <nav aria-label="Footer"><a href="#explore">Modules</a><a href="#demo">Try it</a><a href="#features">Features</a><a href="#security">Security</a><a href="#faq">FAQ</a><a href="/app">Open the app</a></nav>
   </div>
 </footer>
 

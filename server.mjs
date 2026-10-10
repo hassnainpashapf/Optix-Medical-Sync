@@ -62,23 +62,24 @@ function setPassword(userId, pw) {
   db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
 }
 function newPassword() { return crypto.randomBytes(9).toString('base64url'); }
-function announce(pw, why) {
+function announce(pw, why, username = 'admin') {
   const line = '='.repeat(58);
-  console.log(`\n${line}\n  ${why}\n  Username: admin\n  Password: ${pw}\n  (change it from the user menu after signing in)\n${line}\n`);
+  console.log(`\n${line}\n  ${why}\n  Username: ${username}\n  Password: ${pw}\n  (change it from the user menu after signing in)\n${line}\n`);
 }
 
 if (process.argv.includes('--reset-password')) {
-  const u = db.prepare("SELECT id FROM users WHERE username = 'admin'").get();
-  if (!u) { console.error('No admin user yet. Start the server once first.'); process.exit(1); }
+  const u = db.prepare("SELECT id, username FROM users WHERE role = 'Super Admin' ORDER BY (username = 'admin') DESC, id LIMIT 1").get();
+  if (!u) { console.error('No Super Admin yet. Open the app in the browser and create one.'); process.exit(1); }
   const pw = process.env.ADMIN_PASSWORD || newPassword();
-  setPassword(u.id, pw); announce(pw, 'Admin password was reset.'); process.exit(0);
+  setPassword(u.id, pw); db.prepare('UPDATE users SET active = 1 WHERE id = ?').run(u.id); announce(pw, 'Super Admin password was reset.', u.username); process.exit(0);
 }
 if (process.argv.includes('--backup')) { console.log('Backup written: ' + backupNow()); process.exit(0); }
-if (!db.prepare('SELECT 1 FROM users LIMIT 1').get()) {
+if (process.env.ADMIN_PASSWORD && !db.prepare('SELECT 1 FROM users LIMIT 1').get()) {
   const pw = process.env.ADMIN_PASSWORD || newPassword(), salt = crypto.randomBytes(16).toString('hex');
   db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created) VALUES (?, ?, ?, ?, ?, 1, ?)').run('admin', 'Mohamed Agamy', 'Super Admin', salt, hashPw(pw, salt), Date.now());
-  announce(pw, 'First run: admin account created.');
+  announce(pw, 'Super Admin created from ADMIN_PASSWORD.');
 }
+const needsSetup = () => !db.prepare('SELECT 1 FROM users LIMIT 1').get();
 
 /* ---------- helpers ---------- */
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
@@ -121,6 +122,21 @@ async function api(req, res, url) {
   if (m !== 'GET') {
     if (isUpload ? req.headers['x-requested-with'] !== 'nexura' : !(req.headers['content-type'] || '').startsWith('application/json')) return sendJson(res, 415, { error: isUpload ? 'Upload header missing' : 'JSON required' });
     const origin = req.headers.origin; if (origin && !ALLOWED_HOSTS.has(origin.replace(/^https?:\/\//, ''))) return sendJson(res, 403, { error: 'Bad origin' });
+  }
+  if (p === '/api/setup' && m === 'GET') return sendJson(res, 200, { needed: needsSetup() });
+  if (p === '/api/setup' && m === 'POST') {
+    if (!needsSetup()) return sendJson(res, 409, { error: 'The Super Admin already exists.' });
+    let b; try { b = JSON.parse(await readBody(req, 10_000)); } catch { return sendJson(res, 400, { error: 'Bad request' }); }
+    const username = String(b.username || '').trim().toLowerCase(), name = String(b.name || '').trim(), pw = String(b.password || '');
+    if (name.length < 2 || name.length > 80) return sendJson(res, 400, { error: 'Enter your full name.' });
+    if (!/^[a-z0-9._-]{3,30}$/.test(username)) return sendJson(res, 400, { error: 'Username: 3 to 30 letters, numbers, dot, dash or underscore.' });
+    if (pw.length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' });
+    const salt = crypto.randomBytes(16).toString('hex');
+    const r = db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created) VALUES (?, ?, ?, ?, ?, 1, ?)').run(username, name, 'Super Admin', salt, hashPw(pw, salt), Date.now());
+    audit(username, 'Created the Super Admin account', 'Users', r.lastInsertRowid, null);
+    const token = crypto.randomBytes(32).toString('hex');
+    db.prepare('INSERT INTO sessions (token, user_id, expires) VALUES (?, ?, ?)').run(sha(token), r.lastInsertRowid, Date.now() + SESSION_MS);
+    return sendJson(res, 200, { user: publicUser({ username, name, role: 'Super Admin' }) }, { 'Set-Cookie': `sid=${token}; ${cookieFlags(req)}; Max-Age=${SESSION_MS / 1000}` });
   }
   if (p === '/api/login' && m === 'POST') {
     const ip = clientIp(req); if (tooMany(ip)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
