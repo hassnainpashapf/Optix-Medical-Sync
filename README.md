@@ -31,6 +31,17 @@ First run: open **/platform** and create the platform owner. Then hospitals can 
 
 The first start migrates an older single-hospital database (`data/nexura.db`) into a workspace called `demo`. If it has no user, open /platform, open the workspace and use **Reset the workspace Super Admin password**.
 
+## One login for the Optix suite
+
+This product keeps its own website, backend and data. People can sign in with their **Optix account** (the hub that Lab, Pharmacy and future products share):
+
+- `Sign in with your Optix account` on `/app`, or arrive from another product's app chooser (`/app/#/sso?ticket=...`). The server asks the hub who the person is (`POST /api/hub/session`, ticket or token) and only lets in people who have the **hospital** product in an active business.
+- The first **admin** of a business who opens the hospital gets a workspace (trial) created for that business; other people are added the first time they sign in, with the role set in the hub (`SUPER_ADMIN`, `DOCTOR`, `RECEPTIONIST`, `ACCOUNTANT`, `PHARMACIST`; default Receptionist). Plan limits still apply.
+- Register the product once in the hub: Superadmin → Plans & Settings → Products → add `hospital` with the web address of this site's `/app` (for example `https://hospital.example.pk/app`) and the five roles above; then tick it for each business and for each person.
+- Workspace code + password sign-in keeps working. `HUB_API` (default the production hub), `HUB_APP_ID` (`hospital`), `HUB_DISABLED=1` switch it off.
+- `assets/optix-suite-sdk.js` is generated from the shared SDK: `node scripts/sync-sdk.mjs` (needs the `optix-suite-sdk` repo next to this one).
+- Tests: `npm test`. Docker: `Dockerfile`, `deploy/docker-compose.yml`.
+
 ## Configuration (environment variables)
 
 | Variable | Default | Meaning |
@@ -42,6 +53,7 @@ The first start migrates an older single-hospital database (`data/nexura.db`) in
 | `TRUST_PROXY`, `SECURE_COOKIES` | off | Set to `1` behind an HTTPS reverse proxy |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_SECURE` | unset | Outgoing mail (465 = TLS, 587 = STARTTLS) |
 | `SUPPORT_EMAIL` | unset | Shown in the app's Plan page for upgrade requests |
+| `HUB_API`, `HUB_APP_ID`, `HUB_DISABLED` | production hub, `hospital`, off | The Optix account hub (see above) |
 
 ## Before going public
 

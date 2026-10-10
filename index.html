@@ -886,6 +886,19 @@
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
+<style>
+.hubch{position:fixed;inset:0;z-index:300;background:rgba(12,18,40,.72);display:grid;place-items:center;padding:20px}
+.hubch[hidden]{display:none}
+.hubch .box{background:#fff;border-radius:22px;padding:30px 28px 22px;width:min(640px,100%);text-align:center;box-shadow:0 30px 80px rgba(8,14,40,.45)}
+.hubch h2{margin:0 0 4px;font-size:22px;color:#1b2a4a}.hubch p{margin:0;color:#8b94a7;font-size:13px}
+.hubch .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0 10px}
+.hubch .card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 12px 18px;border-radius:18px;border:1.5px solid;cursor:pointer;font:inherit;background:#fff}
+.hubch .card:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(8,14,40,.14)}
+.hubch .card .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;color:#fff;margin-bottom:4px}
+.hubch .card b{font-size:15px;color:#1b2a4a}.hubch .card small{font-size:11.5px;color:#8b94a7;line-height:1.35}
+.hubch .out{margin-top:10px;background:none;border:0;color:#8b94a7;font-weight:700;font-size:12.5px;cursor:pointer}
+.hubch .err{margin-top:10px;color:#b42318;font-size:12.5px}
+</style>
 </head>
 <body class="locked">
 <div class="frame">
@@ -1570,18 +1583,20 @@
     <form class="lg-card" id="lgForm" novalidate>
       <div class="lg-brand"><svg viewBox="0 0 26 30" fill="none" stroke="#6f86d8" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 27V6l14 15V3" /><path d="M9 27l14-12V3" opacity=".7"/><path d="M3 6l6-3"/></svg> Optix Medical Sync</div>
       <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Enter your workspace code and your account details.</p>
-      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="e.g. alpha-clinic"></div>
+      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs" id="lgWsL">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="e.g. alpha-clinic"></div>
       <div class="fl" id="lgUserBox"><label class="lb" for="lgUser" id="lgUserL">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
       <div class="fl" id="lgPassBox"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
       <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
       <div class="lg-err" id="lgErr" role="alert"></div>
       <button class="pri" id="lgBtn" type="submit">Sign in</button>
       <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
+      <p class="lg-foot" id="lgHubRow"><a href="#" id="lgHub">Sign in with your Optix account</a> <span style="color:#8b94a7">(one login for all your apps)</span></p>
       <p class="lg-foot" id="lgBack" hidden><a href="#" id="lgBackA">Back to sign in</a></p>
     </form>
   </div>
 </div>
 </div>
+<div class="hubch" id="hubCh" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -1590,7 +1605,7 @@ function api(method, url, body) {
   if (method !== 'GET') { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body === undefined ? {} : body); }
   return fetch(url, opt).then(function (r) {
     return r.json().catch(function () { return {}; }).then(function (j) {
-      if (r.status === 401 && url !== '/api/login' && url !== '/api/session') { location.reload(); throw new Error('signed out'); }
+      if (r.status === 401 && url !== '/api/login' && url !== '/api/session' && url !== '/api/hub/session') { location.reload(); throw new Error('signed out'); }
       if (!r.ok) { var e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; }
       return j;
     });
@@ -3494,8 +3509,11 @@ window.bootApp = function () {
     applyWs(window.__WS);
     $('userBtn').addEventListener('click', function (e) {
       e.stopPropagation();
-      rowMenu(this, [['pw', 'Change password'], ['out', 'Sign out']], function (a) {
-        if (a === 'out') api('POST', '/api/logout').then(function () { location.reload(); }); else { $('pwForm').reset(); $('pwErr').textContent = ''; $('pwW').hidden = false; $('pwCur').focus(); }
+      var hubSess = null; try { hubSess = JSON.parse(localStorage.getItem('optix_hospital_hub') || 'null'); } catch (e) {}
+      var others = hubSess ? (hubSess.catalog || []).filter(function (c) { return c.id !== 'hospital' && (hubSess.apps || []).indexOf(c.id) >= 0; }) : [];
+      rowMenu(this, [['pw', 'Change password']].concat(others.map(function (c) { return ['app:' + c.id, 'Switch to ' + c.name]; }), [['out', 'Sign out']]), function (a) {
+        if (a.indexOf('app:') === 0) { import('/assets/optix-suite-sdk.js').then(function (m) { return api('GET', '/api/hub/config').then(function (cfg) { return m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: 'optix_hospital_hub' }).openApp(a.slice(4)); }); }).catch(function (e) { toast(e.message); }); }
+        else if (a === 'out') api('POST', '/api/logout').then(function () { try { localStorage.removeItem('optix_hospital_hub'); } catch (e) {} location.reload(); }); else { $('pwForm').reset(); $('pwErr').textContent = ''; $('pwW').hidden = false; $('pwCur').focus(); }
       });
     });
     $('pwW').addEventListener('mousedown', function (e) { if (e.target === this) this.hidden = true; });
@@ -3520,6 +3538,45 @@ window.bootApp = function () {
 (function () {
   var $ = function (id) { return document.getElementById(id); }, mode = 'login', tokenInfo = null, TOKEN = new URLSearchParams(location.search).get('token') || '';
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) { return ''; } return ''; }
+  /* ---------- Optix account (one login for the whole suite) ---------- */
+  var HUBKEY = 'optix_hospital_hub', HUBLOAD = null;
+  var ICONS = { pill: '<path d="M10.5 20.5 3.5 13.5a4.95 4.95 0 0 1 7-7l7 7a4.95 4.95 0 0 1-7 7z"/><path d="m8.5 8.5 7 7"/>', flask: '<path d="M9 3h6M10 3v6.3L4.6 18.1A1.5 1.5 0 0 0 5.9 20.3h12.2a1.5 1.5 0 0 0 1.3-2.2L14 9.3V3"/><path d="M8 14h8"/>', cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/>', truck: '<path d="M1 4h13v11H1zM14 8h4l4 4v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>', users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>', chart: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>', box: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>', file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>' };
+  function hubLoad() {
+    if (!HUBLOAD) HUBLOAD = api('GET', '/api/hub/config').then(function (cfg) {
+      if (!cfg.enabled) throw new Error('Sign-in with an Optix account is switched off.');
+      return import('/assets/optix-suite-sdk.js').then(function (m) { return m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: HUBKEY }); });
+    });
+    return HUBLOAD;
+  }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function hubSaved(r) { /* what /api/hub/session returned -> the hub session the page keeps for switching apps */
+    if (r && r.hub) try { localStorage.setItem(HUBKEY, JSON.stringify({ token: r.hub.token, apps: r.hub.apps, catalog: r.hub.catalog, user: { name: r.user && r.user.name, role: r.user && r.user.role }, lab: { name: r.hub.business }, at: Date.now() })); } catch (e) {}
+  }
+  function hubSessionFor(body) { return api('POST', '/api/hub/session', body).then(function (r) { hubSaved(r); return r; }); }
+  function chooser(result) {
+    var box = $('hubCh'), cat = (result.catalog || []).filter(function (c) { return (result.apps || []).indexOf(c.id) >= 0; });
+    box.innerHTML = '<div class="box"><h2>Where do you want to go?</h2><p>Signed in as <b>' + esc(result.user.name) + '</b>' + (result.lab && result.lab.name ? ' · ' + esc(result.lab.name) : '') + '</p><div class="cards">' + cat.map(function (c) {
+      return '<button type="button" class="card" data-app="' + esc(c.id) + '" style="border-color:' + esc(c.color || '#475569') + '55;background:linear-gradient(160deg,' + esc(c.color || '#475569') + '1f,#fff 70%)"><span class="ic" style="background:' + esc(c.color || '#475569') + '"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[c.icon] || ICONS.box) + '</svg></span><b>' + esc(c.name) + '</b><small>' + esc(c.sub || '') + '</small></button>';
+    }).join('') + '</div><div class="err" id="hubChErr"></div><button type="button" class="out" id="hubChOut">Cancel</button></div>';
+    box.hidden = false;
+    $('hubChOut').addEventListener('click', function () { box.hidden = true; try { localStorage.removeItem(HUBKEY); } catch (e) {} });
+    Array.prototype.forEach.call(box.querySelectorAll('.card'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-app'); b.disabled = true;
+        (id === 'hospital' ? hubSessionFor({ token: result.token }).then(function (r) { box.hidden = true; start(r); }) : hubLoad().then(function (h) { return h.openApp(id); }))
+          .catch(function (e) { b.disabled = false; $('hubChErr').textContent = e.message; });
+      });
+    });
+  }
+  function hubSignedIn(result) { /* after the hub accepted the password */
+    var apps = result.apps || [];
+    return hubLoad().then(function (h) { h.rememberSession(result); }).then(function () {
+      if (apps.length > 1) { chooser(result); return null; }
+      if (apps.indexOf('hospital') >= 0) return hubSessionFor({ token: result.token }).then(function (r) { start(r); return null; });
+      if (apps.length === 1) return hubLoad().then(function (h) { return h.openApp(apps[0]); });
+      throw new Error('This account has no app yet. Ask your administrator to give you access.');
+    });
+  }
   function start(r) {
     api('GET', '/api/data').then(function (srv) {
       window.__SRV = srv; window.__USER = r.user; window.__WS = srv.workspace; store('nx_ws', srv.workspace.slug);
@@ -3527,20 +3584,29 @@ window.bootApp = function () {
     }).catch(function (e) { showLogin('Could not load data: ' + e.message); });
   }
   function setMode(m) {
-    mode = m; var login = m === 'login', forgot = m === 'forgot', tok = m === 'token';
-    $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login; $('lgBack').hidden = login;
-    $('lgTitle').textContent = login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
-    $('lgSub').textContent = login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
+    mode = m; var login = m === 'login' || m === 'hub', forgot = m === 'forgot', tok = m === 'token', hubm = m === 'hub';
+    $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login || hubm; $('lgBack').hidden = login;
+    $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (leave empty if you have one business)' : 'Workspace code';
+    $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
+    $('lgSub').textContent = hubm ? 'The same username and password you use in your other Optix apps.' : login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
     $('lgUserL').textContent = forgot ? 'Username or email' : 'Username';
     $('lgBtn').textContent = login ? 'Sign in' : forgot ? 'Send reset link' : 'Save password and sign in';
     $('lgPass').autocomplete = tok ? 'new-password' : 'current-password'; $('lgErr').textContent = '';
   }
   function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; var f = mode === 'token' ? $('lgPass') : !$('lgWs').value ? $('lgWs') : !$('lgUser').value ? $('lgUser') : $('lgPass'); f.focus(); }
   $('lgEye').addEventListener('click', function () { var on = $('lgPass').type === 'password'; $('lgPass').type = on ? 'text' : 'password'; this.setAttribute('aria-pressed', String(on)); this.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); });
+  $('lgHub').addEventListener('click', function (e) { e.preventDefault(); setMode(mode === 'hub' ? 'login' : 'hub'); $('lgWs').focus(); });
   $('lgForgot').addEventListener('click', function (e) { e.preventDefault(); setMode('forgot'); $('lgUser').focus(); });
   $('lgBackA').addEventListener('click', function (e) { e.preventDefault(); if (TOKEN) { TOKEN = ''; history.replaceState(null, '', '/app'); } setMode('login'); });
   $('lgForm').addEventListener('submit', function (e) {
     e.preventDefault(); var btn = $('lgBtn'), er = $('lgErr'); er.textContent = ''; var ws = $('lgWs').value.trim().toLowerCase(), user = $('lgUser').value.trim(), pass = $('lgPass').value, req;
+    if (mode === 'hub') {
+      if (!user || !pass) { er.textContent = 'Enter your username and password.'; return; }
+      btn.disabled = true;
+      hubLoad().then(function (h) { return h.login(ws, user, pass, { timeout: 12000 }); }).then(function (result) { $('lgPass').value = ''; return hubSignedIn(result); })
+        .catch(function (err) { er.textContent = err.message; }).then(function () { btn.disabled = false; });
+      return;
+    }
     if (mode === 'login') { if (!ws || !user || !pass) { er.textContent = 'Enter the workspace code, username and password.'; return; } req = api('POST', '/api/login', { workspace: ws, username: user, password: pass }); }
     else if (mode === 'forgot') { if (!ws || !user) { er.textContent = 'Enter the workspace code and your username or email.'; return; } btn.disabled = true; api('POST', '/api/forgot', { workspace: ws, identifier: user }).then(function () { er.style.color = '#2f7d32'; er.textContent = 'If that account has an email address, a reset link is on its way. It is valid for 1 hour.'; }).catch(function (x) { er.textContent = x.message; }).then(function () { btn.disabled = false; setTimeout(function () { er.style.color = ''; }, 100); }); return; }
     else { if (pass.length < 8) { er.textContent = 'Use at least 8 characters for the password.'; return; } if (pass !== $('lgPass2').value) { er.textContent = 'The two passwords do not match.'; return; } req = api('POST', '/api/token', { t: TOKEN, password: pass }); }
@@ -3548,7 +3614,12 @@ window.bootApp = function () {
     req.then(function (r) { $('lgPass').value = ''; $('lgPass2').value = ''; start(r); }).catch(function (err) { er.textContent = err.message; }).then(function () { btn.disabled = false; });
   });
   var qws = new URLSearchParams(location.search).get('ws'); $('lgWs').value = (qws || store('nx_ws') || '').toLowerCase();
-  if (TOKEN) {
+  var SSO = /^#\/sso\?.*\bticket=([0-9a-f]+)/.exec(location.hash || '');
+  if (SSO) {
+    history.replaceState(null, '', location.pathname); /* the ticket never stays in the address bar */
+    setMode('login'); $('login').hidden = false; document.body.classList.add('locked'); $('lgErr').textContent = 'Signing you in…';
+    hubSessionFor({ ticket: SSO[1] }).then(function (r) { $('lgErr').textContent = ''; start(r); }).catch(function (e) { $('lgErr').textContent = e.message; });
+  } else if (TOKEN) {
     api('GET', '/api/token?t=' + encodeURIComponent(TOKEN)).then(function (r) { tokenInfo = r; setMode('token'); showLogin(); }).catch(function (e) { TOKEN = ''; setMode('login'); showLogin(e.message); });
   } else api('GET', '/api/session').then(function (r) { start(r); }).catch(function (e) {
     if (e.status === 401) { setMode('login'); showLogin(); } else showLogin('Cannot reach the server. Start it with "npm start" and reload.');

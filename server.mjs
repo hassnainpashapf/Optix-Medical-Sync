@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mailConfig, sendSmtp } from './lib/mail.mjs';
+import { HUB, HubError, localRoleOf, resolveHubIdentity } from './lib/hub.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -39,6 +40,8 @@ pdb.exec(`
   CREATE TABLE IF NOT EXISTS outbox (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, tenant_id TEXT, to_addr TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, status TEXT NOT NULL, error TEXT);
   CREATE TABLE IF NOT EXISTS paudit (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, who TEXT NOT NULL, action TEXT NOT NULL, ref TEXT, summary TEXT);
 `);
+try { pdb.exec('ALTER TABLE tenants ADD COLUMN hub_lab TEXT'); } catch { /* already there */ }
+try { pdb.exec('CREATE UNIQUE INDEX IF NOT EXISTS tenants_hub_lab ON tenants (hub_lab) WHERE hub_lab IS NOT NULL'); } catch { /* ignore */ }
 if (!pdb.prepare('SELECT 1 FROM plans LIMIT 1').get()) {
   // Placeholder prices. The platform owner edits these in the panel; the website reads them from /api/plans.
   const ins = pdb.prepare('INSERT INTO plans (id, name, price, currency, max_users, max_patients, max_storage_mb, sort, blurb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
@@ -78,7 +81,7 @@ function initTenantDb(db) {
     CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, user TEXT NOT NULL, action TEXT NOT NULL, area TEXT NOT NULL, ref TEXT, summary TEXT);
     CREATE INDEX IF NOT EXISTS audit_ts ON audit (ts);
   `);
-  for (const sql of ['ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1', 'ALTER TABLE users ADD COLUMN created INTEGER NOT NULL DEFAULT 0', "ALTER TABLE users ADD COLUMN email TEXT NOT NULL DEFAULT ''"]) { try { db.exec(sql); } catch { /* column exists */ } }
+  for (const sql of ['ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1', 'ALTER TABLE users ADD COLUMN created INTEGER NOT NULL DEFAULT 0', "ALTER TABLE users ADD COLUMN email TEXT NOT NULL DEFAULT ''", 'ALTER TABLE users ADD COLUMN hub_user TEXT']) { try { db.exec(sql); } catch { /* column exists */ } }
 }
 function tenantCtx(slug) {
   if (!validSlug(slug) && slug !== 'demo') return null;
@@ -209,6 +212,43 @@ function startTenantSession(req, res, t, user, extra = {}) {
   return sendJson(res, 200, { user: publicUser(user), workspace: t.id, ...extra }, setCookie(req, 'sid', token, SESSION_MS / 1000));
 }
 
+/* Link a hub business to a hospital workspace (created on the first visit of that business's admin) and a hub person to a user of it. The
+   hub stays the source of truth for who the person is and, when set there, their role; the hospital keeps all clinical data. */
+function hubProvision(who) {
+  const { user: hu, lab } = who, labId = String(lab.id);
+  let t = pdb.prepare('SELECT * FROM tenants WHERE hub_lab = ?').get(labId), fresh = false;
+  if (!t) {
+    if (hu.role !== 'admin') throw new HubError(409, 'Your business has no hospital workspace yet. Ask your administrator to open the Hospital app once.');
+    let base = slugify(lab.slug || lab.name); if (!validSlug(base)) base = 'hospital';
+    let slug = base; while (pdb.prepare('SELECT 1 FROM tenants WHERE id = ?').get(slug) || !validSlug(slug)) slug = (base.slice(0, 24) + '-' + crypto.randomBytes(2).toString('hex')).replace(/^-+/, '');
+    createTenantFiles(slug);
+    pdb.prepare('INSERT INTO tenants (id, name, plan, status, trial_ends, created, sample, owner_email, last_active, hub_lab) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(slug, String(lab.name || slug).slice(0, 80), 'clinic', 'trial', Date.now() + TRIAL_DAYS * 86400000, Date.now(), 0, String(hu.email || ''), Date.now(), labId);
+    paudit('system', 'New workspace (Optix account)', slug, `${lab.name} (business ${labId})`);
+    t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(slug); fresh = true;
+  }
+  if (t.status === 'suspended') throw new HubError(403, 'This workspace is suspended. Contact the platform owner.');
+  if (t.status === 'cancelled') throw new HubError(403, 'This workspace was cancelled.');
+  const ctx = tenantCtx(t.id); if (!ctx) throw new HubError(500, 'The workspace could not be opened.');
+  const hubId = String(hu.id), wanted = localRoleOf(hu.appRoles && hu.appRoles[HUB.appId]) || (hu.role === 'admin' ? 'Super Admin' : null);
+  let u = ctx.db.prepare('SELECT * FROM users WHERE hub_user = ?').get(hubId);
+  if (!u) {
+    const plan = planOf(t.plan);
+    if (plan.max_users >= 0 && usageOf(ctx).users >= plan.max_users) throw new HubError(402, `The ${plan.name} plan allows ${plan.max_users} users. Ask your administrator to upgrade.`);
+    let base = String(hu.username || hu.name || 'user').toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 24); if (base.length < 3) base = (base + 'user').slice(0, 24);
+    let username = base; while (ctx.db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) username = base + '-' + crypto.randomBytes(2).toString('hex');
+    const salt = crypto.randomBytes(16).toString('hex'), role = wanted || 'Receptionist';
+    const r = ctx.db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created, email, hub_user) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)').run(username, String(hu.name || username).slice(0, 80), role, salt, hashPw(randPw() + randPw(), salt), Date.now(), String(hu.email || ''), hubId);
+    u = ctx.db.prepare('SELECT * FROM users WHERE id = ?').get(r.lastInsertRowid);
+    tenantAudit(ctx, username, fresh ? 'Created the workspace (Optix account)' : 'Joined with the Optix account', 'Account', u.id, role);
+  } else {
+    if (!u.active) throw new HubError(403, 'Your hospital account is switched off. Ask your Super Admin.');
+    if (wanted && wanted !== u.role) { ctx.db.prepare('UPDATE users SET role = ? WHERE id = ?').run(wanted, u.id); tenantAudit(ctx, u.username, 'Role set by the Optix account', 'Account', u.id, `${u.role} -> ${wanted}`); u.role = wanted; }
+    if (hu.name && hu.name !== u.name) { ctx.db.prepare('UPDATE users SET name = ? WHERE id = ?').run(String(hu.name).slice(0, 80), u.id); u.name = hu.name; }
+    tenantAudit(ctx, u.username, 'Signed in (Optix account)', 'Account', null, null);
+  }
+  return { t, user: u };
+}
+
 /* ================= public + signup API ================= */
 const okEmail = (e) => typeof e === 'string' && e.length <= 120 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
 const okUser = (u) => /^[a-z0-9._-]{3,30}$/.test(u);
@@ -246,6 +286,17 @@ async function publicApi(req, res, p, m, url) {
     if (t.status === 'suspended') return sendJson(res, 403, { error: 'This workspace is suspended. Contact the platform owner.' });
     tenantAudit(ctx, u.username, 'Signed in', 'Account', null, null);
     return startTenantSession(req, res, t, u);
+  }
+  /* ---------- Optix account (one login for the whole suite) ---------- */
+  if (p === '/api/hub/config' && m === 'GET') return sendJson(res, 200, { enabled: HUB.enabled, api: HUB.api, appId: HUB.appId });
+  if (p === '/api/hub/session' && m === 'POST') {
+    const ip = clientIp(req); if (limited('hub', ip, 30, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
+    hit('hub', ip);
+    try {
+      const b = await readJson(req, 4000), who = await resolveHubIdentity({ ticket: b.ticket, token: b.token });
+      const { t, user } = hubProvision(who);
+      return startTenantSession(req, res, t, user, { hub: { token: who.token, apps: who.apps, catalog: who.catalog, business: who.lab.name } });
+    } catch (e) { if (e instanceof HubError) return sendJson(res, e.status, { error: e.message }); throw e; }
   }
   if (p === '/api/forgot' && m === 'POST') {
     const ip = clientIp(req); if (limited('forgot', ip, 5, 3600000)) return sendJson(res, 429, { error: 'Too many requests. Try again later.' });
