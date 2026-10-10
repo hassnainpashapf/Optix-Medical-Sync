@@ -113,3 +113,4 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 @media(max-width:1020px){.rx-f-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:768px){.rx-f-grid{grid-template-columns:1fr}.rx-sec{padding:72px 0}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.prose{overflow-wrap:anywhere}

@@ -5,85 +5,61 @@
 <meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Start your free trial | Optix Medical Sync</title>
-<meta name="theme-color" content="#101a3d">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23131845'/%3E%3Cpath d='M9 22V10l8 8V9M15 22l8-7V9' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#f2f5f9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%232f6df6'/%3E%3Cpath d='M20 8a12 12 0 1 0 12 12' stroke='white' stroke-width='3.4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M20 14a6 6 0 1 1-6 6' stroke='white' stroke-width='3' stroke-linecap='round' fill='none' opacity='.85'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/optix-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/css/family.css">
 <style>
-  /* Sign-up screen: no ads here (it is a gated form). Colours, radius and type are the shared Optix tokens (assets/optix-tokens.css). */
-  :root { --bad: var(--red); --ok-fg: #0a7a4f; }
+  /* Sign-up screen: no ads here (it is a gated form). Same card as the Pharmacy sign-in: soft page, white 28px card, big blue pill button. */
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); -webkit-font-smoothing: antialiased; line-height: 1.55; }
-  a { color: inherit; text-decoration: none; }
-  .side { position: relative; overflow: hidden; color: #e9efff; padding: 44px 56px; display: flex; flex-direction: column; justify-content: space-between; background: var(--grad-hero); }
-  .side::before { content: ""; position: absolute; inset: -20%; background: radial-gradient(40% 40% at 20% 30%, #3d6fff33, transparent 70%), radial-gradient(35% 35% at 80% 70%, #7be0d433, transparent 70%); animation: mesh 14s ease-in-out infinite alternate; pointer-events: none; }
-  @keyframes mesh { to { transform: translate3d(4%, -3%, 0) scale(1.08); } }
-  .side > * { position: relative; }
-  .brand { display: inline-flex; align-items: center; gap: 9px; color: #fff; font-size: 20px; letter-spacing: -.02em; }
-  .brand b { font-weight: 800; } .brand .suite { font-weight: 500; color: #b4c0e0; }
-  .mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #1d2a66, #101a3d); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(16,26,61,.35); border: 1px solid rgba(255,255,255,.12); }
-  .side h1 { font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -.03em; max-width: 11em; font-weight: 800; }
-  .side h1 em { font-style: normal; background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .side p { color: #c3cdee; max-width: 30em; line-height: 1.6; margin: 0; }
-  .pts { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 12px; font-size: 15px; color: #dbe5ff; }
-  .pts li { display: flex; gap: 12px; align-items: center; }
-  .pts i { width: 28px; height: 28px; border-radius: 9px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14); display: grid; place-items: center; flex: none; }
-  .pts svg { width: 14px; height: 14px; fill: none; stroke: var(--teal); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-  .orb { position: absolute; right: -140px; bottom: -140px; width: 440px; height: 440px; border-radius: 50%; border: 1px solid rgba(110,160,255,.3); box-shadow: 0 0 0 60px rgba(110,160,255,.05), 0 0 0 130px rgba(110,160,255,.04); animation: orb 14s ease-in-out infinite; }
-  @keyframes orb { 50% { transform: translate(-18px, -14px) scale(1.04); } }
-  main { display: grid; place-items: center; padding: 40px 24px; position: relative; }
-  form { width: min(440px, 100%); }
-  h2 { font-size: 28px; margin: 0 0 6px; letter-spacing: -.02em; font-weight: 800; }
-  .sub { margin: 0 0 24px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
-  .fl { margin-bottom: 14px; position: relative; }
-  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  body { min-height: 100vh; display: grid; place-items: center; padding: 40px 16px; position: relative; overflow-x: hidden; }
+  body::before, body::after { content: ""; position: fixed; border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: -1; }
+  body::before { top: 0; left: 25%; width: 500px; height: 500px; background: linear-gradient(135deg, rgba(47,109,246,.10), transparent); }
+  body::after { bottom: 0; right: 25%; width: 450px; height: 450px; background: linear-gradient(315deg, rgba(56,168,157,.10), transparent); }
+  .wrapc { width: 100%; max-width: 480px; }
+  .brandc { display: flex; justify-content: center; margin-bottom: 18px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 30px 80px -25px rgba(27,42,74,.18); padding: 36px 40px 30px; }
+  h1 { margin: 0; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
+  .sub { margin: 8px 0 22px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 500; line-height: 1.5; }
+  .fl { margin-bottom: 14px; }
+  label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
   label small { color: var(--muted); font-weight: 500; }
-  input[type=text], input[type=email], input[type=password] { width: 100%; height: 46px; border: 1.5px solid var(--line); border-radius: var(--r-sm); padding: 0 14px; font: inherit; font-size: 14.5px; color: var(--ink); background: var(--surface-2); outline: none; }
-  input:focus-visible { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(47,109,246,.14); background: var(--surface); }
+  input[type=text], input[type=email], input[type=password] { width: 100%; height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; font: inherit; font-size: 14px; color: var(--navy); background: #f8fafc; box-shadow: 0 1px 2px rgba(27,42,74,.04); transition: border-color .2s, box-shadow .2s, background .2s; }
+  input::placeholder { color: var(--muted); }
+  input:focus { outline: 0; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(47,109,246,.15); background: #fff; }
   .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-  .ws { display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: var(--surface-2); }
-  .ws:focus-within { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(47,109,246,.14); background: var(--surface); }
-  .ws input { border: 0 !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
-  .hint { font-size: 12px; margin-top: 6px; min-height: 16px; color: var(--muted); } .hint.ok { color: var(--ok-fg); } .hint.bad { color: var(--bad); }
-  .chk { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink); margin: 4px 0 18px; font-weight: 500; }
-  .chk input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--blue); }
-  .chk small { display: block; color: var(--muted); margin-top: 2px; }
-  .err { color: var(--bad); font-size: 13px; min-height: 20px; margin-bottom: 8px; }
-  button.go { width: 100%; height: 50px; border: 1.5px solid var(--blue); border-radius: 14px; background: var(--blue); color: #fff; font: inherit; font-weight: 700; font-size: 15.5px; cursor: pointer; transition: transform .15s, box-shadow .15s; }
-  button.go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(47,109,246,.28); }
+  .hint { font-size: 12px; margin-top: 6px; min-height: 16px; color: var(--muted); font-weight: 500; } .hint.ok { color: #0a7a4f; } .hint.bad { color: #c2373a; }
+  .chk { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink); margin: 4px 0 18px; font-weight: 600; }
+  .chk input { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--blue); flex: none; }
+  .chk small { display: block; color: var(--muted); margin-top: 2px; font-weight: 500; }
+  .err { color: #be123c; font-size: 13px; font-weight: 600; min-height: 20px; margin-bottom: 8px; }
+  .err:not(:empty) { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 12px 14px; }
+  button.go { width: 100%; height: 52px; border: 0; border-radius: 16px; background: var(--blue); color: #fff; font: inherit; font-weight: 800; font-size: 14.5px; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(47,109,246,.5); transition: background .2s, transform .1s, box-shadow .2s; }
+  button.go:hover:not(:disabled) { background: var(--blue-d); box-shadow: 0 18px 36px -10px rgba(47,109,246,.6); }
+  button.go:active:not(:disabled) { transform: scale(.98); }
   button.go:disabled { opacity: .6; cursor: default; }
-  .foot { margin-top: 20px; font-size: 13.5px; color: var(--muted); text-align: center; } .foot a { color: var(--blue); font-weight: 600; } .foot a:hover { text-decoration: underline; }
-  .legal { margin-top: 14px; font-size: 12.5px; color: var(--muted); text-align: center; } .legal a { text-decoration: underline; text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible { outline: 3px solid var(--blue-2); outline-offset: 2px; border-radius: 8px; }
-  @media (max-width: 900px) { body { grid-template-columns: minmax(0, 1fr); } .side { display: none; } .mbrand { display: inline-flex !important; } }
-  .mbrand { display: none; align-items: center; gap: 9px; color: var(--ink); font-size: 18px; letter-spacing: -.02em; margin-bottom: 22px; } .mbrand .suite { font-weight: 500; color: var(--muted); }
-  @media (prefers-reduced-motion: reduce) { .orb, .side::before { animation: none; } button.go { transition: none; } }
+  .pts { list-style: none; margin: 18px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .pts li { display: flex; gap: 10px; align-items: center; }
+  .pts i { width: 20px; height: 20px; border-radius: 50%; background: rgba(56,168,157,.14); display: grid; place-items: center; flex: none; }
+  .pts svg { width: 11px; height: 11px; fill: none; stroke: var(--teal); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .foot { margin-top: 18px; font-size: 13px; color: var(--muted); text-align: center; font-weight: 500; } .foot a { color: var(--blue-d); font-weight: 700; text-decoration: none; } .foot a:hover { text-decoration: underline; }
+  .legal { margin-top: 10px; font-size: 12px; color: var(--muted); text-align: center; font-weight: 500; } .legal a { text-decoration: underline; text-underline-offset: 3px; }
+  .links { margin-top: 18px; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 700; padding: 0 6px; }
+  .links a { color: var(--ink); text-decoration: none; } .links a:hover { color: var(--blue); }
+  @media (max-width: 520px) { .card { padding: 28px 22px 24px; border-radius: 24px; } .row { grid-template-columns: minmax(0, 1fr); gap: 0; } }
 </style>
 </head>
 <body>
-<aside class="side">
-  <a class="brand" href="/"><span class="mark"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M9 24V10l9 9V8M15 24l9-8V8"/></svg></span><b>Optix</b><span class="suite">Medical Sync</span></a>
-  <div>
-    <h1>Your hospital, <em>set up in a minute.</em></h1>
-    <p>Create a workspace and you are signed in straight away. No card needed.</p>
-    <ul class="pts" id="pts">
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="trialPt">Free trial, full features</span></li>
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Your own private data, separate from every other hospital</li>
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Start with sample data or a blank workspace</li>
-    </ul>
-  </div>
-  <div class="orb" aria-hidden="true"></div>
-</aside>
-<main>
-  <form id="f" novalidate>
-    <a class="mbrand" href="/"><span class="mark" style="width:30px;height:30px"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M9 24V10l9 9V8M15 24l9-8V8"/></svg></span><b>Optix</b><span class="suite">Medical Sync</span></a>
-    <h2>Start your free trial</h2>
-    <p class="sub">Tell us about your hospital and create your Super Admin account.</p>
-    <div class="fl"><label for="hospital">Hospital or clinic name</label><input type="text" id="hospital" autocomplete="organization"></div>
+<div class="wrapc">
+  <a class="brandc fx-logo" href="/" aria-label="Optix Medical Sync home"><svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#2f6df6"/><path d="M20 8a12 12 0 1 0 12 12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M20 14a6 6 0 1 1-6 6" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>Optix Medical Sync</a>
+  <form class="card" id="f" novalidate>
+    <h1>Start your free trial</h1>
+    <p class="sub">Tell us about your hospital and create your Super Admin account. No card needed.</p>
+    <div class="fl"><label for="hospital">Hospital or clinic name</label><input type="text" id="hospital" autocomplete="organization" placeholder="e.g. City Care Hospital"></div>
     <div class="fl"><label for="ws">Workspace code <small>(you will use it to sign in)</small></label>
-      <div class="ws"><input type="text" id="ws" autocapitalize="none" spellcheck="false" autocomplete="off"></div><div class="hint" id="wsHint"></div></div>
+      <input type="text" id="ws" autocapitalize="none" spellcheck="false" autocomplete="off" placeholder="e.g. city-care"><div class="hint" id="wsHint"></div></div>
     <div class="row"><div class="fl"><label for="name">Your full name</label><input type="text" id="name" autocomplete="name"></div>
       <div class="fl"><label for="user">Username</label><input type="text" id="user" autocapitalize="none" spellcheck="false" autocomplete="username"></div></div>
     <div class="fl"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
@@ -91,10 +67,16 @@
     <label class="chk"><input type="checkbox" id="sample" checked><span>Fill the workspace with sample data<small>Good for looking around. Uncheck to start blank with your own records.</small></span></label>
     <div class="err" id="err" role="alert"></div>
     <button class="go" id="go" type="submit">Create my workspace</button>
+    <ul class="pts" id="pts">
+      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="trialPt">Free trial, full features</span></li>
+      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Your own private data, separate from every other hospital</li>
+      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Start with sample data or a blank workspace</li>
+    </ul>
     <p class="foot">Already have a workspace? <a href="/app">Sign in</a></p>
     <p class="legal">By creating a workspace you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
   </form>
-</main>
+  <div class="links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
+</div>
 <script>
 (function () {
   var $ = function (i) { return document.getElementById(i); }, slugTouched = false, timer = 0;
