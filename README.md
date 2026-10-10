@@ -6,6 +6,11 @@ Hospital dashboard (appointments, staff, calendar, suppliers, stocks, transactio
 - **Database:** `data/nexura.db` (SQLite). Created on first start and filled with the demo data once.
 - **Login:** user `admin`. The password is printed in the terminal on the first start (also in `data/server.log`).
 
+## Website
+
+`/` is the marketing site (`site/`, with a Three.js 3D scene, vendored in `site/vendor/`). The app itself is at `/app`.
+Behind a reverse proxy with HTTPS set `TRUST_PROXY=1`, `SECURE_COOKIES=1` and `ALLOWED_HOSTS=your.domain`.
+
 ## Run
 
 ```

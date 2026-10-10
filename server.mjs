@@ -81,7 +81,11 @@ if (!db.prepare('SELECT 1 FROM users LIMIT 1').get()) {
 }
 
 /* ---------- helpers ---------- */
-const MIME = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+const TRUST_PROXY = process.env.TRUST_PROXY === '1';
+const SECURE_COOKIES = process.env.SECURE_COOKIES === '1';
+const clientIp = (req) => (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress || '?';
+const cookieFlags = (req) => `HttpOnly; SameSite=Strict; Path=/${SECURE_COOKIES || (TRUST_PROXY && req.headers['x-forwarded-proto'] === 'https') ? '; Secure' : ''}`;
 const BASE_HEADERS = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer' };
 function send(res, code, body, headers = {}) { res.writeHead(code, { ...BASE_HEADERS, ...headers }); res.end(body); }
 function sendJson(res, code, obj, headers = {}) { send(res, code, JSON.stringify(obj), { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...headers }); }
@@ -119,7 +123,7 @@ async function api(req, res, url) {
     const origin = req.headers.origin; if (origin && !ALLOWED_HOSTS.has(origin.replace(/^https?:\/\//, ''))) return sendJson(res, 403, { error: 'Bad origin' });
   }
   if (p === '/api/login' && m === 'POST') {
-    const ip = req.socket.remoteAddress || '?'; if (tooMany(ip)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
+    const ip = clientIp(req); if (tooMany(ip)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
     let b; try { b = JSON.parse(await readBody(req, 10_000)); } catch { return sendJson(res, 400, { error: 'Bad request' }); }
     const u = db.prepare('SELECT * FROM users WHERE username = ?').get(String(b.username || '').toLowerCase());
     const ok = u && u.active === 1 && crypto.timingSafeEqual(Buffer.from(hashPw(String(b.password || ''), u.salt), 'hex'), Buffer.from(u.hash, 'hex'));
@@ -128,13 +132,13 @@ async function api(req, res, url) {
     db.prepare('DELETE FROM sessions WHERE expires < ?').run(Date.now());
     db.prepare('INSERT INTO sessions (token, user_id, expires) VALUES (?, ?, ?)').run(sha(token), u.id, Date.now() + SESSION_MS);
     audit(u.username, 'Signed in', 'Account', null, null);
-    return sendJson(res, 200, { user: publicUser(u) }, { 'Set-Cookie': `sid=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${SESSION_MS / 1000}` });
+    return sendJson(res, 200, { user: publicUser(u) }, { 'Set-Cookie': `sid=${token}; ${cookieFlags(req)}; Max-Age=${SESSION_MS / 1000}` });
   }
   const user = userOf(req);
   if (p === '/api/session' && m === 'GET') return user ? sendJson(res, 200, { user: publicUser(user) }) : sendJson(res, 401, { error: 'Not signed in' });
   if (!user) return sendJson(res, 401, { error: 'Not signed in' });
 
-  if (p === '/api/logout' && m === 'POST') { audit(user.username, 'Signed out', 'Account', null, null); db.prepare('DELETE FROM sessions WHERE token = ?').run(sha(cookies(req).sid)); return sendJson(res, 200, { ok: true }, { 'Set-Cookie': 'sid=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0' }); }
+  if (p === '/api/logout' && m === 'POST') { audit(user.username, 'Signed out', 'Account', null, null); db.prepare('DELETE FROM sessions WHERE token = ?').run(sha(cookies(req).sid)); return sendJson(res, 200, { ok: true }, { 'Set-Cookie': `sid=; ${cookieFlags(req)}; Max-Age=0` }); }
   if (p === '/api/data' && m === 'GET') {
     const rows = db.prepare('SELECT col, data FROM records').all(), cols = {};
     for (const r of rows) if (can(user, r.col, 'r')) (cols[r.col] ||= []).push(JSON.parse(r.data));
@@ -161,7 +165,7 @@ async function api(req, res, url) {
     setPassword(u.id, next); audit(user.username, 'Changed own password', 'Account', null, null);
     const token = crypto.randomBytes(32).toString('hex');
     db.prepare('INSERT INTO sessions (token, user_id, expires) VALUES (?, ?, ?)').run(sha(token), u.id, Date.now() + SESSION_MS);
-    return sendJson(res, 200, { ok: true }, { 'Set-Cookie': `sid=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${SESSION_MS / 1000}` });
+    return sendJson(res, 200, { ok: true }, { 'Set-Cookie': `sid=${token}; ${cookieFlags(req)}; Max-Age=${SESSION_MS / 1000}` });
   }
   if (isUpload) {
     if (!can(user, 'appts', 'w') && !can(user, 'patients', 'w')) return sendJson(res, 403, { error: 'Your role cannot upload files.' });
@@ -242,13 +246,18 @@ async function api(req, res, url) {
 /* ---------- static files ---------- */
 function serveStatic(req, res, url) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Method not allowed');
-  let rel = url.pathname === '/' || url.pathname === '/index.html' ? 'index.html' : null;
-  if (!rel && /^\/assets\/[\w.-]+$/.test(url.pathname)) rel = url.pathname.slice(1);
+  const p = url.pathname; let rel = null;
+  const hasSite = fs.existsSync(path.join(ROOT, 'site', 'index.html'));
+  if (p === '/') rel = hasSite ? 'site/index.html' : 'index.html';
+  else if (p === '/app' || p === '/app/' || p === '/index.html') rel = 'index.html';
+  else if (/^\/assets\/[\w.-]+$/.test(p)) rel = p.slice(1);
+  else if (/^\/site\/[\w./-]+$/.test(p) && !p.includes('..')) rel = p.slice(1);
   if (!rel) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
   const file = path.join(ROOT, rel);
   fs.readFile(file, (err, buf) => {
     if (err) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
-    send(res, 200, req.method === 'HEAD' ? undefined : buf, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': rel === 'index.html' ? 'no-cache' : 'max-age=3600' });
+    const page = rel === 'index.html' || rel === 'site/index.html';
+    send(res, 200, req.method === 'HEAD' ? undefined : buf, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': page ? 'no-cache' : 'max-age=3600' });
   });
 }
 
