@@ -4,7 +4,7 @@ Multi-tenant hospital management SaaS. One Node process (Node 24+, **no npm pack
 
 | URL | What |
 |---|---|
-| `/` | Marketing website (Three.js 3D scene, live pricing from the platform) |
+| `/` | Marketing website in the Pharmacy look (photo hero, bento, steps, booking check, live pricing from the platform; no 3D, no libraries) |
 | `/privacy`, `/terms` | Privacy Policy and Terms of Use (disclose Google AdSense and cookies) |
 | `/signup` | A hospital creates its own workspace and Super Admin, 14-day free trial |
 | `/app` | The hospital app (sign in with workspace code, username, password) |
@@ -43,9 +43,19 @@ This product keeps its own website, backend and data. People can sign in with th
 - `assets/optix-suite-sdk.js` is generated from the shared SDK: `node scripts/sync-sdk.mjs` (needs the `optix-suite-sdk` repo next to this one).
 - Tests: `npm test`. Docker: `Dockerfile`, `deploy/docker-compose.yml`.
 
-## Look and feel (shared Optix theme, light only)
+## Look and feel (the Optix family: the Pharmacy design, light only)
 
-The website, sign-up page, platform panel and the hospital app share one look with every Optix product: `optix-suite-sdk/theme/optix-theme.css` is the source of truth. There is no dark mode. Copy it into this repo with `node scripts/sync-theme.mjs` (needs the `optix-suite-sdk` repo next to this one). It writes `site/optix-theme.css` and `site/consent.js` (website) and `assets/optix-tokens.css` (tokens only, used by the app, sign-up and platform pages). Do not edit those copies by hand.
+Website, sign-up, platform panel and the hospital app follow the **Pharmacy POS design**: Plus Jakarta Sans, soft `#f2f5f9` page, navy ink `#1b2a4a`, white cards with 1px `#e2e8f1` borders and very large radii, soft shadows, blue `#2f6df6` pill buttons, white sidebar with a soft green-tint active item. There is no dark mode (`color-scheme: light`).
+
+| File | What |
+|---|---|
+| `site/css/family.css` | tokens, base, inner-page header/footer, consent banner (all public pages) |
+| `site/css/home.css`, `anim-hero.css`, `anim-scroll.css`, `site/js/home.js`, `anim-*.js` | the home page (adapted from the Pharmacy landing) |
+| `assets/optix-tokens.css` | the same tokens for the app, sign-up and platform pages |
+| `assets/optix-app.css` | the Pharmacy look on top of the app's own styles (loaded last in `index.html`) |
+| `site/img/app-*.jpg` | real screens of the app (sample data) used on the home page; retake them when the app UI changes |
+
+Print windows (bills, receipts, reports) are separate documents and stay white paper with black text.
 
 ## Ads (Google AdSense, public pages only)
 

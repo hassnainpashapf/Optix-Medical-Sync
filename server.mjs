@@ -556,7 +556,7 @@ function serveStatic(req, res, url) {
   fs.readFile(file, (err, buf) => {
     if (err) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
     const ext = path.extname(file), headers = { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : (/^\.(jpg|jpeg|png|webp|woff2|mjs)$/.test(ext) || rel.startsWith('site/vendor/') ? 'max-age=86400' : 'max-age=3600') };
-    /* text files travel compressed: the server link can be slow and three.js alone is 670 KB */
+    /* text files travel compressed: the server link can be slow (CSS, JS and HTML compress well) */
     if (/^\.(html|css|js|mjs|json|svg|txt)$/.test(ext) && /\bgzip\b/.test(req.headers['accept-encoding'] || '') && req.method !== 'HEAD') { headers['Content-Encoding'] = 'gzip'; headers.Vary = 'Accept-Encoding'; buf = gzipCached(file, buf); }
     send(res, 200, req.method === 'HEAD' ? undefined : buf, headers);
   });

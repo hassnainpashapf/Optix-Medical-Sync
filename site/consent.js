@@ -1,5 +1,5 @@
 // Optix ads loader — shared by every Optix PUBLIC website (never used inside the signed-in tools).
-// Source of truth: optix-suite-sdk/theme/consent.js (copied into each site by its sync script; do not edit the copies).
+// Copied from optix-suite-sdk/theme/consent.js; this copy is now maintained here (the old theme sync script was removed).
 //
 // Nothing from Google is loaded before the visitor chooses. "Accept" shows personalised ads, "Decline" shows non-personalised ads only.
 // The choice is kept in this browser (localStorage). For visitors in the EEA, UK and Switzerland Google also requires its own
