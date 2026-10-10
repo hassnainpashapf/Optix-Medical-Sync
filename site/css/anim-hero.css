@@ -1,0 +1,103 @@
+/* ============================================================
+   MedSync HERO — premium animation layer (mxh- prefix)
+   Loaded AFTER the inline styles in index.html.
+   - Never redefines hx-* keyframes; only overrides animation
+     *properties* where the loop/polish needs it.
+   - Transform + opacity only (no layout thrash).
+   - If this file or anim-hero.js is missing, the original
+     hx- animations keep working untouched.
+   ============================================================ */
+
+/* ---------- 1. Continuous slow Ken Burns zoom loop ----------
+   Replaces the one-shot hx-zoomout intro with a looping
+   slow-zoom (Dribbble-shot feel): 24s per leg, alternate
+   directions with a slight diagonal drift. */
+.mxh-ready .hx-photo{
+  animation:mxh-kenburns 24s ease-in-out .2s infinite alternate backwards;
+  transform-origin:50% 42%;
+  will-change:transform;
+}
+@keyframes mxh-kenburns{
+  from{transform:scale(1.12) translate3d(0,0,0);}
+  to{transform:scale(1.03) translate3d(-1.4%,1%,0);}
+}
+
+/* ---------- 2. Parallax targets (JS-driven, lerp smoothed) --- */
+.mxh-px{will-change:transform;}
+
+/* ---------- 3. Glass card positioning wrapper ---------------
+   anim-hero.js wraps .hx-glass in this so the JS parallax
+   transform never fights the card's own entrance/float
+   animations. Desktop offsets mirror the original card. */
+.mxh-glass-wrap{
+  position:absolute;right:38px;bottom:-26px;z-index:6;
+  will-change:transform;
+}
+.mxh-glass-wrap>.hx-glass{
+  position:relative;right:auto;bottom:auto;z-index:auto;
+}
+@media(max-width:768px){
+  .mxh-glass-wrap{position:static;}
+  .mxh-glass-wrap>.hx-glass{
+    position:static;width:min(340px,100%);margin:16px auto 8px;
+  }
+}
+
+/* ---------- 4. Glass card float polish -----------------------
+   Keeps the hx-risein2 entrance, upgrades hx-float to a
+   softer 7s drift with a breath of scale. */
+.mxh-ready .hx-glass{
+  animation:hx-risein2 1s cubic-bezier(.22,.8,.3,1) .95s backwards,
+            mxh-float 7s ease-in-out 1.95s infinite;
+}
+@keyframes mxh-float{
+  0%,100%{transform:translate3d(0,0,0) scale(1);}
+  50%{transform:translate3d(0,-9px,0) scale(1.012);}
+}
+
+/* ---------- 5. Headline word-by-word stagger reveal ---------
+   anim-hero.js splits .hx-h1 into masked words; the original
+   whole-heading animation is switched off for this variant. */
+.mxh-h1-on .hx-h1{animation:none;}
+.mxh-wmask{display:inline-block;overflow:hidden;vertical-align:top;}
+.mxh-w{
+  display:inline-block;
+  transform:translateY(115%);
+  will-change:transform;
+  animation:mxh-wordin .9s cubic-bezier(.19,.8,.22,1) var(--mxh-d,.7s) forwards;
+}
+@keyframes mxh-wordin{
+  to{transform:translateY(0);}
+}
+
+/* ---------- 6. CTA arrow pulse ------------------------------- */
+.mxh-ready .hx-cta-arr{
+  animation:mxh-arrowpulse 2.6s ease-in-out 2.4s infinite;
+}
+@keyframes mxh-arrowpulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.1);}
+}
+
+/* ---------- 7. Badge shimmer sweep --------------------------- */
+.mxh-ready .hx-badge{position:relative;overflow:hidden;}
+.mxh-ready .hx-badge::after{
+  content:"";position:absolute;inset:-2px;border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.38) 50%,transparent 58%);
+  transform:translateX(-130%);
+  animation:mxh-shimmer 4.2s ease-in-out 2.6s infinite;
+}
+@keyframes mxh-shimmer{
+  0%{transform:translateX(-130%);}
+  55%,100%{transform:translateX(130%);}
+}
+
+/* ---------- 8. Reduced motion: everything static ------------- */
+@media (prefers-reduced-motion:reduce){
+  .mxh-ready .hx-photo{animation:none;transform:scale(1.02);}
+  .mxh-ready .hx-glass{animation:none;}
+  .mxh-ready .hx-cta-arr{animation:none;}
+  .mxh-ready .hx-badge::after{animation:none;display:none;}
+  .mxh-w{animation:none;transform:none;}
+}

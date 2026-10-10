@@ -1,0 +1,138 @@
+/* ==========================================================================
+   MedSync — scroll/interaction animation layer (below-hero sections)
+   File: assets/anim-scroll.css
+   Prefix: mxs-   |  transform/opacity only  |  no existing keyframes touched
+   Load AFTER the inline <style> in index.html so these rules win on ties.
+   ========================================================================== */
+
+/* ---------- 1. Buttery IntersectionObserver reveals ----------
+   Hidden initial state is gated on html.mxs-js (added by anim-scroll.js),
+   so content stays visible if this JS file ever fails to load. */
+html.mxs-js .mxs-reveal{
+  opacity:0;
+  transform:translateY(34px);
+  transition:opacity .8s cubic-bezier(.22,.8,.3,1),transform .8s cubic-bezier(.22,.8,.3,1);
+  transition-delay:var(--mxs-d,0s);
+  will-change:opacity,transform;
+}
+html.mxs-js .mxs-reveal-l{opacity:0;transform:translateX(-44px);
+  transition:opacity .8s cubic-bezier(.22,.8,.3,1),transform .8s cubic-bezier(.22,.8,.3,1);
+  transition-delay:var(--mxs-d,0s);will-change:opacity,transform;}
+html.mxs-js .mxs-reveal-r{opacity:0;transform:translateX(44px);
+  transition:opacity .8s cubic-bezier(.22,.8,.3,1),transform .8s cubic-bezier(.22,.8,.3,1);
+  transition-delay:var(--mxs-d,0s);will-change:opacity,transform;}
+html.mxs-js .mxs-reveal-z{opacity:0;transform:scale(.93) translateY(18px);
+  transition:opacity .85s cubic-bezier(.22,.8,.3,1),transform .85s cubic-bezier(.22,.8,.3,1);
+  transition-delay:var(--mxs-d,0s);will-change:opacity,transform;}
+html.mxs-js .mxs-reveal.mxs-in,html.mxs-js .mxs-reveal-l.mxs-in,
+html.mxs-js .mxs-reveal-r.mxs-in,html.mxs-js .mxs-reveal-z.mxs-in{
+  opacity:1;transform:none;
+}
+
+/* ---------- 2. Cursor spotlight on cards (transform-safe overlay) ---------- */
+.mxs-spot{position:relative;}
+.mxs-spot::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(340px circle at var(--mxs-x,50%) var(--mxs-y,50%),
+    rgba(47,109,246,.12),rgba(56,168,157,.05) 45%,transparent 65%);
+  opacity:0;transition:opacity .35s ease;z-index:1;
+}
+.mxs-spot:hover::after{opacity:1;}
+
+/* ---------- 3. Drifting glow orbs on tinted sections (cheap: transform only) ---------- */
+.rx-solutions::before,.rx-testimonials::before,.rx-integration::before,
+.rx-solutions::after,.rx-testimonials::after,.rx-integration::after{
+  content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:0;
+}
+.rx-solutions::before{
+  width:520px;height:520px;left:-160px;top:-140px;
+  background:radial-gradient(circle,rgba(47,109,246,.10),transparent 65%);
+  animation:mxs-drift 22s ease-in-out infinite alternate;
+}
+.rx-solutions::after{
+  width:460px;height:460px;right:-140px;bottom:-120px;
+  background:radial-gradient(circle,rgba(56,168,157,.10),transparent 65%);
+  animation:mxs-drift 18s ease-in-out infinite alternate-reverse;
+}
+.rx-testimonials::before{
+  width:560px;height:560px;right:-180px;top:-160px;
+  background:radial-gradient(circle,rgba(47,109,246,.12),transparent 65%);
+  animation:mxs-drift 24s ease-in-out infinite alternate;
+}
+.rx-testimonials::after{
+  width:420px;height:420px;left:-140px;bottom:-140px;
+  background:radial-gradient(circle,rgba(56,168,157,.12),transparent 65%);
+  animation:mxs-drift 19s ease-in-out infinite alternate-reverse;
+}
+.rx-integration::before{
+  width:500px;height:500px;left:8%;top:-180px;
+  background:radial-gradient(circle,rgba(47,109,246,.09),transparent 65%);
+  animation:mxs-drift 21s ease-in-out infinite alternate;
+}
+.rx-integration::after{
+  width:440px;height:440px;right:6%;bottom:-160px;
+  background:radial-gradient(circle,rgba(56,168,157,.09),transparent 65%);
+  animation:mxs-drift 17s ease-in-out infinite alternate-reverse;
+}
+.rx-solutions .rx-wrap,.rx-testimonials .rx-wrap,.rx-integration .rx-wrap{
+  position:relative;z-index:1;
+}
+@keyframes mxs-drift{
+  from{transform:translate3d(0,0,0) scale(1);}
+  to{transform:translate3d(60px,40px,0) scale(1.12);}
+}
+
+/* ---------- 4. Solutions tab panel entrance (re-triggers per tab switch) ---------- */
+.rx-tabpanel.rx-on > *{
+  animation:mxs-panel-in .55s cubic-bezier(.22,.8,.3,1) backwards;
+}
+.rx-tabpanel.rx-on > *:nth-child(2){animation-delay:.07s}
+.rx-tabpanel.rx-on > *:nth-child(3){animation-delay:.14s}
+.rx-tabpanel.rx-on > *:nth-child(4){animation-delay:.21s}
+@keyframes mxs-panel-in{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:none;}
+}
+
+/* ---------- 5. Pricing toggle micro-transition (adds to existing opacity swap) ---------- */
+[data-rx-price]{transition:opacity .18s ease;}
+
+/* ---------- 6. FAQ accordion micro-transitions ---------- */
+.rx-faq-a > p{transition:opacity .35s ease,transform .35s ease;}
+.rx-faq-item:not(.rx-open) .rx-faq-a > p{opacity:0;transform:translateY(-8px);}
+
+/* ---------- 7. Testimonial carousel motion layer ---------- */
+#rxTGrid{cursor:grab;touch-action:pan-y;}
+#rxTGrid.mxs-dragging{cursor:grabbing;}
+#rxTGrid.mxs-dragging #rxTQuote{transition:none;}
+#rxTPhoto{animation:mxs-kenburns 16s ease-in-out infinite;}
+@keyframes mxs-kenburns{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.07);}
+}
+
+/* ---------- 8. Magnetic buttons + shine sweep ---------- */
+.mxs-mag{will-change:transform;}
+.mxs-shine{position:relative;overflow:hidden;}
+.mxs-shine::after{
+  content:"";position:absolute;top:-20%;bottom:-20%;width:55%;left:-75%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-18deg);opacity:0;pointer-events:none;
+  transition:transform .7s ease,opacity .3s ease;
+}
+.mxs-shine:hover::after{opacity:1;transform:translateX(320%) skewX(-18deg);}
+
+/* ---------- 9. Counters: tabular numerals stop width jitter ---------- */
+[data-mxs-count]{font-variant-numeric:tabular-nums;}
+
+/* ---------- 10. Reduced motion: everything static ---------- */
+@media (prefers-reduced-motion:reduce){
+  .mxs-reveal,.mxs-reveal-l,.mxs-reveal-r,.mxs-reveal-z{opacity:1!important;transform:none!important;transition:none!important;}
+  .mxs-spot::after{display:none;}
+  .rx-solutions::before,.rx-testimonials::before,.rx-integration::before,
+  .rx-solutions::after,.rx-testimonials::after,.rx-integration::after{display:none;}
+  .rx-tabpanel.rx-on > *{animation:none!important;}
+  #rxTPhoto{animation:none!important;}
+  .mxs-shine::after{display:none;}
+  #rxTGrid{cursor:default;}
+}

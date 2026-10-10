@@ -1,27 +1,17 @@
-// Shared by every public page of the website (home, privacy, terms): mobile menu, scroll progress, back to top, ads.
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const nav = document.getElementById('nav');
+// Shared by the public pages: header menu, year, and ads (public pages only, only when a publisher id is set; see README).
 const $ = (id) => document.getElementById(id);
-const totop = $('totop');
-function onScrollChrome() { nav.classList.toggle('stuck', scrollY > 8); totop.classList.toggle('show', scrollY > 700); }
-addEventListener('scroll', onScrollChrome, { passive: true }); onScrollChrome();
-totop.addEventListener('click', () => scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }));
 
-/* mobile menu */
-const links = $('links'), burger = $('burger');
-function closeMenu() { links.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }
-burger.addEventListener('click', () => { const o = links.classList.toggle('open'); burger.setAttribute('aria-expanded', String(o)); });
-links.addEventListener('click', (e) => { if (e.target.closest('a')) closeMenu(); });
-addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+/* header menu on the inner pages */
+const bar = document.querySelector('.fx-bar'), burger = $('burger');
+if (bar && burger) {
+  const close = () => { bar.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); };
+  burger.addEventListener('click', () => { const o = bar.classList.toggle('open'); burger.setAttribute('aria-expanded', String(o)); });
+  bar.addEventListener('click', (e) => { if (e.target.closest('.fx-menu a')) close(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+}
 const yr = $('yr'); if (yr) yr.textContent = new Date().getFullYear();
 
-/* a soft light that follows the pointer on cards */
-document.addEventListener('pointermove', (e) => {
-  const c = e.target.closest && e.target.closest('.fcard, .plan'); if (!c) return;
-  const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
-}, { passive: true });
-
-/* ---------- ads: public page only, and only when a publisher id is set (see README). Nothing loads before the visitor chooses. ---------- */
+/* ads: nothing loads before the visitor chooses (consent.js) */
 const ADS = window.OPTIX_ADS || null;
 if (ADS && /^ca-pub-\d{6,20}$/.test(ADS.client || '')) {
   document.querySelectorAll('[data-ad-choices]').forEach((a) => { a.hidden = false; });
@@ -33,9 +23,3 @@ if (ADS && /^ca-pub-\d{6,20}$/.test(ADS.client || '')) {
   });
   import('/site/consent.js').then((m) => m.start(ADS)).catch(() => { /* ads are optional */ });
 }
-
-
-/* scroll progress bar */
-const prog = document.getElementById('progress');
-function onProg() { const h = document.documentElement.scrollHeight - innerHeight; prog.style.width = (h > 0 ? Math.min(100, (scrollY / h) * 100) : 0) + '%'; }
-addEventListener('scroll', onProg, { passive: true }); onProg();

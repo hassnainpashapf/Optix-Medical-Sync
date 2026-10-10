@@ -6,286 +6,589 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Optix Medical Sync | Hospital management</title>
 <meta name="description" content="Optix Medical Sync keeps appointments, patients, calendars, billing, stock and reports in one secure hospital management system.">
-<meta name="theme-color" content="#101a3d">
+<meta name="theme-color" content="#f2f5f9">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Optix Medical Sync"><meta property="og:title" content="Optix Medical Sync | Hospital management"><meta property="og:description" content="Appointments, patients, calendars, billing, stock and reports in one secure hospital management system.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23131845'/%3E%3Cpath d='M9 22V10l8 8V9M15 22l8-7V9' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%232f6df6'/%3E%3Cpath d='M20 8a12 12 0 1 0 12 12' stroke='white' stroke-width='3.4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M20 14a6 6 0 1 1-6 6' stroke='white' stroke-width='3' stroke-linecap='round' fill='none' opacity='.85'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/optix-theme.css">
-<link rel="stylesheet" href="/site/site.css">
-<script>document.documentElement.className+=' js'</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="/site/img/hero.webp" type="image/webp">
+<link rel="stylesheet" href="/site/css/family.css">
+<link rel="stylesheet" href="/site/css/home.css">
+<link rel="stylesheet" href="/site/css/anim-hero.css">
+<link rel="stylesheet" href="/site/css/anim-scroll.css">
 <script src="/ads-config.js"></script>
 </head>
 <body>
 
-<a class="skip" href="#top">Skip to content</a>
-<div class="progress" id="progress" aria-hidden="true"></div>
-<header class="nav" id="nav">
-  <div class="wrap nav-in">
-    <a class="brand" href="/" aria-label="Optix Medical Sync home"><span class="mark"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M9 24V10l9 9V8M15 24l9-8V8"/></svg></span><b>Optix</b><span class="suite">Medical Sync</span></a>
-    <nav class="links" id="links" aria-label="Sections">
-      <a href="#explore">Modules</a>
-      <a href="#demo">Try it</a>
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#security">Security</a>
-      <a href="#faq">FAQ</a>
-      <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a>
-      <div class="links-act"><a class="btn sm ghost" href="/app">Sign in</a> <a class="btn sm" href="/signup">Start free trial</a></div>
-    </nav>
-    <div class="nav-act"><a class="btn sm ghost" href="/app">Sign in</a><a class="btn sm" href="/signup">Start free trial</a></div>
-        <button class="burger" id="burger" type="button" aria-label="Menu" aria-controls="links" aria-expanded="false"><span></span><span></span><span></span></button>
-  </div>
-</header>
-
-<main id="top">
-  <section class="dark" id="stage">
-    <div class="gl-wrap" aria-hidden="true"><canvas id="gl"></canvas></div>
-
-    <div class="hero">
-      <div class="hero-in">
-        <p class="eyebrow">Hospital management</p>
-        <h1>Every patient, doctor and payment, <em>in sync.</em></h1>
-        <p class="lead">Appointments, calendars, patient records, billing, stock and reports live in one secure system. No double-booked doctors. No lost paperwork.</p>
-        <div class="hero-cta">
-          <a class="btn lg" href="/signup">Start free trial</a>
-          <a class="btn lg ghost light" href="#showcase">See how it looks</a>
+<!-- ===== hero ===== -->
+<section class="hx-hero" id="top" aria-label="Optix Medical Sync">
+  <div class="hx-frame">
+    <div class="hx-photo-wrap">
+      <img class="hx-photo" src="/site/img/hero.webp" width="1600" height="1067" fetchpriority="high" alt="A care worker and an older woman looking at a tablet together">
+      <div class="hx-tint" aria-hidden="true"></div>
+      <nav class="hx-nav" aria-label="Primary">
+        <a class="hx-logo" href="/" aria-label="Optix Medical Sync home">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="#ffffff" stroke-width="2.6"/><path d="M16 7.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#7fd4c9" stroke-width="2.6" stroke-linecap="round"/><path d="M16 12.2a3.8 3.8 0 1 1-3.8 3.8" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          Optix Medical Sync
+        </a>
+        <div class="hx-links">
+          <a href="#top">Home</a>
+          <a href="#explore">Modules</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a>
         </div>
-        <ul class="proof" aria-label="What is included">
-          <li><b data-count="11">11</b> connected modules</li>
-          <li><b>5</b> staff roles</li>
-          <li><b>1</b> database you own</li>
-        </ul>
+        <div class="hx-actions">
+          <a class="hx-demo hx-login" href="/app">Login</a>
+          <a class="hx-demo hx-trial" href="/signup">Start free trial</a>
+        </div>
+        <button class="hx-burger" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </nav>
+      <div class="hx-content">
+        <span class="hx-badge"><i aria-hidden="true">✦</i> Hospital management, in one system</span>
+        <h1 class="hx-h1">Every patient, doctor and payment, in sync.</h1>
+        <p class="hx-sub">Appointments, calendars, patient records, billing, stock and reports live in one secure system. No double-booked doctors. No lost paperwork.</p>
+        <div class="hx-cta-row">
+          <a class="hx-cta" href="/signup" style="margin-top:0">Start free trial
+            <span class="hx-cta-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M4 12h15M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </a>
+          <a class="hx-demo hx-ghost" href="#explore">See the app</a>
+        </div>
       </div>
     </div>
-
-    <section class="showcase" id="showcase">
-      <div class="wrap center">
-        <p class="eyebrow">The app</p>
-        <h2>One workspace for the whole hospital</h2>
-        <p class="sub">Real screens from the running system. Move your pointer over the stack.</p>
+    <aside class="hx-glass" aria-label="What is inside">
+      <div class="hx-icons" aria-hidden="true"><i style="background:#e3ecff">📅</i><i style="background:#d9f3ee">🩺</i><i style="background:#efe4ff">🧾</i><i style="background:#ffe9d2">📦</i></div>
+      <div class="hx-stat">
+        <span class="hx-num">11</span>
+        <span class="hx-cap">CONNECTED<br>MODULES</span>
       </div>
-      <div class="deck" id="deck">
-        <div class="deck-in" id="deckIn">
-          <figure class="shot s-left"><img src="/site/img/app-prof.jpg" alt="Patient profile with reports and calendar" loading="lazy"><figcaption>Patient profile</figcaption></figure>
-          <figure class="shot s-right"><img src="/site/img/app-cal.jpg" alt="Doctors calendar for the day" loading="lazy"><figcaption>Doctors calendar</figcaption></figure>
-          <figure class="shot s-main"><img src="/site/img/app-dash.jpg" alt="Dashboard with live numbers and cash flow" loading="lazy"><figcaption>Dashboard</figcaption></figure>
-          <figure class="shot s-low"><img src="/site/img/app-rep.jpg" alt="Reports page with revenue chart" loading="lazy"><figcaption>Reports</figcaption></figure>
-          <span class="chip3d c1">Conflict-free booking</span>
-          <span class="chip3d c2">Live calendar</span>
-          <span class="chip3d c3">Role-based access</span>
-        </div>
+      <div class="hx-div" aria-hidden="true"></div>
+      <div class="hx-pills">
+        <span class="hx-pill">APPOINTMENTS</span>
+        <span class="hx-pill">CALENDAR<i class="hx-dot" style="background:#38a89d" aria-hidden="true"></i></span>
+        <span class="hx-pill">PATIENTS</span>
+        <span class="hx-pill">BILLING<i class="hx-dot" style="background:#a855f7" aria-hidden="true"></i></span>
+        <span class="hx-pill">STOCK<i class="hx-dot" style="background:#2f6df6" aria-hidden="true"></i></span>
+        <span class="hx-pill">AUDIT LOG</span>
       </div>
-    </section>
-  </section>
+    </aside>
+  </div>
+</section>
 
-  <div class="marquee" aria-hidden="true"><div class="mq-track">
-    <span>Appointments</span><span>Doctors calendar</span><span>Patient records</span><span>Lab reports</span><span>Billing</span><span>Receipts</span><span>Suppliers</span><span>Stock levels</span><span>Equipment service</span><span>Reports</span><span>Audit log</span><span>Backups</span>
-    <span>Appointments</span><span>Doctors calendar</span><span>Patient records</span><span>Lab reports</span><span>Billing</span><span>Receipts</span><span>Suppliers</span><span>Stock levels</span><span>Equipment service</span><span>Reports</span><span>Audit log</span><span>Backups</span>
-  </div></div>
+<!-- ===== statement ===== -->
+<section class="st-section" aria-label="Summary">
+  <div class="st-inner">
+    <p class="st-text" aria-label="One system keeps appointments, patients and payments in sync so no doctor is double booked and nothing gets lost">
+      <span class="st-tok st-w" data-c="n">One</span>
+      <span class="st-tok st-w" data-c="n">system</span>
+      <span class="st-tok st-pill st-pill--mint" aria-hidden="true"><span class="st-emoji">📅</span></span>
+      <span class="st-tok st-w" data-c="n">keeps</span>
+      <span class="st-tok st-w" data-c="g">appointments,</span>
+      <span class="st-tok st-w" data-c="g">patients</span>
+      <span class="st-tok st-w" data-c="g">and</span>
+      <span class="st-tok st-w" data-c="g">payments</span>
+      <span class="st-tok st-pill st-pill--lav" aria-hidden="true"><span class="st-emoji">🧾</span></span>
+      <span class="st-tok st-w" data-c="n">in</span>
+      <span class="st-tok st-w" data-c="n">sync</span>
+      <span class="st-tok st-w" data-c="n">so</span>
+      <span class="st-tok st-w" data-c="n">no</span>
+      <span class="st-tok st-w" data-c="n">doctor</span>
+      <span class="st-tok st-w" data-c="n">is</span>
+      <span class="st-tok st-w" data-c="n">double</span>
+      <span class="st-tok st-w" data-c="n">booked</span>
+      <span class="st-tok st-w" data-c="n">(</span>
+      <span class="st-tok st-pill st-pill--avatars" aria-hidden="true"><span class="st-ava" style="background:#d9f3ee">🩺</span><span class="st-ava" style="background:#e3ecff">📋</span><span class="st-ava" style="background:#ffe9d2">💳</span></span>
+      <span class="st-tok st-w" data-c="n">)</span>
+      <span class="st-tok st-w" data-c="g">and</span>
+      <span class="st-tok st-w" data-c="g">nothing</span>
+      <span class="st-tok st-w" data-c="g">gets</span>
+      <span class="st-tok st-w" data-c="g">lost</span>
+    </p>
+  </div>
+</section>
 
-  <section class="explore" id="explore">
-    <div class="wrap">
-      <p class="eyebrow dk">Modules</p>
-      <h2>Eleven screens. One source of truth.</h2>
-      <div class="xp">
-        <div class="xp-tabs" role="tablist" aria-label="Modules">
-          <button role="tab" class="on" data-i="0" aria-selected="true"><b>Appointments</b><span>Requests, approvals, 3-step booking</span></button>
-          <button role="tab" data-i="1" aria-selected="false"><b>Calendar</b><span>Day, week and month by doctor</span></button>
-          <button role="tab" data-i="2" aria-selected="false"><b>Patients</b><span>Profiles, history, lab reports</span></button>
-          <button role="tab" data-i="3" aria-selected="false"><b>Billing</b><span>Insurance split, receipts, export</span></button>
-          <button role="tab" data-i="4" aria-selected="false"><b>Stock</b><span>Suppliers and low-stock alerts</span></button>
-          <button role="tab" data-i="5" aria-selected="false"><b>Staff</b><span>Doctors, working days and hours</span></button>
-          <button role="tab" data-i="6" aria-selected="false"><b>Audit log</b><span>Who changed what, and when</span></button>
-        </div>
-        <div class="xp-view">
-          <div class="frame3d" id="frame3d">
-            <div class="bar"><i></i><i></i><i></i><span id="xpUrl">/app · Appointments</span></div>
-            <div class="imgs" id="xpImgs">
-              <img class="on" src="/site/img/app-appts.jpg" alt="Appointments list with approvals" loading="lazy">
-              <img src="/site/img/app-cal.jpg" alt="Doctors calendar" loading="lazy">
-              <img src="/site/img/app-pts.jpg" alt="Patients list" loading="lazy">
-              <img src="/site/img/app-tx.jpg" alt="Transactions with receipts" loading="lazy">
-              <img src="/site/img/app-stock.jpg" alt="Stock table with low items" loading="lazy">
-              <img src="/site/img/app-staff.jpg" alt="Staff list with working days" loading="lazy">
-              <img src="/site/img/app-aud.jpg" alt="Audit log" loading="lazy">
+<!-- ===== benefits (bento) ===== -->
+<section class="bn-section" id="features" aria-label="Features">
+  <div class="bn-wrap">
+    <header class="bn-head">
+      <div class="bn-rise">
+        <p class="bn-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
+          Built for a hospital day
+        </p>
+        <h2 class="bn-title">Everything the front desk needs, in one place</h2>
+      </div>
+      <a class="bn-pill bn-rise" href="#explore">See The App <span class="bn-arrow">→</span></a>
+    </header>
+
+    <div class="bn-grid-wrap">
+      <div class="bn-logo" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="42" height="42" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round">
+          <path d="M24 8c7 0 12.5 4.5 14 11"/><path d="M40 24c0 7-4.5 12.5-11 14"/><path d="M24 40c-7 0-12.5-4.5-14-11"/><path d="M8 24c0-7 4.5-12.5 11-14"/><circle cx="24" cy="24" r="3.4" fill="#fff" stroke="none"/>
+        </svg>
+      </div>
+
+      <div class="bn-grid">
+        <!-- Card 1: calendar -->
+        <article class="bn-card bn-rise" data-tilt>
+          <div class="bn-chead">
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span>
+            <h3 class="bn-ctitle">Live doctors calendar</h3>
+          </div>
+          <p class="bn-csub">Day, week and month views built from real appointments</p>
+          <div class="bn-mockwrap">
+            <div class="bn-patient">
+              <div class="bn-prow">
+                <span class="bn-avatar bn-ini" aria-hidden="true">SA</span>
+                <div class="bn-pmeta"><span class="bn-plabel">Doctor (sample)</span><b class="bn-pname">Dr. Sarah Ali</b></div>
+                <span class="bn-add">+ Add</span>
+              </div>
+              <div class="bn-week"><span>21</span><span>22</span><span class="bn-on">23</span><span>24</span><span>25</span><span>26</span></div>
+              <div class="bn-srow"><span class="bn-stime">09:00 – 09:45 AM</span><b>Consultation</b></div>
+              <div class="bn-srow"><span class="bn-stime">10:30 – 11:00 AM</span><b>Follow-up</b></div>
+            </div>
+            <span class="bn-tag bn-tag-a"><span class="bn-tdot" style="background:#f5a623">✓</span>Conflict-free<br>booking</span>
+            <span class="bn-tag bn-tag-b"><span class="bn-tdot" style="background:#38a89d">●</span>Live<br>calendar</span>
+          </div>
+        </article>
+
+        <!-- Card 2: clash checks -->
+        <article class="bn-card bn-rise" data-tilt>
+          <div class="bn-chead">
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9.5 12l2 2 3.5-4"/></svg></span>
+            <h3 class="bn-ctitle">Clash checks</h3>
+          </div>
+          <p class="bn-csub">A double booking is refused before it is saved</p>
+          <div class="bn-orbit">
+            <svg class="bn-ring" viewBox="0 0 250 250" fill="none" aria-hidden="true"><circle cx="125" cy="125" r="104" stroke="#7fd1c0" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round" opacity=".8"/></svg>
+            <span class="bn-orb" style="--a:0deg">🩺</span><span class="bn-orb" style="--a:45deg">📅</span><span class="bn-orb" style="--a:90deg">🧾</span><span class="bn-orb" style="--a:135deg">📦</span><span class="bn-orb" style="--a:180deg">💳</span><span class="bn-orb" style="--a:225deg">📋</span><span class="bn-orb" style="--a:270deg">🔒</span><span class="bn-orb" style="--a:315deg">🧪</span>
+            <div class="bn-warn">
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d" aria-hidden="true"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Doctor already booked</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d" aria-hidden="true"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Doctor off that day</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d" aria-hidden="true"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Overlaps the break</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d" aria-hidden="true"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Past closing time</div>
             </div>
           </div>
-          <ul class="xp-pts" id="xpPts"></ul>
-        </div>
+        </article>
+
+        <!-- Card 3: suppliers + stock -->
+        <article class="bn-card bn-rise" data-tilt>
+          <div class="bn-chain">
+            <span class="bn-node bn-emo" aria-label="Supplier">🚚</span>
+            <span class="bn-link"></span>
+            <span class="bn-node bn-emo" aria-label="Stock">📦</span>
+            <span class="bn-link"></span>
+            <span class="bn-node bn-brand" aria-label="Low-stock alert">LOW</span>
+          </div>
+          <div class="bn-chead">
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+            <h3 class="bn-ctitle">Suppliers and stock</h3>
+          </div>
+          <p class="bn-csub" style="margin-bottom:0">See what each supplier delivers, spot what is running low, and restock in a click</p>
+        </article>
+
+        <!-- Card 4: alerts -->
+        <article class="bn-card bn-rise" data-tilt>
+          <div class="bn-notifs">
+            <div class="bn-notif">
+              <span class="bn-nicon" style="background:#ffe9d2">🗓️</span>
+              <div><b>Appointment request</b><span>A new visit is waiting for approval (sample)</span></div>
+            </div>
+            <div class="bn-notif">
+              <span class="bn-nicon" style="background:#efe4ff">📦</span>
+              <div><b>Low stock</b><span>An item is under its limit (sample)</span></div>
+            </div>
+            <div class="bn-notif">
+              <span class="bn-nicon" style="background:#dff5ef">🧾</span>
+              <div><b>Receipt ready</b><span>Print it from the row menu (sample)</span></div>
+            </div>
+          </div>
+          <div class="bn-chead">
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 21a2 2 0 003.4 0"/></svg></span>
+            <h3 class="bn-ctitle">Alerts and search</h3>
+          </div>
+          <p class="bn-csub" style="margin-bottom:0">A bell for what needs attention, and one search box for patients, doctors, visits and suppliers</p>
+        </article>
       </div>
     </div>
-  </section>
-
-  <section class="demo" id="demo">
-    <div class="wrap demo-grid">
-      <div>
-        <p class="eyebrow dk">Try it</p>
-        <h2>A double booking is refused before it happens</h2>
-        <p class="sub dk">This is the real rule the app applies. Pick a doctor, a visit type and a time. The slot must be free, on a working day, and clear of the 1 to 2 pm break.</p>
-        <ul class="ticks"><li>Checks the doctor's existing appointments</li><li>Knows each doctor's working days</li><li>Visit length changes by visit type</li></ul>
-      </div>
-      <div class="sim" id="sim" aria-label="Booking check demo">
-        <div class="sim-row">
-          <label>Doctor<select id="simDoc"><option value="0">Dr. Sarah Ali (Cardiology)</option><option value="1">Dr. Tariq Al-Hakim (Orthopedics)</option><option value="2">Dr. Amir Al-Farsi (Neurology)</option></select></label>
-          <label>Visit<select id="simVis"><option value="45">Consultation, 45 min</option><option value="30">Follow-up, 30 min</option><option value="45">Check-up, 45 min</option></select></label>
-        </div>
-        <div class="sim-days" id="simDays" role="group" aria-label="Day"></div>
-        <div class="sim-grid" id="simGrid" role="group" aria-label="Time slots"></div>
-        <div class="sim-msg" id="simMsg" role="status" aria-live="polite">Choose a time to check it.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="light" id="features">
-    <div class="wrap">
-      <p class="eyebrow dk">Features</p>
-      <h2>Built for the way a hospital actually runs</h2>
-      <div class="grid">
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/></svg></span><h3>Appointments that cannot clash</h3><p>Requests wait for approval. A booking is refused when the doctor is busy, off that day, or the slot hits the break.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 13h3M13 13h3M8 17h3"/></svg></span><h3>Live doctors calendar</h3><p>Day, week and month views built from real appointments, with status, billing and notes in one click.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c.7-4 3-6 6-6s5.3 2 6 6M17 8h4M17 12h4"/></svg></span><h3>Complete patient records</h3><p>Profiles, visit history, lab reports with file attachments, and a personal calendar for every patient.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></svg></span><h3>Billing and receipts</h3><p>Insurance and patient shares, paid and pending states, printable receipts and appointment slips.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span><h3>Suppliers and stock</h3><p>Track what each supplier delivers, see what is running low, and restock in a click.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></span><h3>Equipment upkeep</h3><p>Medical and office devices with service dates, so nothing quietly goes out of maintenance.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><h3>Reports that add up</h3><p>Revenue, purchases, completion rate, busiest doctors and top services, with CSV export.</p></article>
-        <article class="fcard tilt reveal"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15zM10 21h4"/></svg></span><h3>Alerts and search</h3><p>A notification bell for what needs attention, and one search box for patients, doctors, visits and suppliers.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <div class="wrap"><div class="adslot" data-ad="home" hidden></div></div>
-
-  <section class="band" aria-label="In numbers">
-    <div class="wrap band-in">
-      <div><b data-count="11">0</b><span>connected modules</span></div>
-      <div><b data-count="5">0</b><span>staff roles</span></div>
-      <div><b data-count="10" data-suf="MB">0</b><span>per attached file</span></div>
-      <div><b data-count="7">0</b><span>daily backups kept</span></div>
-      <div><b data-count="0">0</b><span>outside services needed</span></div>
-    </div>
-  </section>
-
-  <section class="flow" id="flow">
-    <div class="wrap">
-      <p class="eyebrow dk">How it works</p>
-      <h2>From request to receipt</h2>
-      <ol class="steps">
-        <li class="reveal"><span class="n">1</span><h3>Request</h3><p>A visit request arrives. Staff check the doctor's day and approve it, or reject it.</p></li>
-        <li class="reveal"><span class="n">2</span><h3>Visit</h3><p>The calendar shows who is where. Status, notes and attached files stay with the appointment.</p></li>
-        <li class="reveal"><span class="n">3</span><h3>Bill</h3><p>Insurance and patient shares are tracked, receipts are printed, and reports update by themselves.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="compare" id="compare">
-    <div class="wrap">
-      <p class="eyebrow dk">Why switch</p>
-      <h2>Paper and spreadsheets, or one system</h2>
-      <p class="sub dk">What changes on an ordinary day at the front desk.</p>
-      <div class="cmp reveal">
-        <div class="cmp-h"><span></span><span>Paper and spreadsheets</span><span class="us">Optix Medical Sync</span></div>
-        <div class="cmp-r"><span>Double bookings</span><span class="no">Found out when two patients arrive</span><span class="yes">Refused before they are saved</span></div>
-        <div class="cmp-r"><span>Patient history</span><span class="no">Scattered across files and folders</span><span class="yes">One profile with visits and lab reports</span></div>
-        <div class="cmp-r"><span>Billing</span><span class="no">Receipts written by hand</span><span class="yes">Insurance and patient shares, printable receipts</span></div>
-        <div class="cmp-r"><span>Who sees what</span><span class="no">Anyone who opens the file</span><span class="yes">Five roles, enforced on the server</span></div>
-        <div class="cmp-r"><span>Change history</span><span class="no">None</span><span class="yes">An audit log of every change</span></div>
-        <div class="cmp-r"><span>Backups</span><span class="no">When someone remembers</span><span class="yes">Automatic daily copies, last seven kept</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="dark roles" id="security">
-    <div class="wrap center">
-      <p class="eyebrow">Security</p>
-      <h2>Everyone sees only what their job needs</h2>
-      <p class="sub">Permissions are enforced on the server, not just hidden on screen. Every change is written to an audit log.</p>
-    </div>
-    <div class="ring-stage" aria-label="The five staff roles">
-      <div class="ring" id="ring">
-        <article class="rcard" style="--i:0"><h3>Super Admin</h3><p>Everything, plus users, audit log and backups.</p></article>
-        <article class="rcard" style="--i:1"><h3>Doctor</h3><p>Appointments and patients. Staff list to read.</p></article>
-        <article class="rcard" style="--i:2"><h3>Receptionist</h3><p>Books and manages appointments and patients.</p></article>
-        <article class="rcard" style="--i:3"><h3>Accountant</h3><p>Transactions and reports. Reads the rest.</p></article>
-        <article class="rcard" style="--i:4"><h3>Pharmacist</h3><p>Suppliers and stock. Reads devices.</p></article>
-      </div>
-    </div>
-    <div class="wrap">
-      <div class="matrix-h"><h3>What each role can do</h3><p>Pick a role. The server applies exactly this.</p></div>
-      <div class="rtabs" id="rtabs" role="tablist" aria-label="Roles"></div>
-      <div class="matrix" id="matrix"></div>
-    </div>
-    <ul class="trust wrap">
-      <li><b>Audit log</b><span>Who created, changed or deleted what, and when.</span></li>
-      <li><b>Daily backups</b><span>The database is copied automatically, last seven kept.</span></li>
-      <li><b>Your data, your server</b><span>One database file you host and control.</span></li>
-    </ul>
-  </section>
-
-  <section class="suite-sec" id="suite">
-    <div class="wrap">
-      <p class="eyebrow dk">Optix suite</p>
-      <h2>One of the Optix apps</h2>
-      <p class="sub dk">Optix builds software for labs, pharmacies and hospitals. Medical Sync is the hospital app, and your team can also sign in with their Optix account.</p>
-      <div class="suite-grid">
-        <a class="suite-card reveal" style="--c:#0ea5a4" href="https://optix-suite.ellahabad.workers.dev/products/lab" rel="noopener"><span class="pic sm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L5 19a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/></svg></span><span><b>Optix Lab</b><small>For diagnostic labs</small></span></a>
-        <a class="suite-card reveal" style="--c:#10a36b" href="https://optix-suite.ellahabad.workers.dev/products/pharmacy" rel="noopener"><span class="pic sm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 20.5a5 5 0 0 1-7-7l9-9a5 5 0 0 1 7 7zM8.5 8.5l7 7"/></svg></span><span><b>Optix Pharmacy</b><small>For pharmacies</small></span></a>
-        <a class="suite-card reveal on" style="--c:#2f6df6" href="#top"><span class="pic sm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span><b>Optix Medical Sync</b><small>You are here</small></span></a>
-      </div>
-      <p class="suite-more"><a class="btn sm ghost" href="https://optix-suite.ellahabad.workers.dev" rel="noopener">See all Optix apps</a></p>
-    </div>
-  </section>
-
-  <section class="pricing" id="pricing">
-    <div class="wrap center">
-      <p class="eyebrow dk">Pricing</p>
-      <h2>Simple plans that grow with you</h2>
-      <p class="sub dk" id="priceSub">Every plan starts with a free trial. No card needed.</p>
-      <div class="plans" id="plans" aria-live="polite"><div class="plan skeleton"></div><div class="plan skeleton"></div><div class="plan skeleton"></div></div>
-      <p class="fine">Prices are per workspace, per month. Want to talk first? Start a trial and ask from inside the app.</p>
-    </div>
-  </section>
-
-  <section class="light faq" id="faq">
-    <div class="wrap faq-grid">
-      <div><p class="eyebrow dk">Questions</p><h2>Straight answers</h2><p class="sub dk">Short, factual, and about what the software does today.</p></div>
-      <div class="acc">
-        <details open><summary>Is my hospital's data separate from others?</summary><p>Yes. Every workspace has its own database file and its own uploads folder. A user can only ever reach the workspace they signed in to.</p></details>
-        <details><summary>How does the free trial work?</summary><p>Create a workspace and use every feature for the trial period. When it ends the workspace becomes read-only until a plan is chosen. Nothing is deleted.</p></details>
-        <details><summary>Where is my data stored?</summary><p>In SQLite database files on the server that runs the platform, plus a folder per workspace for uploaded files. Nothing is sent to an outside service.</p></details>
-        <details><summary>What do I need to run it?</summary><p>Node.js 24 or newer. There are no packages to install. Start it with one command and open it in a browser.</p></details>
-        <details><summary>Who can see what?</summary><p>There are five roles: Super Admin, Doctor, Receptionist, Accountant and Pharmacist. The server enforces them, so a restricted role never receives data it may not read.</p></details>
-        <details><summary>Can I see who changed something?</summary><p>Yes. The audit log records every create, update and delete, plus sign-ins, with the user and the time. Only a Super Admin can open it.</p></details>
-        <details><summary>What if something goes wrong?</summary><p>The database is copied to a backups folder on every start and once a day. The last seven copies are kept, and a Super Admin can also back up on demand.</p></details>
-        <details><summary>Does it send SMS or email reminders?</summary><p>Not yet. That needs a messaging provider account, so it is planned rather than included.</p></details>
-        <details><summary>Does it work on a phone?</summary><p>The app is designed for desktop and tablet screens. This website is fully responsive.</p></details>
-      </div>
-    </div>
-  </section>
-
-  <section class="final">
-    <div class="wrap center">
-      <h2>See it working</h2>
-      <p class="sub dk">Create a workspace in a minute and explore every module with sample data.</p>
-      <a class="btn lg" href="/signup">Start free trial</a>
-    </div>
-  </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap foot-grid">
-    <div><a class="brand" href="/"><span class="mark"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M9 24V10l9 9V8M15 24l9-8V8"/></svg></span><b>Optix</b><span class="suite">Medical Sync</span></a>
-      <p class="muted">Hospital management for clinics and hospitals: appointments, patients, billing, stock and reports in one secure system.</p></div>
-    <div><h5>Product</h5><div class="flinks"><a href="#explore">Modules</a><a href="#demo">Try it</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#security">Security</a><a href="#faq">FAQ</a></div></div>
-    <div><h5>Optix suite</h5><div class="flinks"><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a><a href="/signup">Start free trial</a><a href="/app">Sign in</a></div></div>
-    <div><h5>Legal</h5><div class="flinks"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Use</a><a href="#" data-ad-choices hidden>Ad choices</a></div></div>
   </div>
-  <div class="wrap foot-base"><span>&copy; <span id="yr">2026</span> Optix. All rights reserved.</span><span><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></span></div>
-</footer>
-<button class="totop" id="totop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+</section>
 
+<div class="rx-root">
+
+<div class="rx-wrap"><div class="adslot" data-ad="home" hidden></div></div>
+
+<!-- ================= FROM REQUEST TO RECEIPT ================= -->
+<section class="rx-sec rx-why" id="rx-why">
+  <div class="rx-wrap">
+    <div class="rx-center rx-tilt">
+      <h2 class="rx-h2" data-rx-words>Why Choose <span class="rx-navy">Optix Medical Sync?</span></h2>
+      <p class="rx-sub rx-why-sub">From the first request to the printed receipt, every step stays in one record, so nothing is retyped and nothing is lost.</p>
+    </div>
+    <div class="rx-why-grid" id="rxWhyGrid">
+      <div class="rx-rail rx-tilt" style="--rx-d:.1s" role="tablist" aria-label="Steps">
+        <span class="rx-rail-line"></span>
+        <button class="rx-stepbtn rx-on" data-rx-stepbtn="1" role="tab" aria-label="Step 1, Request">1</button>
+        <button class="rx-stepbtn" data-rx-stepbtn="2" role="tab" aria-label="Step 2, Visit">2</button>
+        <button class="rx-stepbtn" data-rx-stepbtn="3" role="tab" aria-label="Step 3, Bill">3</button>
+      </div>
+      <div class="rx-photo-card rx-shots rx-s1 rx-tilt" style="--rx-d:.18s" id="rxPhotoCard">
+        <img class="rx-ph rx-on" data-rx-ph="1" src="/site/img/app-appts.jpg" width="1100" height="774" loading="lazy" alt="The appointments page with requests waiting for approval">
+        <img class="rx-ph" data-rx-ph="2" src="/site/img/app-cal.jpg" width="1100" height="774" loading="lazy" alt="The doctors calendar for the day">
+        <img class="rx-ph" data-rx-ph="3" src="/site/img/app-tx.jpg" width="1100" height="774" loading="lazy" alt="Transactions with receipts">
+        <div class="rx-floats rx-on" data-rx-fl="1">
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--green)">✓</span><b>Conflict-free<br>booking</b></div>
+          <div class="rx-float-card rx-fc-bottom">
+            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--green)"></span><span><b>Approve</b><span>Doctor is free, request accepted</span></span><span class="rx-tm">09:00</span></div>
+            <div class="rx-sched-row"><span class="rx-dot" style="background:#e5484d"></span><span><b>Refuse</b><span>Doctor already booked</span></span><span class="rx-tm">09:30</span></div>
+          </div>
+        </div>
+        <div class="rx-floats" data-rx-fl="2">
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--purple)">📅</span><b>Live doctors<br>calendar</b></div>
+          <div class="rx-float-card rx-fc-bottom">
+            <b style="font-size:12.5px">Visits this week (sample)</b>
+            <div class="rx-bars">
+              <div class="rx-bar" style="height:45%;background:#bbf7d0"></div><div class="rx-bar" style="height:70%;background:#4ade80"></div><div class="rx-bar" style="height:55%;background:#bbf7d0"></div><div class="rx-bar" style="height:88%;background:#4ade80"></div><div class="rx-bar" style="height:60%;background:#bbf7d0"></div><div class="rx-bar" style="height:76%;background:#4ade80"></div><div class="rx-bar" style="height:30%;background:#bbf7d0"></div>
+            </div>
+            <div class="rx-bar-legend"><span><i style="background:#4ade80"></i>Completed</span><span><i style="background:#bbf7d0"></i>Upcoming</span></div>
+          </div>
+        </div>
+        <div class="rx-floats" data-rx-fl="3">
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--orange)">🧾</span><b>Receipts in<br>one click</b></div>
+          <div class="rx-float-card rx-fc-bottom">
+            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--green)"></span><span><b>Consultation</b><span>Sample payment</span></span><span class="rx-tm">Paid</span></div>
+            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--orange)"></span><span><b>Follow-up</b><span>Sample payment</span></span><span class="rx-tm">Pending</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="rx-why-panels rx-tilt" style="--rx-d:.26s">
+        <div class="rx-why-panel rx-on" data-s="1" data-rx-panel="1">
+          <h3>Request</h3>
+          <p>A visit request arrives. Staff check the doctor's day and approve it, or reject it. A booking is refused when the doctor is busy, off that day, or the slot hits the break.</p>
+          <ul class="rx-check-list">
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Approve or reject in one click</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Each doctor's working days and hours</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Visit length by visit type</li>
+          </ul>
+          <a class="rx-btn-light" href="#demo">Try the booking check <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        </div>
+        <div class="rx-why-panel" data-s="2" data-rx-panel="2">
+          <h3>Visit</h3>
+          <p>The calendar shows who is where. Status, notes and attached files stay with the appointment, and every patient has one profile with visits and lab reports.</p>
+          <ul class="rx-check-list">
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Day, week and month calendar</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Notes and status on every visit</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Lab reports with file attachments</li>
+          </ul>
+          <a class="rx-btn-light" href="#explore">See the modules <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        </div>
+        <div class="rx-why-panel" data-s="3" data-rx-panel="3">
+          <h3>Bill</h3>
+          <p>Insurance and patient shares are tracked, receipts are printed, and the reports update by themselves.</p>
+          <ul class="rx-check-list">
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Paid, pending and failed payments</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Printable receipts and appointment slips</li>
+            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Revenue and visit reports with CSV export</li>
+          </ul>
+          <a class="rx-btn-light" href="#pricing">See pricing <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MODULES (real screens) ================= -->
+<section class="rx-sec rx-solutions" id="explore">
+  <div class="rx-wrap">
+    <div class="rx-center rx-tilt">
+      <span class="rx-eyebrow">◎ Modules</span>
+      <h2 class="rx-h2" data-rx-words>One workspace for <span class="rx-navy">the whole hospital</span></h2>
+      <p class="rx-sub">Real screens from the running app, with sample data. Pick a module to see what it does.</p>
+    </div>
+    <div class="rx-tabs rx-tilt" style="--rx-d:.1s" role="tablist" data-tabs="mod">
+      <button class="rx-tabbtn rx-on" data-i="1" role="tab">Appointments</button>
+      <button class="rx-tabbtn" data-i="2" role="tab">Calendar</button>
+      <button class="rx-tabbtn" data-i="3" role="tab">Patients</button>
+      <button class="rx-tabbtn" data-i="4" role="tab">Billing</button>
+      <button class="rx-tabbtn" data-i="5" role="tab">Stock</button>
+      <button class="rx-tabbtn" data-i="6" role="tab">Staff</button>
+      <button class="rx-tabbtn" data-i="7" role="tab">Audit log</button>
+    </div>
+    <div class="rx-tabpanels rx-tilt" style="--rx-d:.18s" data-panels="mod">
+      <div class="rx-tabpanel rx-on" data-i="1">
+        <div><h3>Requests, approvals and a 3-step booking</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>New requests wait in a queue with one-click approve or reject</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Patient, appointment and payment details, checked at each step</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Double booking and break-time clashes are refused</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Appointments</span></div><img src="/site/img/app-appts.jpg" width="1100" height="774" loading="lazy" alt="Appointments list with approvals"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="2">
+        <div><h3>A calendar built from real appointments</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>A column per doctor with the real appointments and off days</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Day, week and month views: zoom out for the load, in for the details</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Click a visit for its status, billing, notes and files</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Calendar</span></div><img src="/site/img/app-cal.jpg" width="1100" height="774" loading="lazy" alt="Doctors calendar"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="3">
+        <div><h3>One profile for every patient</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Search and filter by name, ID or phone, inpatient or outpatient</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Insurance, care plan, visits calendar and history in one place</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Attach a file to a lab report and download it later</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Patients</span></div><img src="/site/img/app-pts.jpg" width="1100" height="774" loading="lazy" alt="Patients list"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="4">
+        <div><h3>Billing, receipts and exports</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Every payment with its state (paid, pending, failed) and method</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Printable receipts, one click from the row menu</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>CSV export of this page or all filtered rows</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Transactions</span></div><img src="/site/img/app-tx.jpg" width="1100" height="774" loading="lazy" alt="Transactions with receipts"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="5">
+        <div><h3>Suppliers and stock levels</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Items under their limit are flagged and counted in the bell</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>See what each supplier delivers and spends</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Restock in a click, without opening a form</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Stocks</span></div><img src="/site/img/app-stock.jpg" width="1100" height="774" loading="lazy" alt="Stock table with low items"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="6">
+        <div><h3>Doctors, working days and hours</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>A seven-day view of who works when</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>A start and end time for each working day</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Full time or part time, editable</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Staff List</span></div><img src="/site/img/app-staff.jpg" width="1100" height="774" loading="lazy" alt="Staff list with working days"></figure>
+      </div>
+      <div class="rx-tabpanel" data-i="7">
+        <div><h3>Who changed what, and when</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Every create, update and delete, plus sign-ins, with the user and time</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Filter and search by user, area or words in the details</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Only a Super Admin can open it</li></ul></div>
+        <figure class="rx-browser"><div class="rx-bbar"><i></i><i></i><i></i><span>/app · Audit Log</span></div><img src="/site/img/app-aud.jpg" width="1100" height="774" loading="lazy" alt="Audit log"></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="rx-sec rx-demo" id="demo">
+  <div class="rx-wrap rx-demo-grid">
+    <div class="rx-tilt">
+      <span class="rx-eyebrow">◎ Try it</span>
+      <h2 class="rx-h2" data-rx-words>A double booking is <span class="rx-navy">refused before it happens</span></h2>
+      <p class="rx-sub" style="margin-left:0">This is the real rule the app applies. Pick a doctor, a visit type and a time. The slot must be free, on a working day, and clear of the 1 to 2 pm break.</p>
+      <ul class="rx-check-list" style="margin-top:22px">
+        <li><span class="rx-check-dot" style="background:rgba(34,197,94,.14)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Checks the doctor's existing appointments</li>
+        <li><span class="rx-check-dot" style="background:rgba(34,197,94,.14)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Knows each doctor's working days</li>
+        <li><span class="rx-check-dot" style="background:rgba(34,197,94,.14)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Visit length changes by visit type</li>
+      </ul>
+    </div>
+    <div class="rx-sim rx-tilt" style="--rx-d:.12s" id="sim" aria-label="Booking check demo (sample doctors and appointments)">
+      <div class="sim-row">
+        <label>Doctor<select id="simDoc"><option value="0">Dr. Sarah Ali (Cardiology)</option><option value="1">Dr. Tariq Al-Hakim (Orthopedics)</option><option value="2">Dr. Amir Al-Farsi (Neurology)</option></select></label>
+        <label>Visit<select id="simVis"><option value="45">Consultation, 45 min</option><option value="30">Follow-up, 30 min</option><option value="45">Check-up, 45 min</option></select></label>
+      </div>
+      <div class="sim-days" id="simDays" role="group" aria-label="Day"></div>
+      <div class="sim-grid" id="simGrid" role="group" aria-label="Time slots"></div>
+      <div class="sim-msg" id="simMsg" role="status" aria-live="polite">Choose a time to check it.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROLES ================= -->
+<section class="rx-sec rx-roles" id="security">
+  <div class="rx-wrap">
+    <div class="rx-center rx-tilt">
+      <span class="rx-eyebrow">◎ Security</span>
+      <h2 class="rx-h2" data-rx-words>Everyone sees only <span class="rx-navy">what their job needs</span></h2>
+      <p class="rx-sub">Permissions are enforced on the server, not just hidden on screen. Every change is written to an audit log.</p>
+    </div>
+    <div class="rx-tabs rx-tilt" style="--rx-d:.1s" role="tablist" data-tabs="role">
+      <button class="rx-tabbtn rx-on" data-i="1" role="tab">Super Admin</button>
+      <button class="rx-tabbtn" data-i="2" role="tab">Doctor</button>
+      <button class="rx-tabbtn" data-i="3" role="tab">Receptionist</button>
+      <button class="rx-tabbtn" data-i="4" role="tab">Accountant</button>
+      <button class="rx-tabbtn" data-i="5" role="tab">Pharmacist</button>
+    </div>
+    <div class="rx-tabpanels rx-tilt" style="--rx-d:.18s" data-panels="role">
+      <div class="rx-tabpanel rx-on" data-i="1">
+        <div><h3>Super Admin runs the workspace</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Can change every area</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Adds and removes users</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>The only role that opens the audit log and backups</li></ul></div>
+        <div class="rx-sol-visual">
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📅</span><span><b>Appointments, patients, staff</b><span>Create, edit, delete</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">🧾</span><span><b>Transactions and reports</b><span>Billing and revenue</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">🛡</span><span><b>Users and audit log</b><span>Super Admin only</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+        </div>
+      </div>
+      <div class="rx-tabpanel" data-i="2">
+        <div><h3>Doctors focus on patients</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Appointments and patients: view and change</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Staff list: view only</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Billing, stock and users are never sent to this role</li></ul></div>
+        <div class="rx-sol-visual">
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📅</span><span><b>Appointments</b><span>Calendar and visits</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">🧑‍⚕️</span><span><b>Patients</b><span>Profiles and lab reports</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">📋</span><span><b>Staff list</b><span>Doctors and working days</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">View only</span></div>
+        </div>
+      </div>
+      <div class="rx-tabpanel" data-i="3">
+        <div><h3>Receptionists run the front desk</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Books and manages appointments and patients</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Reads the staff list to pick a doctor</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>No access to billing, stock or users</li></ul></div>
+        <div class="rx-sol-visual">
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📅</span><span><b>Appointments</b><span>Book, approve, reschedule</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">🧑‍⚕️</span><span><b>Patients</b><span>Register and update</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fb7185,#be123c)">💳</span><span><b>Transactions</b><span>Billing</span></span><span class="rx-tag" style="background:rgba(244,63,94,.12);color:#e11d48">No access</span></div>
+        </div>
+      </div>
+      <div class="rx-tabpanel" data-i="4">
+        <div><h3>Accountants own the money</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Transactions: view and change</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Reports, suppliers and stock: view only</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Reads appointments, patients and staff</li></ul></div>
+        <div class="rx-sol-visual">
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">🧾</span><span><b>Transactions</b><span>Receipts and exports</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📊</span><span><b>Reports</b><span>Revenue and purchases</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">View only</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">🚚</span><span><b>Suppliers and stock</b><span>What is bought and held</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">View only</span></div>
+        </div>
+      </div>
+      <div class="rx-tabpanel" data-i="5">
+        <div><h3>Pharmacists keep the shelves full</h3><ul>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Suppliers and stock: view and change</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Reads devices and the staff list</li>
+          <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>No access to patients, appointments or billing</li></ul></div>
+        <div class="rx-sol-visual">
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">🚚</span><span><b>Suppliers</b><span>Deliveries and spend</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">📦</span><span><b>Stocks</b><span>Levels and restocking</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Can change</span></div>
+          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fb7185,#be123c)">🧑‍⚕️</span><span><b>Patients</b><span>Records</span></span><span class="rx-tag" style="background:rgba(244,63,94,.12);color:#e11d48">No access</span></div>
+        </div>
+      </div>
+    </div>
+    <ul class="rx-trust">
+      <li class="rx-tilt"><b>Audit log</b><span>Who created, changed or deleted what, and when.</span></li>
+      <li class="rx-tilt" style="--rx-d:.08s"><b>Daily backups</b><span>The database is copied automatically, last seven kept.</span></li>
+      <li class="rx-tilt" style="--rx-d:.16s"><b>Your data, your server</b><span>One database file per hospital, kept apart from every other workspace.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section class="rx-sec rx-pricing" id="pricing">
+  <div class="rx-wrap">
+    <div class="rx-center rx-tilt">
+      <span class="rx-eyebrow">◎ Pricing</span>
+      <h2 class="rx-h2" data-rx-words>Simple plans <span class="rx-navy">that grow with you</span></h2>
+      <p class="rx-sub" id="priceSub">Every plan starts with a free trial. No card needed.</p>
+    </div>
+    <div class="rx-price-grid" id="plans" aria-live="polite">
+      <div class="rx-price-card rx-skel"></div><div class="rx-price-card rx-skel"></div><div class="rx-price-card rx-skel"></div>
+    </div>
+    <p class="rx-fine">Prices are per workspace, per month. Want to talk first? Start a trial and ask from inside the app.</p>
+  </div>
+</section>
+
+<!-- ================= MODULES RING ================= -->
+<section class="rx-sec rx-integration" id="rx-integration">
+  <div class="rx-wrap">
+    <div class="rx-center rx-tilt">
+      <span class="rx-eyebrow">◎ Modules</span>
+      <h2 class="rx-h2" data-rx-words>Eleven modules,<br><span class="rx-navy">one source of truth</span></h2>
+      <p class="rx-sub">Appointments, patients, billing, stock and more share one database, so every screen agrees with every other.</p>
+      <div><a class="rx-btn-blue" href="/signup">Start free trial <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#2f6df6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div>
+    </div>
+    <div class="rx-net rx-tilt" style="--rx-d:.12s" id="rxNet">
+      <svg class="rx-net-svg" id="rxNetSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="rx-hub rx-pop" style="--rx-d:0s">
+        <svg width="46" height="46" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 6a14 14 0 1 0 14 14" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><path d="M20 13a7 7 0 1 1-7 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".85"/><circle cx="20" cy="20" r="2.6" fill="#fff"/></svg>
+      </div>
+      <div class="rx-chip-layer" id="rxChipLayer"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="rx-sec rx-faq" id="faq">
+  <div class="rx-wrap">
+    <div class="rx-faq-grid">
+      <div class="rx-faq-left rx-tilt">
+        <span class="rx-eyebrow">◎ F.A.Q</span>
+        <h2 class="rx-h2" data-rx-words>Got Questions?<br><span class="rx-navy">Straight Answers.</span></h2>
+        <p class="rx-sub" style="margin-left:0">Short, factual, and about what the software does today.</p>
+        <div><a class="rx-btn-sky" href="/signup">Start free trial <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div>
+      </div>
+      <div class="rx-tilt" style="--rx-d:.12s" id="rxFaqList">
+        <div class="rx-faq-item rx-open"><button class="rx-faq-q" type="button">Is my hospital's data separate from others? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>Yes. Every workspace has its own database file and its own uploads folder. A user can only ever reach the workspace they signed in to.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">How does the free trial work? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>Create a workspace and use every feature for the trial period. When it ends the workspace becomes read-only until a plan is chosen. Nothing is deleted.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">Where is my data stored? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>In SQLite database files on the server that runs the platform, plus a folder per workspace for uploaded files. Nothing is sent to an outside service.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">What do I need to run it? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>Node.js 24 or newer. There are no packages to install. Start it with one command and open it in a browser.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">Who can see what? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>There are five roles: Super Admin, Doctor, Receptionist, Accountant and Pharmacist. The server enforces them, so a restricted role never receives data it may not read.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">Can I see who changed something? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>Yes. The audit log records every create, update and delete, plus sign-ins, with the user and the time. Only a Super Admin can open it.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">What if something goes wrong? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>The database is copied to a backups folder on every start and once a day. The last seven copies are kept, and a Super Admin can also back up on demand.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">Does it send SMS or email reminders? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>Not yet. That needs a messaging provider account, so it is planned rather than included.</p></div></div>
+        <div class="rx-faq-item"><button class="rx-faq-q" type="button">Does it work on a phone? <span class="rx-faq-toggle">+</span></button><div class="rx-faq-a"><p>The app is designed for desktop and tablet screens. This website is fully responsive.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<div class="rx-cta">
+  <div class="rx-wrap">
+    <div class="rx-cta-banner rx-tilt">
+      <div class="rx-cta-bg"></div>
+      <div class="rx-cta-shade"></div>
+      <div class="rx-cta-inner">
+        <div>
+          <h2>See it working</h2>
+          <p>Create a workspace in a minute and explore every module with sample data.</p>
+        </div>
+        <a class="rx-btn-white" href="/signup">Start free trial <span class="rx-arrow-c"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="rx-footer" id="rx-contact">
+  <div class="rx-wrap">
+    <div class="rx-f-grid four">
+      <div class="rx-f-brand">
+        <a class="rx-logo" href="/" aria-label="Optix Medical Sync home">
+          <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#2f6df6"/><path d="M20 8a12 12 0 1 0 12 12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M20 14a6 6 0 1 1-6 6" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>
+          Optix Medical Sync
+        </a>
+        <p>Hospital management for clinics and hospitals: appointments, patients, billing, stock and reports in one secure system.</p>
+      </div>
+      <div class="rx-f-col">
+        <h4>Product</h4>
+        <a href="#explore">Modules</a><a href="#demo">Try it</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#security">Security</a><a href="#faq">FAQ</a>
+      </div>
+      <div class="rx-f-col">
+        <h4>Optix suite</h4>
+        <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a>
+        <a href="/signup">Start free trial</a>
+        <a href="/app" style="color:#2f6df6;font-weight:700">Sign in</a>
+      </div>
+      <div class="rx-f-col">
+        <h4>Legal</h4>
+        <a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Use</a><a href="#" data-ad-choices hidden>Ad choices</a>
+      </div>
+    </div>
+    <div class="rx-f-bottom">
+      <span>&copy; <span id="yr">2026</span> Optix. All rights reserved.</span>
+      <nav><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></nav>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /rx-root -->
+
+<script src="/site/js/home.js"></script>
+<script src="/site/js/anim-hero.js"></script>
+<script src="/site/js/anim-scroll.js"></script>
 <script type="module" src="/site/chrome.js"></script>
-<script type="module" src="/site/site.js"></script>
 </body>
 </html>
