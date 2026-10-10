@@ -5,6 +5,7 @@ import http from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import zlib from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mailConfig, sendSmtp } from './lib/mail.mjs';
@@ -168,6 +169,12 @@ function sendReset(req, t, user) {
 /* ================= http helpers ================= */
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
 const BASE_HEADERS = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer' };
+const gzCache = new Map(); /* file -> { key, gz }: compressed once per file version */
+function gzipCached(file, buf) {
+  const key = buf.length + ':' + fs.statSync(file).mtimeMs, hit = gzCache.get(file);
+  if (hit && hit.key === key) return hit.gz;
+  const gz = zlib.gzipSync(buf, { level: 9 }); gzCache.set(file, { key, gz }); return gz;
+}
 const send = (res, code, body, headers = {}) => { res.writeHead(code, { ...BASE_HEADERS, ...headers }); res.end(body); };
 const sendJson = (res, code, obj, headers = {}) => send(res, code, JSON.stringify(obj), { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...headers });
 function readBuf(req, limit) {
@@ -548,7 +555,10 @@ function serveStatic(req, res, url) {
   const file = path.join(ROOT, rel);
   fs.readFile(file, (err, buf) => {
     if (err) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
-    send(res, 200, req.method === 'HEAD' ? undefined : buf, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': path.extname(file) === '.html' ? 'no-cache' : 'max-age=3600' });
+    const ext = path.extname(file), headers = { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : (/^\.(jpg|jpeg|png|webp|woff2|mjs)$/.test(ext) || rel.startsWith('site/vendor/') ? 'max-age=86400' : 'max-age=3600') };
+    /* text files travel compressed: the server link can be slow and three.js alone is 670 KB */
+    if (/^\.(html|css|js|mjs|json|svg|txt)$/.test(ext) && /\bgzip\b/.test(req.headers['accept-encoding'] || '') && req.method !== 'HEAD') { headers['Content-Encoding'] = 'gzip'; headers.Vary = 'Accept-Encoding'; buf = gzipCached(file, buf); }
+    send(res, 200, req.method === 'HEAD' ? undefined : buf, headers);
   });
 }
 
