@@ -1320,6 +1320,7 @@
           <div class="tools">
             <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="txQ" type="search" placeholder="Search By Name or Service" aria-label="Search By Name or Service"></label>
             <div class="fwrap"><button class="fbtn" id="txFBtn" aria-haspopup="true"><span id="txFLbl">Filter</span><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button><div class="menu" id="txFMenu" hidden></div></div>
+            <button class="addbtn" id="txNew" hidden>New Invoice <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
             <div class="exw"><button class="addbtn" id="exBtn" aria-haspopup="true">Export <svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="menu" id="exMenu" hidden><button data-x="page">CSV, this page</button><button data-x="all">CSV, all filtered rows</button></div></div>
           </div>
           <div class="tbl-wrap"><table><thead><tr id="txHead"></tr></thead><tbody id="txRows"></tbody></table></div>
@@ -1907,7 +1908,7 @@ window.bootApp = function () {
   var yax = document.getElementById('yax'), area = document.getElementById('area'), plot = document.getElementById('plot');
   function buildMonths() {
     var y = TODAY.slice(0, 4), cash = [], out = [], i; for (i = 0; i < 12; i++) { cash.push(0); out.push(0); }
-    (typeof TXC === 'undefined' ? [] : TXC).forEach(function (x) { if (x.status === 'Paid' && x.dt.slice(0, 4) === y) cash[+x.dt.slice(5, 7) - 1] += x.amt; });
+    (typeof TXC === 'undefined' ? [] : TXC).forEach(function (x) { if ((x.status === 'Paid' || x.status === 'Partial') && x.dt.slice(0, 4) === y) cash[+x.dt.slice(5, 7) - 1] += txPaid(x); });
     (typeof TXS === 'undefined' ? [] : TXS).forEach(function (x) { if (x.status === 'Paid' && x.dt.slice(0, 4) === y) out[+x.dt.slice(5, 7) - 1] += x.amt; });
     months = []; for (i = 0; i < 12; i++) months.push({ name: MON[i], cash: cash[i], out: out[i] });
     var mx = Math.max.apply(null, cash.concat([1])), rough = Math.max(mx / 6, 1000), mag = Math.pow(10, Math.floor(Math.log10(rough))), f = rough / mag, step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag; axisMax = step * 6;
@@ -2627,7 +2628,7 @@ window.bootApp = function () {
       else { p.reports = p.reports.filter(function (x) { return x !== r; }); persist('patients', p); if (r.file) api('DELETE', '/api/files/' + r.file.id).catch(function () {}); renderReports(); toast('Deleted: ' + r.name); }
     });
   });
-  $('pcK').addEventListener('click', function (e) { e.stopPropagation(); var p = curPatient(); rowMenu(this, [['edit', 'Edit patient'], ['vitals', 'Open vitals overview'], ['copypid', 'Copy patient ID']], function (a) { if (a === 'edit') openPtForm(p); else if (a === 'vitals') go('Vitals'); else copyText(p.code, 'Patient ID'); }); });
+  $('pcK').addEventListener('click', function (e) { e.stopPropagation(); var p = curPatient(); rowMenu(this, [['edit', 'Edit patient'], ['vitals', 'Open vitals overview'], ['copypid', 'Copy patient ID']].concat(canWrite('txs') ? [['inv', 'New invoice']] : [], canWrite('visits') ? [['visit', 'New consultation']] : [], canWrite('labs') ? [['lab', 'Order lab or radiology test']] : [], canWrite('admissions') && !admOfPt(p.id) ? [['admit', 'Admit to a ward']] : []), function (a) { if (a === 'edit') openPtForm(p); else if (a === 'vitals') go('Vitals'); else if (a === 'inv') openInvoiceForm({ pid: p.id }); else if (a === 'visit') openVisit({ pid: p.id }); else if (a === 'lab') openLabOrder({ pid: p.id }); else if (a === 'admit') openAdmit(null, p.id); else copyText(p.code, 'Patient ID'); }); });
   ['pfIdC', 'pfPhoneC', 'pfEmailC'].forEach(function (id) { $(id).addEventListener('click', function () { copyText(this.dataset.copy, this.dataset.l); }); });
   $('toVitals').addEventListener('click', function () { go('Vitals'); });
 
@@ -3222,43 +3223,51 @@ window.bootApp = function () {
     }
     for (var j = 0; j < 120; j++) { var sp = SUPS[r(SUPS.length)], dd = new Date(Date.UTC(+TODAY.slice(0, 4), +TODAY.slice(5, 7) - 1, +TODAY.slice(8) - 1 - Math.floor(j / 3))), y = r(10); TXS.push({ id: 'PO' + ('000' + (j + 1)).slice(-4), supId: sp.id, name: sp.name, svc: sp.cat, amt: 2000 + r(40) * 250, pay: ['Bank Transfer', 'Cheque', 'Cash'][r(3)], dt: isoOf(dd.getUTCFullYear(), dd.getUTCMonth(), dd.getUTCDate()) + ' ' + hhmm(9 * 60 + r(500)), status: y < 6 ? 'Paid' : y < 9 ? 'Pending' : 'Failed' }); }
   })();
-  var TXCOLS = { customers: [['id', 'Transaction ID'], ['name', 'Patient Name'], ['svc', 'Service'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']], suppliers: [['id', 'Transaction ID'], ['name', 'Supplier Name'], ['svc', 'Category'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']] };
+  var TXCOLS = { customers: [['id', 'Transaction ID'], ['name', 'Patient Name'], ['svc', 'Service'], ['amt', 'Amount (EGP)'], ['due', 'Balance Due'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']], suppliers: [['id', 'Transaction ID'], ['name', 'Supplier Name'], ['svc', 'Category'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']] };
   function txList() { return txTab === 'customers' ? TXC : TXS; }
-  function txView() { var q = txQ.toLowerCase(); var l = txList().filter(function (x) { return (txStat === 'All' || x.status === txStat) && (!q || (x.id + ' ' + x.name + ' ' + x.svc + ' ' + x.pay).toLowerCase().indexOf(q) > -1); }); return txSort ? sortBy(l, txSort, txDir) : l; }
+  function txView() { var q = txQ.toLowerCase(); var l = txList().filter(function (x) { return (txStat === 'All' || (txStat === 'Dues' ? (txTab === 'customers' ? txDue(x) > 0 : x.status === 'Pending') : x.status === txStat)) && (!q || (x.id + ' ' + x.name + ' ' + x.svc + ' ' + x.pay).toLowerCase().indexOf(q) > -1); }); return txSort ? sortBy(l, txSort, txDir, function (x, k) { return k === 'due' ? txDue(x) : x[k]; }) : l; }
   var TXPILL = { Paid: 'good', Pending: 'warn', Partial: 'warn', Failed: 'bad' };
   function renderTx() {
-    var list = txList(), pend = 0; if (txTab === 'suppliers') list.forEach(function (x) { if (x.status === 'Pending') pend += x.amt; });
-    $('txKpis').style.setProperty('--k', 3);
-    var revPaid = TXC.reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0), buyPaid = TXS.reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0);
-    $('txKpis').innerHTML = txTab === 'customers' ? kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Revenue', fmtNum(revPaid) + ' EGP'], ['refresh', 'Net Revenue', fmtNum(revPaid - buyPaid) + ' EGP']]) : kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Purchases', fmtNum(buyPaid) + ' EGP'], ['refresh', 'Pending Payments', fmtNum(pend) + ' EGP']]);
+    var list = txList(), pend = 0, cust = txTab === 'customers', dues = 0; if (!cust) list.forEach(function (x) { if (x.status === 'Pending') pend += x.amt; }); else TXC.forEach(function (x) { dues += txDue(x); });
+    $('txKpis').style.setProperty('--k', cust ? 4 : 3);
+    var revPaid = TXC.reduce(function (m, x) { return m + txPaid(x); }, 0), buyPaid = TXS.reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0);
+    $('txKpis').innerHTML = cust ? kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Revenue', fmtNum(revPaid) + ' EGP'], ['refresh', 'Net Revenue', fmtNum(revPaid - buyPaid) + ' EGP'], ['clock', 'Outstanding Dues', fmtNum(dues) + ' EGP']]) : kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Purchases', fmtNum(buyPaid) + ' EGP'], ['refresh', 'Pending Payments', fmtNum(pend) + ' EGP']]);
     $('txHead').innerHTML = TXCOLS[txTab].map(function (c) { return '<th data-k="' + c[0] + '"' + (txSort === c[0] ? ' data-dir="' + (txDir === 1 ? 'asc' : 'desc') + '"' : '') + '><button>' + c[1] + ' <span class="sort"><i></i><i></i></span></button></th>'; }).join('') + '<th>Actions</th>';
-    $('txQ').placeholder = txTab === 'customers' ? 'Search By Name or Service' : 'Search By Supplier or Category';
+    $('txQ').placeholder = cust ? 'Search By Name or Service' : 'Search By Supplier or Category'; $('txNew').hidden = !(cust && canWrite('txs'));
     var v = txView(), pages = Math.max(1, Math.ceil(v.length / TXP)); if (txPage > pages) txPage = pages;
     $('txRows').innerHTML = v.slice((txPage - 1) * TXP, txPage * TXP).map(function (x) {
-      var p = x.dt.split(' ');
-      return '<tr><td>' + x.id + '</td><td>' + x.name + '</td><td>' + x.svc + '</td><td>' + fmtNum(x.amt) + ' EGP</td><td>' + x.pay + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
-        '<td><span class="pl ' + TXPILL[x.status] + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" aria-haspopup="true" aria-label="Actions for ' + x.id + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
+      var p = x.dt.split(' '), due = cust ? txDue(x) : 0;
+      return '<tr><td>' + x.id + '</td><td>' + esc(x.name) + '</td><td>' + esc(x.svc) + '</td><td>' + fmtNum(x.amt) + ' EGP</td>' + (cust ? '<td>' + (due > 0 ? '<b style="color:var(--bad);font-weight:700">' + fmtNum(due) + ' EGP</b>' : '<span class="hm-sub">—</span>') + '</td>' : '') + '<td>' + esc(x.pay) + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
+        '<td><span class="pl ' + (TXPILL[x.status] || 'mute') + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" aria-haspopup="true" aria-label="Actions for ' + x.id + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('txEmpty').hidden = v.length > 0; $('txPager').innerHTML = v.length ? pagerHtml(txPage, pages) : '';
-    $('txFLbl').textContent = txStat === 'All' ? 'Filter' : txStat;
+    $('txFLbl').textContent = txStat === 'All' ? 'Filter' : txStat === 'Dues' ? 'Dues' : txStat;
   }
   function txSetTab(t) { txTab = t; txPage = 1; txSort = null; txQ = ''; $('txQ').value = ''; $('txTabC').classList.toggle('on', t === 'customers'); $('txTabS').classList.toggle('on', t === 'suppliers'); $('txTabC').setAttribute('aria-selected', String(t === 'customers')); $('txTabS').setAttribute('aria-selected', String(t === 'suppliers')); renderTx(); }
   $('txTabC').addEventListener('click', function () { txSetTab('customers'); }); $('txTabS').addEventListener('click', function () { txSetTab('suppliers'); });
   $('txQ').addEventListener('input', function (e) { txQ = e.target.value.trim(); txPage = 1; renderTx(); });
   $('txHead').addEventListener('click', function (e) { var th = e.target.closest('th[data-k]'); if (!th) return; var k = th.dataset.k; txDir = txSort === k ? -txDir : 1; txSort = k; renderTx(); });
+  $('txNew').addEventListener('click', function () { openInvoiceForm({}); });
   $('txPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; txPage = +b.dataset.p; renderTx(); });
-  filterMenu($('txFMenu'), ['All', 'Paid', 'Pending', 'Failed'], function () { return txStat; }, function (v) { txStat = v; txPage = 1; }, renderTx); wireFilterBtn($('txFBtn'), $('txFMenu'));
+  filterMenu($('txFMenu'), ['All', 'Paid', 'Partial', 'Pending', 'Failed', 'Dues'], function () { return txStat; }, function (v) { txStat = v; txPage = 1; }, renderTx); wireFilterBtn($('txFBtn'), $('txFMenu'));
   $('exBtn').addEventListener('click', function (e) { e.stopPropagation(); document.querySelectorAll('.fwrap .menu').forEach(function (m) { m.hidden = true; }); $('exMenu').hidden = !$('exMenu').hidden; });
   $('exMenu').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return; this.hidden = true;
     var v = txView(), rows = b.dataset.x === 'page' ? v.slice((txPage - 1) * TXP, txPage * TXP) : v;
-    csvDownload('transactions-' + txTab + '.csv', ['Transaction ID', txTab === 'customers' ? 'Patient Name' : 'Supplier Name', txTab === 'customers' ? 'Service' : 'Category', 'Amount (EGP)', 'Payment Method', 'Date & Time', 'Status'], rows.map(function (x) { return [x.id, x.name, x.svc, x.amt, x.pay, x.dt, x.status]; }));
+    csvDownload('transactions-' + txTab + '.csv', ['Transaction ID', txTab === 'customers' ? 'Patient Name' : 'Supplier Name', txTab === 'customers' ? 'Service' : 'Category', 'Amount (EGP)'].concat(txTab === 'customers' ? ['Paid (EGP)', 'Balance Due (EGP)'] : [], ['Payment Method', 'Date & Time', 'Status']), rows.map(function (x) { return [x.id, x.name, x.svc, x.amt].concat(txTab === 'customers' ? [txPaid(x), txDue(x)] : [], [x.pay, x.dt, x.status]); }));
     toast('Exported ' + rows.length + ' transactions');
   });
   $('txRows').addEventListener('click', function (e) {
     var k = e.target.closest('.kebab'); if (!k) return; e.stopPropagation();
-    var x = txList().filter(function (o) { return o.id === k.dataset.id; })[0], items = [['print', 'Print receipt'], ['copy', 'Copy transaction ID']]; if (x.status !== 'Paid') items.unshift(['paid', 'Mark as Paid']);
-    rowMenu(k, items, function (a) { if (a === 'print') { var pp = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [[txTab === 'customers' ? 'Patient' : 'Supplier', x.name], [txTab === 'customers' ? 'Service' : 'Category', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp[0]) + ' ' + fmtTime(pp[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' EGP', 1]]); return; } if (a === 'paid') { x.status = 'Paid'; persist('txs', x); rebuildChart(); renderTx(); toast(x.id + ' marked as paid'); } else copyText(x.id, 'Transaction ID'); });
+    var x = txList().filter(function (o) { return o.id === k.dataset.id; })[0], cust = txTab === 'customers', w = canWrite('txs'), items = [];
+    if (cust) { items.push(['view', 'View invoice']); if (w && txDue(x) > 0 && (x.items || x.payments || x.status === 'Pending')) items.push(['pay', 'Record payment']); items.push(['inv', 'Print invoice']); if (txPaid(x) > 0) items.push(['print', 'Print receipt']); if (w && x.status !== 'Paid' && !(x.items || x.payments)) items.push(['paid', 'Mark as Paid']); if (w && x.status !== 'Paid' && (x.items || x.payments) && txDue(x) > 0) items.push(['paid', 'Mark as fully paid']); }
+    else { items.push(['print', 'Print receipt']); if (w && x.status !== 'Paid') items.push(['paid', 'Mark as Paid']); }
+    items.push(['copy', 'Copy transaction ID']);
+    rowMenu(k, items, function (a) {
+      if (a === 'view') { openInvoice(x.id); return; } if (a === 'pay') { openPayment(x.id); return; } if (a === 'inv') { printInvoice(x); return; }
+      if (a === 'print') { if (cust) { var iv = invOf(x); printReceipt(x, iv.pays.length ? iv.pays.length - 1 : 0); if (!iv.pays.length) { var pp0 = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Patient', x.name], ['Service', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp0[0]) + ' ' + fmtTime(pp0[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' EGP', 1]]); } return; } var pp = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Supplier', x.name], ['Category', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp[0]) + ' ' + fmtTime(pp[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' EGP', 1]]); return; }
+      if (a === 'paid') { if (cust && (x.items || x.payments)) { var iv2 = invOf(x); x.payments = iv2.pays.slice(); x.payments.push({ at: stampNow(), amt: iv2.due, method: x.pay && x.pay !== '—' ? x.pay : 'Cash' }); x.status = invStatusOf(x); } else x.status = 'Paid'; persist('txs', x); rebuildChart(); renderTx(); renderDash(); toast(x.id + ' marked as paid'); } else copyText(x.id, 'Transaction ID');
+    });
   });
   renderTx();
 
@@ -3427,7 +3436,7 @@ window.bootApp = function () {
 
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
-  function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
+  function canR(c) { return !!PERMS && !!PERMS[c]; } function canW(c) { return !!PERMS && PERMS[c] === 'rw'; }
   var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
@@ -3517,8 +3526,8 @@ window.bootApp = function () {
   function renderReports2() {
     if (!canR('txs') || !canR('appts')) return;
     var b = repBounds(), inR = function (d) { return d >= b[0] && d <= b[1]; };
-    var tc = TXC.filter(function (x) { return x.status === 'Paid' && inR(dtDay(x)); }), ts = TXS.filter(function (x) { return x.status === 'Paid' && inR(dtDay(x)); }), ap = approved.filter(function (x) { return inR(x.date); });
-    var rev = tc.reduce(function (m, x) { return m + x.amt; }, 0), buy = ts.reduce(function (m, x) { return m + x.amt; }, 0);
+    var tc = TXC.filter(function (x) { return (x.status === 'Paid' || x.status === 'Partial') && inR(dtDay(x)); }), ts = TXS.filter(function (x) { return x.status === 'Paid' && inR(dtDay(x)); }), ap = approved.filter(function (x) { return inR(x.date); });
+    var rev = tc.reduce(function (m, x) { return m + txPaid(x); }, 0), buy = ts.reduce(function (m, x) { return m + x.amt; }, 0);
     var past = ap.filter(function (x) { return x.date <= TODAY; }), fin = past.filter(function (x) { return x.status === 'fin'; }).length, canc = past.filter(function (x) { return x.status === 'can'; }).length;
     $('repKpis').innerHTML = kpiHtml([['cash', 'Revenue', fmtNum(rev) + ' EGP'], ['tx', 'Purchases', fmtNum(buy) + ' EGP'], ['refresh', 'Net', fmtNum(rev - buy) + ' EGP'], ['apt', 'Appointments', ap.length], ['v', 'Completed', past.length ? Math.round(fin / past.length * 100) + '%' : '—']]);
     // monthly chart
@@ -3526,7 +3535,7 @@ window.bootApp = function () {
     if (repRange === 'All time') { var d0 = new Date(Date.UTC(+TODAY.slice(0, 4), +TODAY.slice(5, 7) - 12, 1)); y = d0.getUTCFullYear(); m0 = d0.getUTCMonth(); }
     for (var yy = y, mm = m0; yy < ye || (yy === ye && mm <= me); mm++) { if (mm > 11) { mm = 0; yy++; } if (yy > ye || (yy === ye && mm > me)) break; months.push({ key: yy + '-' + pad2(mm + 1), name: MON[mm] + (y !== ye && (months.length === 0 || mm === 0) ? ' ' + String(yy).slice(2) : '') }); }
     if (repRange === 'Last 30 days' && months.length > 2) months = months.slice(-2);
-    var data = months.map(function (mo) { return { name: mo.name, r: tc.concat([]).filter(function (x) { return x.dt.slice(0, 7) === mo.key; }).reduce(function (s, x) { return s + x.amt; }, 0), p: ts.filter(function (x) { return x.dt.slice(0, 7) === mo.key; }).reduce(function (s, x) { return s + x.amt; }, 0) }; });
+    var data = months.map(function (mo) { return { name: mo.name, r: tc.concat([]).filter(function (x) { return x.dt.slice(0, 7) === mo.key; }).reduce(function (s, x) { return s + txPaid(x); }, 0), p: ts.filter(function (x) { return x.dt.slice(0, 7) === mo.key; }).reduce(function (s, x) { return s + x.amt; }, 0) }; });
     var W = 700, H = 250, L = 52, Bt = 28, Tp = 10, mx = niceMax(Math.max.apply(null, data.map(function (d) { return Math.max(d.r, d.p); }).concat([1]))), ph = H - Bt - Tp, gw = (W - L - 8) / Math.max(data.length, 1), bw = Math.min(26, gw / 3.2), svgc = '<svg class="rsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Revenue and purchases per month">';
     for (var t = 0; t <= 4; t++) { var yv = Tp + ph - ph * t / 4; svgc += '<line x1="' + L + '" x2="' + (W - 4) + '" y1="' + yv + '" y2="' + yv + '" stroke="' + (t ? '#e6eaf2' : '#c9d0de') + '" stroke-dasharray="' + (t ? '3 4' : '') + '"/><text x="' + (L - 8) + '" y="' + (yv + 4) + '" text-anchor="end">' + fmtK(mx / 4 * t) + '</text>'; }
     data.forEach(function (d, i) {
@@ -3541,7 +3550,7 @@ window.bootApp = function () {
     var vt = {}, dc = {}; ap.forEach(function (x) { vt[x.visit] = (vt[x.visit] || 0) + 1; dc[dirOf(x)[0]] = (dc[dirOf(x)[0]] || 0) + 1; });
     $('repVisit').innerHTML = hbars(['Consultation', 'Follow-Up', 'Check-Up'].map(function (k) { return [k, vt[k] || 0]; }));
     $('repDocs').innerHTML = hbars(Object.keys(dc).map(function (k) { return [k, dc[k]]; }).sort(function (a, c) { return c[1] - a[1]; }).slice(0, 8));
-    var sv = {}; tc.forEach(function (x) { (sv[x.svc] || (sv[x.svc] = { n: 0, v: 0 })); sv[x.svc].n++; sv[x.svc].v += x.amt; });
+    var sv = {}; tc.forEach(function (x) { revParts(x).forEach(function (q) { (sv[q[0]] || (sv[q[0]] = { n: 0, v: 0 })); sv[q[0]].n++; sv[q[0]].v += q[1]; }); });
     $('repSvc').innerHTML = Object.keys(sv).sort(function (a, c) { return sv[c].v - sv[a].v; }).slice(0, 8).map(function (k) { return '<tr><td>' + esc(k) + '</td><td>' + sv[k].n + '</td><td>' + fmtNum(sv[k].v) + '</td><td>' + (rev ? Math.round(sv[k].v / rev * 100) : 0) + '%</td></tr>'; }).join('') || '<tr><td colspan="4" style="color:var(--ink-3)">No paid transactions in this period.</td></tr>';
     $('repLbl').textContent = repRange;
   }
@@ -4013,7 +4022,7 @@ window.bootApp = function () {
   }
   function seedHospital() {
     WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; SEED_NEW = { pts: [], txs: [] };
-    var r = lcg(4242); seedIPD(r); seedConsults(r); seedQueue(r); seedLab(r);
+    var r = lcg(4242); seedIPD(r); seedConsults(r); seedQueue(r); seedLab(r); seedInvoices(r);
   }
   function hospitalSeedBody() { return { wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }; }
   function loadSampleModules() {
@@ -4565,6 +4574,134 @@ window.bootApp = function () {
     var combos = [['Hemoglobin (Hb)', 'White Blood Cells (WBC)', 'Platelet Count'], ['Fasting Blood Sugar', 'HbA1c'], ['Total Cholesterol', 'Triglycerides', 'HDL Cholesterol', 'LDL Cholesterol'], ['Serum Creatinine', 'Blood Urea', 'Serum Sodium', 'Serum Potassium'], ['ALT (SGPT)', 'AST (SGOT)'], ['TSH', 'Vitamin D (25-OH)'], ['Chest X-Ray (PA view)'], ['C-Reactive Protein (CRP)', 'ESR'], ['Abdominal Ultrasound'], ['ECG (12 lead)']];
     vis.slice(0, 9).forEach(function (v, i) { order(v.pid, v.patient, v.docId, v.doctor, combos[i % combos.length], i < 6 ? 'resulted' : i < 8 ? 'collected' : 'ordered', { visitId: v.id }, Math.max(0, Math.round(dayDiff(v.date, TODAY)))); });
     adm.slice(0, 3).forEach(function (a, i) { order(a.pid, a.patient, a.docId, a.doctor, combos[(i + 3) % combos.length], i === 0 ? 'resulted' : i === 1 ? 'collected' : 'ordered', { admId: a.id }, Math.min(2, i)); });
+  }
+  /* ===== invoices ===== */
+
+  /* ---------- invoices: itemised bills, discount, part payments, dues ---------- */
+  var PAY_METHODS = ['Cash', 'Visa Card', 'Insurance', 'Wallet', 'Bank Transfer'], SRC_LBL = { cons: 'Consultation', bed: 'Bed charges', lab: 'Lab & radiology', oth: 'Other' }, SRC_TAG = { cons: 'cons', bed: 'bed', lab: 'lab', oth: 'oth' };
+  function catOfSvc(s) { s = String(s || ''); return /bed|ward|room/i.test(s) ? 'bed' : /consult|follow|check/i.test(s) ? 'cons' : /x-?ray|blood|ultra|mri|scan|lab|ecg|ct\b/i.test(s) ? 'lab' : 'oth'; }
+  /* what a transaction brings in, by source: [[label, amount]] (an itemised invoice is split in proportion to what has been paid) */
+  function revParts(x) {
+    var paid = txPaid(x); if (paid <= 0) return [];
+    if (!x.items || !x.items.length) return [[x.svc, paid, catOfSvc(x.svc)]];
+    var sub = x.items.reduce(function (s, i) { return s + i.qty * i.price; }, 0) || 1, by = {};
+    x.items.forEach(function (i) { var k = i.src || 'oth'; by[k] = (by[k] || 0) + i.qty * i.price / sub * paid; });
+    return Object.keys(by).map(function (k) { return [SRC_LBL[k] || 'Other', by[k], k]; });
+  }
+  function invOf(x) {
+    var items = x.items && x.items.length ? x.items : [{ desc: x.svc, qty: 1, price: x.amt, src: catOfSvc(x.svc) }], pays = x.payments || (x.status === 'Paid' ? [{ at: x.dt, amt: x.amt, method: x.pay }] : []);
+    var sub = x.subtotal != null ? x.subtotal : items.reduce(function (s, i) { return s + i.qty * i.price; }, 0), paid = pays.reduce(function (s, p) { return s + p.amt; }, 0);
+    return { items: items, pays: pays, sub: sub, disc: x.discount || 0, total: x.amt, paid: paid, due: Math.max(0, Math.round((x.amt - paid) * 100) / 100) };
+  }
+  function pendingCharges(pid) {
+    var billed = billedRefs(), out = [];
+    if (canR('admissions')) ADMS.forEach(function (a) { if (a.pid === pid && a.status === 'discharged' && a.charge && a.charge.amount > 0 && !billed[a.id]) out.push({ label: 'Bed charges · ' + a.code + ' (' + a.charge.days + (a.charge.days === 1 ? ' day' : ' days') + ', ' + a.ward + ')', amount: a.charge.amount, items: admItems(a), tag: 'bed' }); });
+    if (canR('labs')) LABS.forEach(function (l) { if (l.pid === pid && !billed[l.id]) out.push({ label: 'Lab and radiology · ' + l.code + ' (' + l.items.length + (l.items.length === 1 ? ' test' : ' tests') + ')', amount: labTotal(l), items: l.items.map(function (i) { return { desc: i.name, qty: 1, price: +i.price || 0, src: 'lab', ref: l.id }; }), tag: 'lab' }); });
+    if (canR('appts')) approved.forEach(function (a) { if (a.pid === pid && (a.status === 'fin' || a.status === 'ses') && !a.patPaid && !billed['appt' + a.id]) { var share = a.fee - Math.round(a.fee * a.cover / 100); if (share > 0) out.push({ label: 'Consultation · ' + fmtDate(a.date) + ' (' + a.visit + ')', amount: share, items: [{ desc: 'Consultation, ' + a.visit + ' (' + fmtDate(a.date) + ')' + (a.cover ? ', patient share ' + (100 - a.cover) + '%' : ''), qty: 1, price: share, src: 'cons', ref: 'appt' + a.id }], tag: 'cons' }); } });
+    return out;
+  }
+  function ivRowHtml(i) {
+    return '<tr data-src="' + (i.src || 'oth') + '"><td><div class="iv-d"><span class="hm-tag ' + (SRC_TAG[i.src] || 'oth') + '">' + esc(SRC_LBL[i.src] || 'Other') + '</span><input class="in" data-f="desc" value="' + esc(i.desc || '') + '" placeholder="What is being charged" autocomplete="off"></div></td><td><input class="in" data-f="qty" type="number" min="1" step="1" value="' + esc(i.qty == null ? 1 : i.qty) + '" style="width:64px"></td><td><input class="in" data-f="price" type="number" min="0" step="any" value="' + esc(i.price == null ? '' : i.price) + '" placeholder="0"></td><td class="num" data-amt="1">0</td><td><button type="button" class="hm-x" data-x="1" aria-label="Remove line">' + svg('x') + '</button></td></tr>';
+  }
+  function openInvoiceForm(o) {
+    o = o || {}; var p0 = o.pid ? patientById(o.pid) : null;
+    hdw('invW', { title: 'New Invoice', wide: true, save: 'Save invoice',
+      body: '<div class="row2"><div class="fl"><label class="lb" for="ivP">Patient</label>' + ptPickHtml('ivP') + '</div><div class="fl"><span class="lb">Invoice date</span><div id="ivDP"></div></div></div>' +
+        '<h4 class="hm-h">Items <small>a line for each charge</small></h4>' +
+        '<table class="hm-mini" id="ivT"><thead><tr><th>Description</th><th>Qty</th><th>Unit price (EGP)</th><th class="num">Amount</th><th></th></tr></thead><tbody></tbody></table>' +
+        '<div class="iv-add"><button type="button" class="hm-addrow" id="ivPull">' + svg('plus') + 'Add this patient\'s pending charges</button><button type="button" class="hm-addrow" id="ivFee">' + svg('plus') + 'Consultation fee</button><button type="button" class="hm-addrow" id="ivX">' + svg('plus') + 'Custom line</button></div>' +
+        '<div id="ivPend" hidden></div>' +
+        '<div class="hm-grid2" style="margin-top:20px"><div><div class="fl"><label class="lb" for="ivDisc"><span>Discount (EGP) <span class="opt">(Optional)</span></span></label><input class="in" id="ivDisc" type="number" min="0" step="any" placeholder="0"></div>' +
+          '<h4 class="hm-h" style="margin-top:6px">Payment received now <small>(Optional)</small></h4><div class="row2"><div class="fl"><label class="lb" for="ivPay">Amount (EGP)</label><input class="in" id="ivPay" type="number" min="0" step="any" placeholder="0"></div><div class="fl"><label class="lb" for="ivM">Method</label><select class="in sel" id="ivM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>' +
+          '<div class="fl"><label class="lb" for="ivN"><span>Note <span class="opt">(Optional)</span></span></label><input class="in" id="ivN" placeholder="Shown on the invoice" autocomplete="off" maxlength="160"></div></div>' +
+          '<div class="iv-tot" id="ivTot"></div></div>',
+      ready: function (D) {
+        D.dp = mkdp('ivDP', isoToday(), 1, 0); if (p0) D.$('#ivP').value = p0.name; var tb = D.$('#ivT tbody');
+        function calc() {
+          var sub = 0; tb.querySelectorAll('tr').forEach(function (tr) { var q = +tr.querySelector('[data-f=qty]').value || 0, pr = +tr.querySelector('[data-f=price]').value || 0; sub += q * pr; tr.querySelector('[data-amt]').textContent = fmtNum(q * pr); });
+          var disc = Math.min(Math.max(+D.$('#ivDisc').value || 0, 0), sub), total = sub - disc, paid = Math.min(Math.max(+D.$('#ivPay').value || 0, 0), total), due = total - paid;
+          D.$('#ivTot').innerHTML = '<div><span>Subtotal</span><b>' + fmtNum(sub) + ' EGP</b></div><div><span>Discount</span><b>- ' + fmtNum(disc) + ' EGP</b></div><div class="t"><span>Total</span><b>' + fmtNum(total) + ' EGP</b></div><div><span>Paid now</span><b>' + fmtNum(paid) + ' EGP</b></div><div class="d' + (due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(due) + ' EGP</b></div>';
+        }
+        function add(i) { tb.insertAdjacentHTML('beforeend', ivRowHtml(i)); if (i.ref) tb.lastChild.dataset.ref = i.ref; calc(); }
+        D.add = add; D.calc = calc; calc();
+        D.f.addEventListener('input', function (e) { if (e.target.closest('#ivT') || e.target.id === 'ivDisc' || e.target.id === 'ivPay') calc(); });
+        tb.addEventListener('click', function (e) { var x = e.target.closest('[data-x]'); if (x) { x.closest('tr').remove(); calc(); } });
+        D.$('#ivX').addEventListener('click', function () { add({ src: 'oth', qty: 1 }); var l = tb.querySelector('tr:last-child input'); if (l) l.focus(); });
+        D.$('#ivFee').addEventListener('click', function () { add({ desc: 'Consultation fee', qty: 1, price: FEE, src: 'cons' }); });
+        D.$('#ivPull').addEventListener('click', function () {
+          var pt = ptFromInput('ivP'), box = D.$('#ivPend'); if (!pt) return D.err('Choose the patient first, then add the charges.', '#ivP'); D.err('');
+          var have = {}; tb.querySelectorAll('tr').forEach(function (tr) { if (tr.dataset.ref) have[tr.dataset.ref] = 1; }); var l = pendingCharges(pt.id).filter(function (c) { return !c.items.some(function (i) { return have[i.ref]; }); });
+          box.hidden = false; box.innerHTML = l.length ? '<div class="lp"><div class="lp-list thin" style="max-height:190px">' + l.map(function (c, n) { return '<label class="lp-i"><input type="checkbox" value="' + n + '" checked><span class="lp-n">' + esc(c.label) + '</span><span class="lp-p">' + fmtNum(c.amount) + ' EGP</span></label>'; }).join('') + '</div><div style="margin-top:8px;display:flex;gap:8px"><button type="button" class="hm-mini-btn solid" id="ivAddSel">Add selected</button><button type="button" class="hm-mini-btn" id="ivHide">Close</button></div></div>' : '<div class="hm-note">Nothing is waiting to be billed for ' + esc(pt.name) + '. Bed days appear after discharge, lab orders when they are placed and consultations once an appointment is finished.</div>';
+          var as = D.$('#ivAddSel'); if (as) as.addEventListener('click', function () { box.querySelectorAll('input:checked').forEach(function (c) { l[+c.value].items.forEach(function (i) { add(i); }); }); box.hidden = true; });
+          var hd = D.$('#ivHide'); if (hd) hd.addEventListener('click', function () { box.hidden = true; });
+        });
+        if (p0) setTimeout(function () { D.$('#ivPull').click(); }, 0);
+      },
+      submit: function (D) {
+        var pt = ptFromInput('ivP'); if (!pt) return D.err('Choose a registered patient from the list.', '#ivP');
+        var items = [], bad = null; D.f.querySelectorAll('#ivT tbody tr').forEach(function (tr) {
+          var d = tr.querySelector('[data-f=desc]').value.trim(), q = +tr.querySelector('[data-f=qty]').value, pr = tr.querySelector('[data-f=price]').value;
+          if (!d && pr === '') return; if (!d) { bad = bad || [tr.querySelector('[data-f=desc]'), 'Every line needs a description.']; return; } if (!(q >= 1)) { bad = bad || [tr.querySelector('[data-f=qty]'), 'The quantity must be 1 or more.']; return; } if (pr === '' || +pr < 0) { bad = bad || [tr.querySelector('[data-f=price]'), 'Enter the price for ' + d + '.']; return; }
+          var it = { desc: d, qty: q, price: +pr, src: tr.dataset.src || 'oth' }; if (tr.dataset.ref) it.ref = tr.dataset.ref; items.push(it);
+        });
+        if (bad) return D.err(bad[1], bad[0]); if (!items.length) return D.err('Add at least one line.', '#ivPull');
+        var sub = items.reduce(function (s, i) { return s + i.qty * i.price; }, 0), disc = +D.$('#ivDisc').value || 0, pay = +D.$('#ivPay').value || 0;
+        if (disc < 0 || disc > sub) return D.err('The discount cannot be more than the subtotal (' + fmtNum(sub) + ' EGP).', '#ivDisc'); if (pay < 0 || pay > sub - disc + 0.001) return D.err('The payment cannot be more than the total (' + fmtNum(sub - disc) + ' EGP).', '#ivPay');
+        if (!D.dp.val) return D.err('Choose the invoice date.', D.dp.btn);
+        var at = D.dp.val + ' ' + stampNow().slice(11), x = makeInvoice({ pid: pt.id, name: pt.name, items: items, discount: disc, dt: at, note: D.$('#ivN').value.trim(), payments: pay > 0 ? [{ at: at, amt: pay, method: D.$('#ivM').value }] : [] });
+        TXC.unshift(x); persist('txs', x); D.close(); txSetTab('customers'); rebuildChart(); renderDash(); toast('Invoice ' + x.id + ' saved' + (txDue(x) > 0 ? ' · ' + fmtNum(txDue(x)) + ' EGP due' : '')); openInvoice(x.id);
+      } });
+  }
+  function openInvoice(id) {
+    var x = TXC.filter(function (t) { return t.id === id; })[0]; if (!x) return; var v = invOf(x), w = canWrite('txs'), pp = x.dt.split(' ');
+    hdw('invV', { title: (x.inv ? 'Invoice ' : 'Transaction ') + x.id, mid: true, noFocus: true,
+      foot: '<button type="button" class="lnk" data-act="cancel">Close</button><span class="grow"></span><button type="button" class="ghost" data-act="print">Print invoice</button>' + (v.pays.length ? '<button type="button" class="ghost" data-act="receipt">Print receipt</button>' : '') + (w && v.due > 0 && (x.items || x.payments || x.status === 'Pending') ? '<button type="button" class="pri" data-act="pay">Record payment</button>' : ''),
+      body: '<div class="rbox"><div><small>Patient</small><b>' + (x.pid && canR('patients') ? '<button class="nmb" type="button" data-pid="' + x.pid + '">' + esc(x.name) + '</button>' : esc(x.name)) + '</b></div><div class="stsel"><small>Status</small><span class="pl ' + (TXPILL[x.status] || 'mute') + '">' + esc(x.status) + '</span></div></div>' +
+        '<p class="hm-sub" style="margin:10px 0 0">' + fmtDate(pp[0]) + ', ' + fmtTime(pp[1] || '00:00') + (x.note ? ' · ' + esc(x.note) : '') + '</p>' +
+        '<table class="hm-mini" style="margin-top:14px"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th></tr></thead><tbody>' + v.items.map(function (i) { return '<tr><td><span class="hm-tag ' + (SRC_TAG[i.src] || 'oth') + '" style="margin-right:8px">' + esc(SRC_LBL[i.src] || 'Other') + '</span>' + esc(i.desc) + '</td><td class="num">' + i.qty + '</td><td class="num">' + fmtNum(i.price) + '</td><td class="num"><b>' + fmtNum(i.qty * i.price) + '</b></td></tr>'; }).join('') + '</tbody></table>' +
+        '<div class="iv-tot" style="margin-top:14px"><div><span>Subtotal</span><b>' + fmtNum(v.sub) + ' EGP</b></div>' + (v.disc ? '<div><span>Discount</span><b>- ' + fmtNum(v.disc) + ' EGP</b></div>' : '') + '<div class="t"><span>Total</span><b>' + fmtNum(v.total) + ' EGP</b></div><div><span>Paid</span><b>' + fmtNum(v.paid) + ' EGP</b></div><div class="d' + (v.due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(v.due) + ' EGP</b></div></div>' +
+        '<h4 class="hm-h">Payments</h4>' + (v.pays.length ? '<table class="hm-mini"><thead><tr><th>Date</th><th>Method</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + v.pays.map(function (p) { return '<tr><td>' + fmtStamp(p.at) + '</td><td>' + esc(p.method) + '</td><td class="num"><b>' + fmtNum(p.amt) + '</b></td></tr>'; }).join('') + '</tbody></table>' : '<div class="hm-note">No payment received yet.</div>'),
+      act: function (name, D) { if (name === 'print') printInvoice(x); else if (name === 'receipt') printReceipt(x, v.pays.length - 1); else if (name === 'pay') { D.close(); openPayment(x.id); } },
+      ready: function (D) { D.body.addEventListener('click', function (e) { var b = e.target.closest('.nmb'); if (b) { D.close(); curPid = +b.dataset.pid; go('PatientProfile'); } }); } });
+  }
+  function openPayment(id) {
+    var x = TXC.filter(function (t) { return t.id === id; })[0]; if (!x) return; var v = invOf(x); if (v.due <= 0) { toast('Nothing is due on ' + x.id); return; }
+    hdw('payW', { title: 'Record payment · ' + x.id, mid: false, save: 'Save payment',
+      body: '<div class="rbox" style="margin-bottom:16px"><div><small>' + esc(x.name) + '</small><b>Balance due ' + fmtNum(v.due) + ' EGP</b></div><div class="stsel"><small>Total</small><b>' + fmtNum(v.total) + ' EGP</b></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="pyA">Amount received (EGP)</label><input class="in" id="pyA" type="number" min="0" step="any" value="' + v.due + '"></div><div class="fl"><label class="lb" for="pyM">Method</label><select class="in sel" id="pyM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>',
+      submit: function (D) {
+        var a = +D.$('#pyA').value; if (!(a > 0)) return D.err('Enter the amount received.', '#pyA'); if (a > v.due + 0.001) return D.err('That is more than the balance due (' + fmtNum(v.due) + ' EGP).', '#pyA');
+        x.payments = v.pays.slice(); x.payments.push({ at: stampNow(), amt: a, method: D.$('#pyM').value }); x.pay = D.$('#pyM').value; x.status = invStatusOf(x); persist('txs', x); D.close(); renderTx(); rebuildChart(); renderDash(); toast(fmtNum(a) + ' EGP received' + (x.status === 'Paid' ? '. ' + x.id + ' is fully paid' : '. ' + fmtNum(txDue(x)) + ' EGP still due')); openInvoice(x.id);
+      } });
+  }
+  function printInvoice(x) {
+    var v = invOf(x), p = x.pid ? patientById(x.pid) : null, pp = x.dt.split(' ');
+    printDoc('Invoice ' + x.id,
+      letterhead('Invoice', 'Invoice no. ' + x.id) + metaRows([['Patient', x.name], ['Patient ID', p ? p.code : ''], ['Date', fmtDate(pp[0])], ['Status', x.status]]) +
+      '<h2>Charges</h2><table><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount (EGP)</th></tr></thead><tbody>' + v.items.map(function (i) { return '<tr><td>' + esc(i.desc) + '</td><td class="r">' + i.qty + '</td><td class="r">' + fmtNum(i.price) + '</td><td class="r">' + fmtNum(i.qty * i.price) + '</td></tr>'; }).join('') +
+      '<tr class="tot"><td colspan="3" class="r">Subtotal</td><td class="r">' + fmtNum(v.sub) + '</td></tr>' + (v.disc ? '<tr><td colspan="3" class="r">Discount</td><td class="r">- ' + fmtNum(v.disc) + '</td></tr>' : '') + '<tr><td colspan="3" class="r"><b>Total</b></td><td class="r"><b>' + fmtNum(v.total) + '</b></td></tr></tbody></table>' +
+      (v.pays.length ? '<h2>Payments received</h2><table><thead><tr><th>Date</th><th>Method</th><th class="r">Amount (EGP)</th></tr></thead><tbody>' + v.pays.map(function (q) { return '<tr><td>' + esc(fmtStamp(q.at)) + '</td><td>' + esc(q.method) + '</td><td class="r">' + fmtNum(q.amt) + '</td></tr>'; }).join('') + '</tbody></table>' : '') +
+      '<table style="margin-top:12px"><tbody><tr class="tot"><td class="r" style="font-size:15px">Balance due</td><td class="r" style="font-size:15px;width:160px">' + fmtNum(v.due) + ' EGP</td></tr></tbody></table>' + (x.note ? '<div class="box" style="margin-top:14px">' + esc(x.note) + '</div>' : '') + '<div class="sig"><div>Cashier signature and stamp</div></div>');
+  }
+  function printReceipt(x, idx) {
+    var v = invOf(x), q = v.pays[idx]; if (!q) return; var before = v.pays.slice(0, idx + 1).reduce(function (s, p) { return s + p.amt; }, 0);
+    printDoc('Receipt ' + x.id,
+      letterhead('Payment Receipt', 'Receipt for ' + x.id) + metaRows([['Received from', x.name], ['Date', fmtStamp(q.at)], ['For', (x.inv ? 'Invoice ' : 'Transaction ') + x.id], ['Payment method', q.method]]) +
+      '<table style="margin-top:14px"><tbody><tr><td>Invoice total</td><td class="r">' + fmtNum(v.total) + ' EGP</td></tr><tr><td>Paid up to this receipt</td><td class="r">' + fmtNum(before) + ' EGP</td></tr><tr class="tot"><td style="font-size:16px">Amount received</td><td class="r" style="font-size:16px">' + fmtNum(q.amt) + ' EGP</td></tr><tr><td>Balance still due</td><td class="r">' + fmtNum(Math.max(0, v.total - before)) + ' EGP</td></tr></tbody></table><div class="sig"><div>Cashier signature and stamp</div></div>');
+  }
+
+  /* sample invoices for people who were discharged or tested */
+  function seedInvoices(r) {
+    var labs = LABS.filter(function (l) { return l.status === 'resulted' && l.pid; }).slice(0, 3);
+    labs.forEach(function (l, i) {
+      var items = l.items.map(function (t) { return { desc: t.name, qty: 1, price: +t.price, src: 'lab', ref: l.id }; }), tot = items.reduce(function (s, t) { return s + t.price; }, 0);
+      var inv = makeInvoice({ pid: l.pid, name: l.patient, items: items, discount: i === 1 ? Math.round(tot * 0.1) : 0, dt: l.resultedAt || l.createdAt, payments: i === 2 ? [] : [{ at: l.resultedAt || l.createdAt, amt: i === 1 ? tot - Math.round(tot * 0.1) : tot, method: i === 0 ? 'Cash' : 'Visa Card' }] });
+      TXC.unshift(inv); SEED_NEW.txs.push(inv);
+    });
+    VISITS.filter(function (v) { return v.status === 'final' && v.pid; }).slice(0, 4).forEach(function (v, i) {
+      var inv = makeInvoice({ pid: v.pid, name: v.patient, items: [{ desc: 'Consultation, ' + (v.diagnosis || 'visit') + ' (' + fmtDate(v.date) + ')', qty: 1, price: 500 + i * 100, src: 'cons' }, { desc: 'Dressing and minor procedure', qty: 1, price: 150, src: 'oth' }], dt: v.date + ' ' + (v.time || '10:00'), payments: i % 2 ? [{ at: v.date + ' ' + (v.time || '10:00'), amt: 300, method: 'Cash' }] : [{ at: v.date + ' ' + (v.time || '10:00'), amt: 650 + i * 100, method: 'Wallet' }] });
+      TXC.unshift(inv); SEED_NEW.txs.push(inv);
+    });
   }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }

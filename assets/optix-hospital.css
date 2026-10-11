@@ -183,3 +183,21 @@ fieldset:disabled .hm-x, fieldset:disabled .hm-addrow { display: none; }
 .lp-n { flex: 1; min-width: 0; font-weight: 600; color: var(--ink); }
 .lp-p { color: var(--ink-2); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 78px; text-align: right; }
 .lp-sum { margin-top: 8px; font-weight: 700; }
+
+/* ---------- invoices ---------- */
+.iv-d { display: flex; align-items: center; gap: 8px; }
+.iv-d .hm-tag { flex: none; }
+.iv-d .in { flex: 1; min-width: 0; }
+.iv-add { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.iv-add .hm-addrow { margin-top: 0; }
+#ivT td.num { font-weight: 700; color: var(--ink); white-space: nowrap; }
+#ivT td { padding: 6px 5px; } #ivT th:first-child, #ivT td:first-child { padding-left: 0; }
+#ivT td[data-amt] { min-width: 80px; }
+.iv-tot { background: #f6f8fb; border-radius: 18px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; align-self: start; }
+.iv-tot > div { display: flex; justify-content: space-between; gap: 16px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.iv-tot > div b { color: var(--ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.iv-tot > .t { border-top: 1px solid var(--line); padding-top: 10px; font-size: 14.5px; color: var(--ink); }
+.iv-tot > .d { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 14.5px; color: var(--ink); }
+.iv-tot > .d.bad b { color: var(--bad); }
+#ivPend { margin-top: 12px; }
+#txNew:not([hidden]) + .exw { margin-left: 0; }
