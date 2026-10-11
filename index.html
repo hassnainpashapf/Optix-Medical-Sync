@@ -970,6 +970,7 @@
     <nav class="nav">
       <a href="#queue" data-ic="ticket">OPD Queue</a>
       <a href="#consultations" data-ic="rx">Consultations</a>
+      <a href="#lab" data-ic="flask">Lab &amp; Radiology</a>
       <a href="#wards" data-ic="bed">Wards &amp; Beds</a>
     </nav>
     <div class="group">FINANCE</div>
@@ -1071,6 +1072,35 @@
             <button class="addbtn" id="oqIssue" style="margin-left:0">Issue Token <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
           </div>
           <div class="oq-board" id="oqBoard"></div>
+        </section>
+      </div>
+
+      <div class="view" id="view-lab" hidden>
+        <div class="head"><div><h1>Lab &amp; Radiology</h1><p>Order tests from a consultation or admission, enter results and print the report</p></div></div>
+        <section class="card ap-card">
+          <div class="tabs" role="tablist"><button class="tab on" role="tab" id="lbTabO" aria-selected="true">Orders (0)</button><button class="tab" role="tab" id="lbTabC" aria-selected="false">Test Catalog (0)</button></div>
+          <div class="kpis" id="lbKpis" style="margin-top:14px"></div>
+          <div id="lbPO">
+            <div class="tools">
+              <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="lbQ" type="search" placeholder="Search patient, test or order number" aria-label="Search lab orders"></label>
+              <select class="in sel" id="lbSt" aria-label="Status" style="width:170px;height:40px"><option value="All">All statuses</option><option value="ordered">Ordered</option><option value="collected">Sample collected</option><option value="resulted">Resulted</option></select>
+              <select class="in sel" id="lbDp" aria-label="Department" style="width:160px;height:40px"><option value="All">Lab and radiology</option><option value="Lab">Lab only</option><option value="Radiology">Radiology only</option></select>
+              <button class="addbtn" id="lbAdd">New Order <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Patient</th><th>Tests</th><th>Ordered By</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lbRows"></tbody></table></div>
+            <div class="empty" id="lbEmpty" hidden>No lab or radiology orders match.</div>
+            <nav class="pager" id="lbPager" aria-label="Pages"></nav>
+          </div>
+          <div id="lbPC" hidden>
+            <div class="tools">
+              <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="ctQ" type="search" placeholder="Search tests" aria-label="Search the test catalog"></label>
+              <select class="in sel" id="ctDp" aria-label="Department" style="width:160px;height:40px"><option value="All">All departments</option><option value="Lab">Lab</option><option value="Radiology">Radiology</option></select>
+              <button class="addbtn" id="ctAdd">Add Test <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Test</th><th>Department</th><th>Price</th><th>Unit</th><th>Reference Range</th><th>Actions</th></tr></thead><tbody id="ctRows"></tbody></table></div>
+            <div class="empty" id="ctEmpty" hidden></div>
+            <nav class="pager" id="ctPager" aria-label="Pages"></nav>
+          </div>
         </section>
       </div>
 
@@ -1951,7 +1981,8 @@ window.bootApp = function () {
     Dashboard: [['grid', 'Dashboard']],
     'Wards & Beds': [['bed', 'Wards & Beds']],
     Consultations: [['rx', 'Consultations']],
-    'OPD Queue': [['ticket', 'OPD Queue']]
+    'OPD Queue': [['ticket', 'OPD Queue']],
+    'Lab & Radiology': [['flask', 'Lab & Radiology']]
   };
   var hist = ['Dashboard'], hi = 0;
   function renderCrumb(key) {
@@ -1962,8 +1993,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1979,6 +2010,7 @@ window.bootApp = function () {
     if (vid === 'view-plan') loadPlan();
     if (vid === 'view-wards') renderWards();
     if (vid === 'view-visits') renderVisits();
+    if (vid === 'view-lab') renderLab();
     if (vid === 'view-opd') { renderQueue(); syncQueue().then(renderQueue); }
     renderCrumb(key);
     document.getElementById('back').disabled = hi === 0;
@@ -3396,7 +3428,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3921,7 +3953,7 @@ window.bootApp = function () {
     var a = admById(id); if (!a) return; var ch = a.status === 'discharged' ? a.charge : admCharge(a, stampNow()), adm = a.status === 'admitted';
     var moves = (a.moves || []).map(function (m) { return '<tr><td>' + esc(m.ward) + '</td><td>Bed ' + esc(m.bed) + '</td><td>' + fmtStamp(m.from) + '</td><td>' + (m.to ? fmtStamp(m.to) : '<span class="pl warn" style="height:22px">Current</span>') + '</td></tr>'; }).join('');
     var labs = LABS.filter(function (l) { return l.admId === a.id; });
-    hdw('admD', { title: 'Admission ' + a.code, mid: true, foot: '<button type="button" class="lnk" data-act="cancel">Close</button>' + (a.status === 'discharged' ? '<button type="button" class="ghost" data-act="print">Print discharge summary</button>' : '') + (adm && canWrite('admissions') ? '<button type="button" class="ghost" data-act="transfer">Transfer</button><button type="button" class="pri" data-act="discharge">Discharge</button>' : ''),
+    hdw('admD', { title: 'Admission ' + a.code, mid: true, foot: '<button type="button" class="lnk" data-act="cancel">Close</button>' + (a.status === 'discharged' ? '<button type="button" class="ghost" data-act="print">Print discharge summary</button>' : '') + (adm && canWrite('labs') ? '<button type="button" class="ghost" data-act="lab">Order test</button>' : '') + (adm && canWrite('admissions') ? '<button type="button" class="ghost" data-act="transfer">Transfer</button><button type="button" class="pri" data-act="discharge">Discharge</button>' : ''),
       body: '<div class="rbox"><div><small>Patient</small><b>' + (a.pid && canR('patients') ? '<button class="nmb" data-pid="' + a.pid + '" type="button">' + esc(a.patient) + '</button>' : esc(a.patient)) + '</b></div><div class="stsel"><small>Status</small><span class="pl ' + (adm ? 'warn' : 'good') + '">' + (adm ? 'Admitted' : 'Discharged') + '</span></div></div>' +
         '<h4 class="rh4">General Info</h4><div class="gi"><div><span class="ib">' + svg('steth') + '</span><div><small>Doctor</small><b>' + esc(a.doctor || '—') + '</b></div></div><div><span class="ib">' + svg('bed') + '</span><div><small>Ward and bed</small><b>' + esc(a.ward) + ', bed ' + esc(a.bed) + '</b></div></div><div><span class="ib">' + svg('cal') + '</span><div><small>Admitted</small><b>' + fmtStamp(a.admitAt) + '</b></div></div><div><span class="ib">' + svg('clock') + '</span><div><small>' + (adm ? 'Stay so far' : 'Discharged') + '</small><b>' + (adm ? ch.days + (ch.days === 1 ? ' day' : ' days') : fmtStamp(a.dischargeAt)) + '</b></div></div></div>' +
         '<h4 class="rh4">Reason for admission</h4><div class="hm-note">' + esc(a.reason || '—') + (a.note ? '\n' + esc(a.note) : '') + '</div>' +
@@ -3929,7 +3961,7 @@ window.bootApp = function () {
         '<h4 class="rh4">Bed history</h4><table class="hm-mini"><thead><tr><th>Ward</th><th>Bed</th><th>From</th><th>To</th></tr></thead><tbody>' + moves + '</tbody></table>' +
         '<h4 class="rh4">Bed charges ' + (adm ? '<small>(estimate until discharge)</small>' : '') + '</h4><table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + ch.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '<tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + fmtNum(ch.amount) + ' EGP</b></td></tr></tbody></table>' + (a.txId ? '<p class="hm-sub" style="margin-top:8px">Invoice ' + esc(a.txId) + '</p>' : '') +
         (labs.length ? '<h4 class="rh4">Lab and radiology</h4>' + labs.map(function (l) { return '<div class="hm-note" style="margin-bottom:6px"><b>' + esc(l.code) + '</b> · ' + l.items.map(function (i) { return esc(i.name); }).join(', ') + ' · ' + esc(LAB_ST[l.status] || l.status) + '</div>'; }).join('') : ''),
-      act: function (name, D) { D.close(); if (name === 'print') printDischarge(a); else if (name === 'transfer') openTransfer(a.id); else if (name === 'discharge') openDischarge(a.id); },
+      act: function (name, D) { D.close(); if (name === 'print') printDischarge(a); else if (name === 'transfer') openTransfer(a.id); else if (name === 'lab') openLabOrder({ pid: a.pid, admId: a.id }); else if (name === 'discharge') openDischarge(a.id); },
       ready: function (D) { D.body.addEventListener('click', function (e) { var b = e.target.closest('.nmb'); if (b) { D.close(); curPid = +b.dataset.pid; go('PatientProfile'); } }); }, noFocus: true });
   }
   function printDischarge(a) {
@@ -3981,7 +4013,7 @@ window.bootApp = function () {
   }
   function seedHospital() {
     WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; SEED_NEW = { pts: [], txs: [] };
-    var r = lcg(4242); seedIPD(r); seedConsults(r); seedQueue(r);
+    var r = lcg(4242); seedIPD(r); seedConsults(r); seedQueue(r); seedLab(r);
   }
   function hospitalSeedBody() { return { wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }; }
   function loadSampleModules() {
@@ -4115,7 +4147,8 @@ window.bootApp = function () {
       v = n; persist('visits', n);
       var ap = n.apptId ? findAnyAppt(n.apptId) : null; if (ap && ap.status !== 'can' && approved.indexOf(ap) > -1) { var ns = n.status === 'final' ? 'fin' : 'ses'; if (ap.status !== ns && !(ap.status === 'fin' && ns === 'ses')) { ap.status = ns; saveAppt(ap, ap.list || 'approved'); refreshAppts(); } }
       var tk = n.tokenId ? OPDQ.filter(function (t) { return t.id === n.tokenId; })[0] : null; if (tk) { tk.visitId = n.id; if (n.status === 'final' && tk.status !== 'done') { tk.status = 'done'; tk.doneAt = Date.now(); } persist('opdq', tk); if (typeof renderQueue === 'function') renderQueue(); }
-      if (labs && labs.length && typeof placeLabOrder === 'function') placeLabOrder(n, labs);
+      if (labs && labs.length && typeof placeLabOrder === 'function') placeLabOrder({ pid: n.pid, patient: n.patient, docId: n.docId, doctor: n.doctor, visitId: n.id }, labs);
+      if (labs && labs.length && mode !== 'final') { var box = D.$('#vsLabBox'); if (box) { box.innerHTML = labPickerHtml(v, LABS.filter(function (l) { return l.visitId === v.id; })); var root = D.$('#vsLP'); if (root) labPickWire(root); } }
       renderVisits(); if ($('view-profile') && !$('view-profile').hidden) renderPtProfile();
       if (mode === 'final') { D.close(); toast('Consultation completed' + (n.rx.length ? '. You can print the prescription from the list.' : '')); } else if (after) { toast('Saved'); after(); } else { toast('Draft saved'); }
       renderDash();
@@ -4328,6 +4361,211 @@ window.bootApp = function () {
       var extra = di === 0 ? 3 : 1; for (var k = 0; k < extra; k++) { var p = patients[(di * 17 + k * 5 + 11) % patients.length], st2 = (k === 0 && !hasIn) ? 'in' : (di === 1 && k === 0 ? 'noshow' : 'waiting'); if (st2 === 'in') hasIn = true; if (!OPDQ.some(function (t) { return t.docId === d.id && t.pid === p.id; })) tok(p, 0, st2, 6 + (extra - k) * 4); }
     });
   }
+  /* ===== lab and radiology ===== */
+
+  /* ---------- lab and radiology ---------- */
+  var LAB_STD = [
+    ['Hemoglobin (Hb)', 'Lab', 120, 'g/dL', 12, 17], ['White Blood Cells (WBC)', 'Lab', 100, 'x10³/µL', 4, 11], ['Platelet Count', 'Lab', 100, 'x10³/µL', 150, 450], ['Fasting Blood Sugar', 'Lab', 60, 'mg/dL', 70, 100], ['Random Blood Sugar', 'Lab', 60, 'mg/dL', 70, 140], ['HbA1c', 'Lab', 250, '%', 4, 5.6],
+    ['Total Cholesterol', 'Lab', 90, 'mg/dL', 0, 200], ['Triglycerides', 'Lab', 90, 'mg/dL', 0, 150], ['HDL Cholesterol', 'Lab', 90, 'mg/dL', 40, 80], ['LDL Cholesterol', 'Lab', 90, 'mg/dL', 0, 100], ['Serum Creatinine', 'Lab', 80, 'mg/dL', 0.6, 1.3], ['Blood Urea', 'Lab', 70, 'mg/dL', 15, 45],
+    ['ALT (SGPT)', 'Lab', 90, 'U/L', 7, 56], ['AST (SGOT)', 'Lab', 90, 'U/L', 10, 40], ['TSH', 'Lab', 200, 'mIU/L', 0.4, 4], ['Vitamin D (25-OH)', 'Lab', 400, 'ng/mL', 30, 100], ['Serum Sodium', 'Lab', 80, 'mmol/L', 135, 145], ['Serum Potassium', 'Lab', 80, 'mmol/L', 3.5, 5.1],
+    ['C-Reactive Protein (CRP)', 'Lab', 120, 'mg/L', 0, 6], ['ESR', 'Lab', 60, 'mm/hr', 0, 20], ['Urine Routine Examination', 'Lab', 70, '', null, null, 'Clear, no pus cells'],
+    ['Chest X-Ray (PA view)', 'Radiology', 300, '', null, null, 'Report'], ['Abdominal Ultrasound', 'Radiology', 500, '', null, null, 'Report'], ['ECG (12 lead)', 'Radiology', 150, '', null, null, 'Report'], ['CT Scan, Brain', 'Radiology', 1800, '', null, null, 'Report'], ['MRI, Lumbar Spine', 'Radiology', 2800, '', null, null, 'Report'], ['X-Ray, Knee', 'Radiology', 300, '', null, null, 'Report']
+  ];
+  var lbTab = 'orders', lbQ = '', lbSt = 'All', lbDp = 'All', lbPage = 1, LBP = 8, ctQ = '', ctDp = 'All', ctPage = 1, CTP = 10;
+  function labTestById(id) { return LABT.filter(function (t) { return t.id === id; })[0] || null; }
+  function labById(id) { return LABS.filter(function (l) { return l.id === id; })[0] || null; }
+  function refText(t) { return t.lo != null && t.hi != null ? t.lo + ' - ' + t.hi : (t.ref || '—'); }
+  function labTotal(l) { return l.items.reduce(function (s, i) { return s + (+i.price || 0); }, 0); }
+  function flagOf(it) { var v = parseFloat(it.value); if (it.dept === 'Radiology' || isNaN(v) || it.lo == null || it.hi == null) return String(it.value || '').trim() ? 'normal' : ''; return v < it.lo ? 'low' : v > it.hi ? 'high' : 'normal'; }
+  var FLAG_PILL = { normal: ['good', 'Normal'], high: ['bad', 'High'], low: ['warn', 'Low'], '': ['mute', '—'] };
+  function labBilled(l) { return !!billedRefs()[l.id]; }
+  function renderLab() {
+    if (!canR('labs')) return;
+    $('lbTabO').textContent = 'Orders (' + LABS.length + ')'; $('lbTabC').textContent = 'Test Catalog (' + LABT.length + ')';
+    [['lbTabO', 'orders'], ['lbTabC', 'catalog']].forEach(function (t) { $(t[0]).classList.toggle('on', lbTab === t[1]); $(t[0]).setAttribute('aria-selected', String(lbTab === t[1])); });
+    $('lbPO').hidden = lbTab !== 'orders'; $('lbPC').hidden = lbTab !== 'catalog';
+    var ord = LABS.filter(function (l) { return l.status === 'ordered'; }).length, col = LABS.filter(function (l) { return l.status === 'collected'; }).length, resT = LABS.filter(function (l) { return l.status === 'resulted' && dayOf(l.resultedAt) === TODAY; }).length, rad = LABS.filter(function (l) { return l.status !== 'resulted' && l.items.some(function (i) { return i.dept === 'Radiology'; }); }).length;
+    $('lbKpis').innerHTML = kpiHtml([['flask', 'Awaiting Sample', ord], ['refresh', 'Awaiting Result', col], ['v', 'Resulted Today', resT], ['monitor', 'Radiology Pending', rad]]);
+    $('lbAdd').hidden = !canWrite('labs'); $('ctAdd').hidden = !canWrite('labtests');
+    if (lbTab === 'orders') renderLabOrders(); else renderCatalog();
+  }
+  function lbView() {
+    var q = lbQ.toLowerCase();
+    return LABS.filter(function (l) { return (lbSt === 'All' || l.status === lbSt) && (lbDp === 'All' || l.items.some(function (i) { return i.dept === lbDp; })) && (!q || (l.patient + ' ' + l.code + ' ' + l.items.map(function (i) { return i.name; }).join(' ')).toLowerCase().indexOf(q) > -1); }).sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; });
+  }
+  function renderLabOrders() {
+    var v = lbView(), pages = Math.max(1, Math.ceil(v.length / LBP)); if (lbPage > pages) lbPage = pages;
+    $('lbRows').innerHTML = v.slice((lbPage - 1) * LBP, lbPage * LBP).map(function (l) {
+      var abn = l.items.filter(function (i) { return i.flag === 'high' || i.flag === 'low'; }).length;
+      return '<tr><td><div class="nm2"><b>' + esc(l.code) + '</b><small>' + (l.visitId ? 'From consultation' : l.admId ? 'From admission' : 'Direct order') + '</small></div></td><td>' + (l.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + l.pid + '"><b>' + esc(l.patient) + '</b></button>' : esc(l.patient)) + '</td><td style="white-space:normal;min-width:200px;max-width:300px">' + l.items.map(function (i) { return '<span class="hm-tag ' + (i.dept === 'Radiology' ? 'cons' : 'lab') + '" style="margin:2px 4px 2px 0">' + esc(i.name) + '</span>'; }).join('') + '</td><td>' + esc(l.by || '—') + '</td><td class="td2"><span>' + fmtDate(dayOf(l.createdAt)) + '</span><small>' + fmtTime(l.createdAt.slice(11, 16) || '00:00') + '</small></td><td>' + fmtNum(labTotal(l)) + ' EGP</td>' +
+        '<td><span class="pl ' + (l.status === 'resulted' ? 'good' : l.status === 'collected' ? 'warn' : 'mute') + '">' + esc(LAB_ST[l.status]) + '</span>' + (abn ? ' <span class="hm-tag" style="background:#fdecec;color:#c2373a">' + abn + ' abnormal</span>' : '') + '</td>' +
+        '<td><span class="kw"><button class="kebab" data-a="lmenu" data-id="' + esc(l.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(l.code) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
+    }).join('');
+    $('lbEmpty').hidden = v.length > 0; $('lbPager').innerHTML = v.length ? pagerHtml(lbPage, pages) : '';
+  }
+  function ctView() { var q = ctQ.toLowerCase(); return LABT.filter(function (t) { return (ctDp === 'All' || t.dept === ctDp) && (!q || t.name.toLowerCase().indexOf(q) > -1); }).sort(function (a, b) { return a.dept === b.dept ? (a.name < b.name ? -1 : 1) : (a.dept < b.dept ? -1 : 1); }); }
+  function renderCatalog() {
+    var v = ctView(), pages = Math.max(1, Math.ceil(v.length / CTP)); if (ctPage > pages) ctPage = pages;
+    var w = canWrite('labtests');
+    $('ctRows').innerHTML = v.slice((ctPage - 1) * CTP, ctPage * CTP).map(function (t) {
+      return '<tr><td><div class="nm2"><b>' + esc(t.name) + '</b></div></td><td><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span></td><td>' + fmtNum(t.price) + ' EGP</td><td>' + esc(t.unit || '—') + '</td><td>' + esc(refText(t)) + '</td><td>' + (w ? '<span class="kw"><button class="kebab" data-a="tmenu" data-id="' + esc(t.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(t.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span>' : '') + '</td></tr>';
+    }).join('');
+    var none = !LABT.length; $('ctEmpty').hidden = v.length > 0; $('ctEmpty').innerHTML = none ? 'The test catalog is empty.' + (w ? '<br><button class="btn-soft hm-empty-act" id="ctStd">Load the standard list of ' + LAB_STD.length + ' common tests</button>' : '') : 'No tests match.';
+    $('ctPager').innerHTML = v.length ? pagerHtml(ctPage, pages) : '';
+    var s = $('ctStd'); if (s) s.addEventListener('click', function () { loadStdTests(); });
+  }
+  function stdTests() { return LAB_STD.map(function (x, i) { return { id: 'lt' + (i + 1), name: x[0], dept: x[1], price: x[2], unit: x[3], lo: x[4], hi: x[5], ref: x[6] || '', ord: 500 - i }; }); }
+  function loadStdTests() { LABT = stdTests(); LABT.forEach(function (t) { persist('labtests', t); }); renderLab(); toast('Added ' + LABT.length + ' tests'); }
+  $('lbTabO').addEventListener('click', function () { lbTab = 'orders'; renderLab(); }); $('lbTabC').addEventListener('click', function () { lbTab = 'catalog'; renderLab(); });
+  $('lbQ').addEventListener('input', function (e) { lbQ = e.target.value.trim(); lbPage = 1; renderLab(); });
+  $('lbSt').addEventListener('change', function () { lbSt = this.value; lbPage = 1; renderLab(); }); $('lbDp').addEventListener('change', function () { lbDp = this.value; lbPage = 1; renderLab(); });
+  $('ctQ').addEventListener('input', function (e) { ctQ = e.target.value.trim(); ctPage = 1; renderLab(); }); $('ctDp').addEventListener('change', function () { ctDp = this.value; ctPage = 1; renderLab(); });
+  $('lbPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; lbPage = +b.dataset.p; renderLab(); });
+  $('ctPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; ctPage = +b.dataset.p; renderLab(); });
+  $('lbAdd').addEventListener('click', function () { openLabOrder({}); }); $('ctAdd').addEventListener('click', function () { openTestForm(null); });
+  $('lbRows').addEventListener('click', function (e) {
+    var l0 = e.target.closest('[data-a="pt"]'); if (l0) { curPid = +l0.dataset.pid; go('PatientProfile'); return; }
+    var k = e.target.closest('[data-a="lmenu"]'); if (!k) return; e.stopPropagation(); var l = labById(k.dataset.id), w = canWrite('labs'), it = [];
+    if (w && l.status === 'ordered') it.push(['collect', 'Mark sample collected']); if (w && l.status !== 'resulted') it.push(['result', 'Enter results']); if (l.status === 'resulted') { it.push(['view', 'View and print report']); if (w) it.push(['result', 'Edit results']); }
+    if (l.pid && canR('patients')) it.push(['pt', 'Open patient profile']); if (w && l.status !== 'resulted') it.push(['del', 'Cancel this order']);
+    rowMenu(k, it, function (a) {
+      if (a === 'collect') { l.status = 'collected'; l.collectedAt = stampNow(); persist('labs', l); renderLab(); renderDash(); toast(l.code + ': sample collected'); } else if (a === 'result') openLabResult(l.id); else if (a === 'view') openLabView(l.id); else if (a === 'pt') { curPid = l.pid; go('PatientProfile'); }
+      else { if (labBilled(l)) { toast('This order is already on an invoice.'); return; } LABS = LABS.filter(function (x) { return x !== l; }); unpersist('labs', l.id); renderLab(); renderDash(); toast('Order ' + l.code + ' cancelled'); }
+    });
+  });
+  $('ctRows').addEventListener('click', function (e) {
+    var k = e.target.closest('[data-a="tmenu"]'); if (!k) return; e.stopPropagation(); var t = labTestById(k.dataset.id);
+    rowMenu(k, [['edit', 'Edit test'], ['del', 'Delete test']], function (a) { if (a === 'edit') openTestForm(t); else { LABT = LABT.filter(function (x) { return x !== t; }); unpersist('labtests', t.id); renderLab(); toast('Deleted ' + t.name); } });
+  });
+  function openTestForm(t) {
+    hdw('testW', { title: t ? 'Edit Test' : 'Add Test',
+      body: '<div class="fl"><label class="lb" for="tfN">Test name</label><input class="in" id="tfN" placeholder="e.g. Serum Ferritin" autocomplete="off" value="' + esc(t ? t.name : '') + '"></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="tfD">Department</label><select class="in sel" id="tfD">' + optList([['Lab', 'Laboratory'], ['Radiology', 'Radiology']], t ? t.dept : 'Lab') + '</select></div><div class="fl"><label class="lb" for="tfP">Price (EGP)</label><input class="in" id="tfP" type="number" min="0" placeholder="150" value="' + (t ? t.price : '') + '"></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="tfU"><span>Unit <span class="opt">(Optional)</span></span></label><input class="in" id="tfU" placeholder="e.g. mg/dL" autocomplete="off" value="' + esc(t ? t.unit : '') + '"></div><div class="fl"><label class="lb" for="tfR"><span>Reference text <span class="opt">(if not a number range)</span></span></label><input class="in" id="tfR" placeholder="e.g. Negative" autocomplete="off" value="' + esc(t ? t.ref : '') + '"></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="tfL"><span>Normal from <span class="opt">(Optional)</span></span></label><input class="in" id="tfL" type="number" step="any" value="' + (t && t.lo != null ? t.lo : '') + '"></div><div class="fl"><label class="lb" for="tfH"><span>Normal up to <span class="opt">(Optional)</span></span></label><input class="in" id="tfH" type="number" step="any" value="' + (t && t.hi != null ? t.hi : '') + '"></div></div>' +
+        '<p class="hm-sub">When both numbers are set, a result outside the range is flagged High or Low automatically.</p>',
+      submit: function (D) {
+        var n = D.$('#tfN').value.trim(), pr = D.$('#tfP').value, lo = D.$('#tfL').value, hi = D.$('#tfH').value; if (n.length < 2) return D.err('Enter the test name.', '#tfN'); if (pr === '' || +pr < 0) return D.err('Enter the price.', '#tfP'); if ((lo === '') !== (hi === '')) return D.err('Set both the lower and the upper limit, or neither.', '#tfL'); if (lo !== '' && +lo > +hi) return D.err('The lower limit is above the upper limit.', '#tfL');
+        if (LABT.some(function (x) { return x !== t && x.name.toLowerCase() === n.toLowerCase(); })) return D.err('A test with this name exists.', '#tfN');
+        var o = t || { id: newId('lt'), ord: Date.now() }; o.name = n; o.dept = D.$('#tfD').value; o.price = +pr; o.unit = D.$('#tfU').value.trim(); o.ref = D.$('#tfR').value.trim(); o.lo = lo === '' ? null : +lo; o.hi = hi === '' ? null : +hi; if (!t) LABT.push(o); persist('labtests', o); D.close(); renderLab(); toast('Saved: ' + n);
+      } });
+  }
+
+  /* new order (from the Lab page, a consultation or an admission) */
+  function testItem(t) { return { testId: t.id, name: t.name, dept: t.dept, price: t.price, unit: t.unit || '', ref: refText(t), lo: t.lo, hi: t.hi, value: '', flag: '' }; }
+  function placeLabOrder(ctx, ids, extra) {
+    var items = ids.map(labTestById).filter(Boolean).map(testItem); if (!items.length) return null;
+    var l = { id: newId('lab'), code: nextCode('LAB-', LABS), pid: ctx.pid, patient: ctx.patient, docId: ctx.docId || 0, by: ctx.doctor || ME.name || '', visitId: ctx.visitId || '', admId: ctx.admId || '', createdAt: stampNow(), status: 'ordered', items: items, comment: '', ord: Date.now() };
+    for (var k in (extra || {})) l[k] = extra[k];
+    LABS.unshift(l); persist('labs', l); renderLab(); renderDash(); toast('Ordered ' + items.length + (items.length === 1 ? ' test' : ' tests') + ' (' + l.code + ')'); return l;
+  }
+  function labPickList(sel) {
+    return LABT.slice().sort(function (a, b) { return a.dept === b.dept ? (a.name < b.name ? -1 : 1) : (a.dept < b.dept ? -1 : 1); }).map(function (t) {
+      return '<label class="lp-i"><input type="checkbox" value="' + esc(t.id) + '"' + (sel.indexOf(t.id) > -1 ? ' checked' : '') + '><span class="lp-n">' + esc(t.name) + '</span><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span><span class="lp-p">' + fmtNum(t.price) + ' EGP</span></label>';
+    }).join('') || '<div class="no-ev">The test catalog is empty. Add tests in Lab &amp; Radiology first.</div>';
+  }
+  function labPickWire(root, onChange) {
+    var q = root.querySelector('.lp-q'), box = root.querySelector('.lp-list');
+    q.addEventListener('input', function () { var v = this.value.trim().toLowerCase(); box.querySelectorAll('.lp-i').forEach(function (r) { r.hidden = v && r.textContent.toLowerCase().indexOf(v) < 0; }); });
+    box.addEventListener('change', function () { var ids = [].map.call(box.querySelectorAll('input:checked'), function (c) { return c.value; }), tot = ids.reduce(function (s, id) { var t = labTestById(id); return s + (t ? t.price : 0); }, 0); root.querySelector('.lp-sum').textContent = ids.length ? ids.length + ' selected · ' + fmtNum(tot) + ' EGP' : 'Nothing selected'; if (onChange) onChange(ids); });
+  }
+  function labPickerHtml(v, orders) {
+    if (!canWrite('labs') && !(orders || []).length) return '';
+    return '<h4 class="hm-h">Lab and radiology <small>tests are added to the patient\'s bill</small></h4>' +
+      (orders || []).map(function (l) { return '<div class="hm-note" style="margin-bottom:8px"><b>' + esc(l.code) + '</b> · ' + l.items.map(function (i) { return esc(i.name); }).join(', ') + ' · <b>' + esc(LAB_ST[l.status]) + '</b> <button type="button" class="hm-mini-btn" data-lab="' + esc(l.id) + '" style="margin-left:6px">Open</button></div>'; }).join('') +
+      (canWrite('labs') ? '<div class="lp" id="vsLP"><input class="in lp-q" placeholder="Search tests to order" autocomplete="off"><div class="lp-list thin">' + labPickList([]) + '</div><div class="lp-sum hm-sub">Nothing selected</div></div>' : '');
+  }
+  function labPickerReady(D, v) {
+    var root = D.$('#vsLP'); if (root) labPickWire(root); D.labSel = [];
+    D.body.addEventListener('click', function (e) { var b = e.target.closest('[data-lab]'); if (b) openLabView(b.dataset.lab); });
+  }
+  function labPickerRead(D) { var root = D.$('#vsLP'); return root ? [].map.call(root.querySelectorAll('.lp-list input:checked'), function (c) { return c.value; }) : []; }
+  function openLabOrder(o) {
+    if (!canWrite('labs')) { toast('Your role cannot order tests.'); return; }
+    var p = o.pid ? patientById(o.pid) : null, adm = o.admId ? admById(o.admId) : null, vis = o.visitId ? visitById(o.visitId) : null;
+    hdw('labW', { title: 'New Lab or Radiology Order', mid: true, save: 'Place order',
+      body: '<div class="fl"><label class="lb" for="loP">Patient</label>' + ptPickHtml('loP') + '</div>' +
+        '<div class="fl"><label class="lb" for="loD">Ordered by</label><select class="in sel" id="loD">' + docOptions(o.docId || (adm && adm.docId) || (vis && vis.docId) || '', 'Select doctor') + '</select></div>' +
+        (adm ? '<div class="hm-note" style="margin-bottom:14px">Linked to admission ' + esc(adm.code) + ' (' + esc(adm.ward) + ', bed ' + esc(adm.bed) + ')</div>' : '') +
+        '<div class="fl"><span class="lb">Tests</span><div class="lp"><input class="in lp-q" placeholder="Search tests" autocomplete="off"><div class="lp-list thin">' + labPickList([]) + '</div><div class="lp-sum hm-sub">Nothing selected</div></div></div>' +
+        '<div class="fl"><label class="lb" for="loN"><span>Clinical notes <span class="opt">(Optional)</span></span></label><input class="in" id="loN" placeholder="e.g. Fasting sample, suspected anaemia" autocomplete="off"></div>',
+      ready: function (D) { if (p) D.$('#loP').value = p.name; labPickWire(D.f); },
+      submit: function (D) {
+        var pt = ptFromInput('loP'); if (!pt) return D.err('Choose a registered patient from the list.', '#loP'); var did = +D.$('#loD').value; if (!did) return D.err('Select the ordering doctor.', '#loD');
+        var ids = [].map.call(D.f.querySelectorAll('.lp-list input:checked'), function (c) { return c.value; }); if (!ids.length) return D.err('Select at least one test.', '.lp-q');
+        var doc = staffById(did); placeLabOrder({ pid: pt.id, patient: pt.name, docId: did, doctor: doc ? doc.name : '', visitId: o.visitId || '', admId: o.admId || '' }, ids, { comment: D.$('#loN').value.trim() }); D.close();
+      } });
+  }
+
+  /* results */
+  function openLabResult(id) {
+    var l = labById(id); if (!l) return;
+    hdw('resultW', { title: 'Results ' + l.code, wide: true, save: 'Complete and save', noFocus: false,
+      foot: '<button type="button" class="lnk" data-act="cancel">Cancel</button><span class="grow"></span><button type="button" class="ghost" data-act="progress">Save progress</button><button type="submit" class="pri">Complete results</button>',
+      body: '<div class="rbox" style="margin-bottom:14px"><div><small>Patient</small><b>' + esc(l.patient) + '</b></div><div class="stsel"><small>Order</small><b>' + esc(l.code) + ' · ' + fmtStamp(l.createdAt) + '</b></div></div>' +
+        '<table class="hm-mini" id="rsT"><thead><tr><th>Test</th><th style="width:30%">Result</th><th>Unit</th><th>Reference</th><th style="width:148px">Flag</th></tr></thead><tbody>' + l.items.map(function (i, n) {
+          var rad = i.dept === 'Radiology';
+          return '<tr data-n="' + n + '"><td><b>' + esc(i.name) + '</b><div class="hm-sub">' + esc(i.dept) + '</div></td>' + (rad ? '<td colspan="4"><textarea class="in" data-f="value" style="height:84px;width:100%;resize:vertical" placeholder="Findings and impression">' + esc(i.value || '') + '</textarea></td>'
+            : '<td><input class="in" data-f="value" value="' + esc(i.value || '') + '" placeholder="Value" autocomplete="off"></td><td>' + esc(i.unit || '—') + '</td><td>' + esc(i.ref || '—') + '</td><td><select class="in sel" data-f="flag">' + optList([['', 'Auto'], ['normal', 'Normal'], ['high', 'High'], ['low', 'Low']], i.flagSet ? i.flag : '') + '</select></td>') + '</tr>';
+        }).join('') + '</tbody></table>' +
+        '<div class="fl" style="margin-top:16px"><label class="lb" for="rsC"><span>Comments <span class="opt">(Optional)</span></span></label><textarea class="in" id="rsC" style="height:70px" maxlength="800" placeholder="Remarks for the doctor">' + esc(l.comment || '') + '</textarea></div>',
+      ready: function (D) {
+        function autoLbl(tr) { var sel = tr.querySelector('[data-f=flag]'); if (!sel) return; var it = l.items[+tr.dataset.n], f = flagOf(Object.assign({}, it, { value: tr.querySelector('[data-f=value]').value })); sel.options[0].textContent = f ? 'Auto: ' + f.charAt(0).toUpperCase() + f.slice(1) : 'Auto'; }
+        D.f.addEventListener('input', function (e) { var tr = e.target.closest('tr[data-n]'); if (tr && e.target.dataset.f === 'value') autoLbl(tr); });
+        D.f.querySelectorAll('tr[data-n]').forEach(autoLbl);
+      },
+      act: function (name, D) { if (name === 'progress') save(D, false); },
+      submit: function (D) { save(D, true); } });
+    function save(D, complete) {
+      var items = l.items.map(function (i) { return Object.assign({}, i); }), missing = null;
+      D.f.querySelectorAll('tr[data-n]').forEach(function (tr) {
+        var it = items[+tr.dataset.n], val = tr.querySelector('[data-f=value]').value.trim(), fs = tr.querySelector('[data-f=flag]'); it.value = val;
+        if (fs) { it.flagSet = !!fs.value; it.flag = fs.value || flagOf(it); } else it.flag = val ? 'normal' : '';
+        if (!val && !missing) missing = tr.querySelector('[data-f=value]');
+      });
+      if (complete && missing) return D.err('Enter a result for every test, or use Save progress.', missing);
+      var keep = JSON.stringify(l); l.items = items; l.comment = D.$('#rsC').value.trim(); if (!l.collectedAt) l.collectedAt = stampNow();
+      if (complete) { l.status = 'resulted'; l.resultedAt = stampNow(); l.resultedBy = ME.name || ''; } else if (l.status === 'ordered') l.status = 'collected';
+      persist('labs', l); D.close(); renderLab(); renderDash(); if ($('view-profile') && !$('view-profile').hidden) renderPtProfile(); toast(complete ? 'Results saved for ' + l.patient : 'Progress saved');
+      if (complete) openLabView(l.id);
+    }
+  }
+  function openLabView(id) {
+    var l = labById(id); if (!l) return; var w = canWrite('labs');
+    hdw('labV', { title: 'Report ' + l.code, wide: true, noFocus: true,
+      foot: '<button type="button" class="lnk" data-act="cancel">Close</button><span class="grow"></span>' + (w && l.status !== 'resulted' ? '<button type="button" class="ghost" data-act="enter">Enter results</button>' : '') + (l.status === 'resulted' ? '<button type="button" class="pri" data-act="print">Print report</button>' : ''),
+      body: '<div class="rbox"><div><small>Patient</small><b>' + esc(l.patient) + '</b></div><div class="stsel"><small>Status</small><span class="pl ' + (l.status === 'resulted' ? 'good' : 'warn') + '">' + esc(LAB_ST[l.status]) + '</span></div></div>' +
+        '<p class="hm-sub" style="margin:10px 0 0">Ordered ' + fmtStamp(l.createdAt) + ' by ' + esc(l.by || '—') + (l.resultedAt ? ' · Reported ' + fmtStamp(l.resultedAt) : '') + '</p>' +
+        '<table class="hm-mini" style="margin-top:14px"><thead><tr><th>Test</th><th>Result</th><th>Unit</th><th>Reference</th><th>Flag</th></tr></thead><tbody>' + l.items.map(function (i) { var f = FLAG_PILL[i.flag || ''] || FLAG_PILL['']; return '<tr><td><b>' + esc(i.name) + '</b></td><td style="white-space:pre-wrap">' + (i.value ? '<b>' + esc(i.value) + '</b>' : '<span class="hm-sub">Pending</span>') + '</td><td>' + esc(i.unit || '') + '</td><td>' + esc(i.ref || '') + '</td><td>' + (i.dept === 'Radiology' || !i.value ? '' : '<span class="pl ' + f[0] + '" style="height:24px;padding:0 11px;font-size:11px">' + f[1] + '</span>') + '</td></tr>'; }).join('') + '</tbody></table>' +
+        (l.comment ? '<h4 class="hm-h">Comments</h4><div class="hm-note">' + esc(l.comment) + '</div>' : ''),
+      act: function (name, D) { if (name === 'print') printLab(l); else if (name === 'enter') { D.close(); openLabResult(l.id); } } });
+  }
+  function printLab(l) {
+    var p = l.pid ? patientById(l.pid) : null, rad = l.items.every(function (i) { return i.dept === 'Radiology'; }), lab = l.items.filter(function (i) { return i.dept !== 'Radiology'; }), rds = l.items.filter(function (i) { return i.dept === 'Radiology'; });
+    printDoc('Report ' + l.code,
+      letterhead(rad ? 'Radiology Report' : lab.length && rds.length ? 'Laboratory and Radiology Report' : 'Laboratory Report', 'Order ' + l.code) +
+      metaRows([['Patient', l.patient], ['Patient ID', p ? p.code : ''], ['Age / gender', p ? ageGender(p) : ''], ['Ordered by', l.by], ['Ordered', fmtStamp(l.createdAt)], ['Sample collected', l.collectedAt ? fmtStamp(l.collectedAt) : ''], ['Reported', l.resultedAt ? fmtStamp(l.resultedAt) : ''], ['Order no.', l.code]]) +
+      (lab.length ? '<h2>Results</h2><table><thead><tr><th>Test</th><th class="r">Result</th><th>Unit</th><th>Reference range</th><th>Flag</th></tr></thead><tbody>' + lab.map(function (i) { var f = i.flag === 'high' ? 'HIGH' : i.flag === 'low' ? 'LOW' : ''; return '<tr><td>' + esc(i.name) + '</td><td class="r"><b>' + esc(i.value || '') + '</b></td><td>' + esc(i.unit || '') + '</td><td>' + esc(i.ref || '') + '</td><td class="flag">' + f + '</td></tr>'; }).join('') + '</tbody></table>' : '') +
+      rds.map(function (i) { return '<h2>' + esc(i.name) + '</h2><div class="box">' + esc(i.value || 'Pending') + '</div>'; }).join('') +
+      (l.comment ? '<h2>Comments</h2><div class="box">' + esc(l.comment) + '</div>' : '') +
+      '<div class="sig"><div>' + esc(l.resultedBy || 'Reported by') + '<br>Signature and stamp</div></div>');
+  }
+
+  /* sample lab data: the standard catalog plus orders in every state */
+  function seedLab(r) {
+    LABT = stdTests(); var byName = {}; LABT.forEach(function (t) { byName[t.name] = t; });
+    var vis = VISITS.filter(function (v) { return v.status === 'final'; }), adm = ADMS.filter(function (a) { return a.status === 'admitted'; }), n = 0;
+    function val(t) { if (t.lo == null) return t.dept === 'Radiology' ? (t.name.indexOf('Chest') > -1 ? 'Lung fields are clear. Heart size is normal. No effusion.' : t.name.indexOf('Ultrasound') > -1 ? 'Liver, gallbladder, spleen and kidneys appear normal. No free fluid.' : t.name.indexOf('ECG') > -1 ? 'Normal sinus rhythm, rate 76/min. No acute ST-T changes.' : 'No significant abnormality seen. Impression: normal study.') : 'Clear, no pus cells'; var span = t.hi - t.lo, x = r(100); return String(x < 70 ? +(t.lo + span * (0.15 + r(70) / 100)).toFixed(1) : x < 85 ? +(t.hi + span * (0.05 + r(30) / 100)).toFixed(1) : +Math.max(0, t.lo - span * (0.05 + r(25) / 100)).toFixed(1)); }
+    function order(pid, name, docId, doc, names, status, ctx, daysAgo) {
+      var at = addDays(TODAY, -daysAgo) + ' ' + hhmm(540 + r(300)), items = names.map(function (nm) { return testItem(byName[nm]); }), l = { id: 'lab' + (++n), code: 'LAB-' + (1000 + n), pid: pid, patient: name, docId: docId, by: doc, visitId: ctx.visitId || '', admId: ctx.admId || '', createdAt: at, status: status, items: items, comment: '', ord: 4000 - n };
+      if (status !== 'ordered') l.collectedAt = at.slice(0, 11) + hhmm(Math.min(1430, toMin(at.slice(11)) + 25));
+      if (status === 'resulted') { items.forEach(function (i) { i.value = val(byName[i.name]); i.flag = flagOf(i); }); l.resultedAt = at.slice(0, 11) + hhmm(Math.min(1439, toMin(at.slice(11)) + 150)); l.resultedBy = 'Lab technician'; }
+      LABS.push(l); return l;
+    }
+    var combos = [['Hemoglobin (Hb)', 'White Blood Cells (WBC)', 'Platelet Count'], ['Fasting Blood Sugar', 'HbA1c'], ['Total Cholesterol', 'Triglycerides', 'HDL Cholesterol', 'LDL Cholesterol'], ['Serum Creatinine', 'Blood Urea', 'Serum Sodium', 'Serum Potassium'], ['ALT (SGPT)', 'AST (SGOT)'], ['TSH', 'Vitamin D (25-OH)'], ['Chest X-Ray (PA view)'], ['C-Reactive Protein (CRP)', 'ESR'], ['Abdominal Ultrasound'], ['ECG (12 lead)']];
+    vis.slice(0, 9).forEach(function (v, i) { order(v.pid, v.patient, v.docId, v.doctor, combos[i % combos.length], i < 6 ? 'resulted' : i < 8 ? 'collected' : 'ordered', { visitId: v.id }, Math.max(0, Math.round(dayDiff(v.date, TODAY)))); });
+    adm.slice(0, 3).forEach(function (a, i) { order(a.pid, a.patient, a.docId, a.doctor, combos[(i + 3) % combos.length], i === 0 ? 'resulted' : i === 1 ? 'collected' : 'ordered', { admId: a.id }, Math.min(2, i)); });
+  }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
   function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403 || e.status === 409) toast(e.message); else saveFail(); }); }
@@ -4346,7 +4584,7 @@ window.bootApp = function () {
     api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS), wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }).catch(function (e) { if (e.status !== 409) saveFail(); });
   }
   function rerenderAll() {
-    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits(); renderQueue();
+    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits(); renderQueue(); renderLab();
   }
   function hydrate(srv) {
     if (!srv) { seedServer(); rerenderAll(); return; }
@@ -4397,7 +4635,7 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };

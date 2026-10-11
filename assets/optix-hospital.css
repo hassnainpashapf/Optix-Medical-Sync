@@ -172,3 +172,14 @@ fieldset:disabled .hm-x, fieldset:disabled .hm-addrow { display: none; }
 
 .oq-call .addbtn:disabled { opacity: .45; box-shadow: none; cursor: default; }
 .oq-call .addbtn:disabled:hover { background: var(--blue); }
+
+/* ---------- test picker (lab and radiology) ---------- */
+.lp .lp-q { height: 40px; }
+.lp-list { margin-top: 8px; max-height: 232px; overflow-y: auto; border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 4px; }
+.lp-i { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; font-size: 12.5px; cursor: pointer; }
+.lp-i[hidden] { display: none; }
+.lp-i:hover { background: #f6f8fb; }
+.lp-i input { width: 16px; height: 16px; accent-color: var(--blue); flex: none; }
+.lp-n { flex: 1; min-width: 0; font-weight: 600; color: var(--ink); }
+.lp-p { color: var(--ink-2); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 78px; text-align: right; }
+.lp-sum { margin-top: 8px; font-weight: 700; }
