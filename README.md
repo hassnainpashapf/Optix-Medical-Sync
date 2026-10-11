@@ -6,7 +6,7 @@ Multi-tenant hospital management SaaS. One Node process (Node 24+, **no npm pack
 |---|---|
 | `/` | Marketing website in the Pharmacy look (photo hero, bento, steps, booking check, live pricing from the platform; no 3D, no libraries) |
 | `/privacy`, `/terms` | Privacy Policy and Terms of Use (disclose Google AdSense and cookies) |
-| `/signup` | A hospital creates its own workspace and Super Admin, 14-day free trial |
+| `/signup` | A hospital creates its own workspace and Super Admin, 15-day free trial |
 | `/app` | The hospital app (sign in with workspace code, username, password) |
 | `/platform` | Platform owner panel (you): workspaces, plans and prices, email outbox, platform log |
 

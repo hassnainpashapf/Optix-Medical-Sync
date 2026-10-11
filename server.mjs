@@ -18,7 +18,7 @@ const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data');
 const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 const SESSION_MS = 7 * 24 * 3600 * 1000;
 const MAX_FILE = 10 * 1024 * 1024;
-const TRIAL_DAYS = 14;
+const TRIAL_DAYS = 15;
 const COLLECTIONS = new Set(['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs']);
 /* the hospital modules added after the first release: wards and beds (IPD), consultations, OPD queue, lab and radiology */
 const HOSPITAL_COLS = ['wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs'];
