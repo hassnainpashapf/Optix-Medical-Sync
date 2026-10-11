@@ -43,8 +43,6 @@
   .grow { flex: 0 0 0; }
   .iconbtn { width: 40px; height: 40px; padding: 0; display: grid; place-items: center; flex: none; }
   .srch-btn { display: grid; }
-  .vsep, .user .ic { display: none; }
-  .user div { display: none; }
   .user .av { width: 40px; height: 40px; }
   .iconbtn .dot { top: 7px; right: 8px; }
   .notif { position: fixed; left: 10px; right: 10px; top: 66px; width: auto; max-height: calc(100dvh - 84px); overflow-y: auto; z-index: 80; }
@@ -94,6 +92,12 @@
   .hm-mini-btn { height: 40px; padding: 0 16px; }
   .hm-addrow { height: 44px; }
   .tl-i { padding: 12px 8px; }
+  .dots { min-width: 40px; min-height: 40px; display: grid; place-items: center; margin: -8px -8px 0 0; }
+  .ch-head .sq, .dnav2 button, .cal-top button { min-width: 40px; min-height: 40px; }
+  .chead .cd .kebab { width: 40px; height: 40px; }
+  .oq-a .hm-x { width: 40px; height: 40px; }
+  .tbl-wrap .lk, .tbl-wrap td a, .tbl-wrap thead th button { min-height: 40px; display: inline-flex; align-items: center; }
+  .tbl-wrap .lk.nm2 { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; }
 
   /* toolbars wrap: search takes a full row, buttons share the next one */
   .tools { gap: 10px; }
@@ -158,6 +162,10 @@
   .ap-head { flex-wrap: wrap; gap: 10px; }
   .rcard, .mid2 .rcard { padding: 16px 14px 14px; }
   .toast { bottom: calc(24px + env(safe-area-inset-bottom)); max-width: calc(100vw - 32px); text-align: center; }
+}
+
+@media (max-width: 640px) {
+  .vsep, .user .ic, .user div { display: none; }
 }
 
 @media (max-width: 560px) {
@@ -253,4 +261,10 @@
   .tools .addbtn { flex: 1 1 auto; margin-left: 0; }
   .tools .exw { margin-left: 0; flex: none; }
   .pg[aria-label="First page"], .pg[aria-label="Last page"] { display: none; }
+}
+
+/* charts drawn as svg keep a readable size and scroll sideways inside their card */
+@media (max-width: 560px) {
+  div:has(> svg.rsvg) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  svg.rsvg { min-width: 560px; }
 }
