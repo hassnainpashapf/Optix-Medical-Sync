@@ -767,7 +767,7 @@
   .lg-points svg { width: 15px; height: 15px; fill: none; stroke: #7fb0ff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .lg-orb { position: absolute; right: -120px; bottom: -120px; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(110,160,255,.3); box-shadow: 0 0 0 60px rgba(110,160,255,.05), 0 0 0 130px rgba(110,160,255,.04); animation: orb 14s ease-in-out infinite; }
   @keyframes orb { 50% { transform: translate(-18px, -14px) scale(1.04); } }
-  .lg-main { display: grid; place-items: center; padding: 32px 24px; overflow-y: auto; }
+  .lg-main { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 32px 24px; overflow-y: auto; }
   .lg-card { width: min(380px, 100%); }
   .lg-brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; margin-bottom: 22px; }
   .lg-brand svg { width: 26px; height: 30px; }
@@ -4966,7 +4966,7 @@ window.bootApp = function () {
     Promise.all([hubLoad(), import('/assets/optix-suite-sdk.js')]).then(function (r) {
       var h = r[0], m = r[1];
       m.mountGoogleButton($('lgGoogleWs'), {
-        hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (credential) { return Promise.resolve(credential); } }, text: 'continue_with',
+        hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (credential) { return Promise.resolve(credential); } }, text: 'continue_with', width: (function () { var f = $('lgForm'), cs = getComputedStyle(f); return Math.max(240, Math.min(400, f.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) || 320)); })(),
         onResult: function (credential) { $('lgErr').textContent = ''; api('POST', '/api/login/google', { workspace: $('lgWs').value.trim().toLowerCase(), credential: credential }).then(function (res) { start(res); }).catch(function (err) { $('lgErr').textContent = err.message; }); },
         onError: function (err) { $('lgErr').textContent = err.message; },
       });
