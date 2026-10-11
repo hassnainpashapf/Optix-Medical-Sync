@@ -968,6 +968,7 @@
     </nav>
     <div class="group">CLINICAL</div>
     <nav class="nav">
+      <a href="#consultations" data-ic="rx">Consultations</a>
       <a href="#wards" data-ic="bed">Wards &amp; Beds</a>
     </nav>
     <div class="group">FINANCE</div>
@@ -1040,6 +1041,21 @@
             <div class="tbl-wrap"><table><thead><tr><th>Ward</th><th>Type</th><th>Floor</th><th>Daily Rate</th><th>Beds</th><th>Occupied</th><th>Actions</th></tr></thead><tbody id="wrRows"></tbody></table></div>
             <div class="empty" id="wrEmpty" hidden>No wards yet.</div>
           </div>
+        </section>
+      </div>
+
+      <div class="view" id="view-visits" hidden>
+        <div class="head"><div><h1>Consultations</h1><p>Complaints, vitals, diagnoses and prescriptions for every visit</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="kpis" id="vsKpis"></div>
+          <div class="tools">
+            <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="vsQ" type="search" placeholder="Search patient, doctor, diagnosis or medicine" aria-label="Search consultations"></label>
+            <select class="in sel" id="vsF" aria-label="Filter" style="width:190px;height:40px"><option value="All">All consultations</option><option value="Today">Today</option><option value="Draft">Open drafts</option><option value="Followup">Follow-up due (7 days)</option></select>
+            <button class="addbtn" id="vsAdd">New Consultation <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Prescription</th><th>Follow-up</th><th>Status</th><th>Actions</th></tr></thead><tbody id="vsRows"></tbody></table></div>
+          <div class="empty" id="vsEmpty" hidden>No consultations match.</div>
+          <nav class="pager" id="vsPager" aria-label="Pages"></nav>
         </section>
       </div>
 
@@ -1361,6 +1377,10 @@
                 </tr></thead>
                 <tbody id="rrows"></tbody>
               </table><div class="empty" id="rEmpty" hidden>No reports for this patient yet.</div></div>
+            </section>
+            <section class="card reports tlcard" aria-label="Care timeline">
+              <div class="ph"><div><b>Care Timeline</b><small>Consultations, admissions, lab results and bills in one place</small></div><span class="hm-sub" id="tlCount"></span></div>
+              <div class="tl thin" id="ptTl"></div>
             </section>
           </div>
         </div>
@@ -1907,7 +1927,8 @@ window.bootApp = function () {
     Stocks: [['box', 'Stocks']],
     Peripherals: [['print', 'Peripherals']],
     Dashboard: [['grid', 'Dashboard']],
-    'Wards & Beds': [['bed', 'Wards & Beds']]
+    'Wards & Beds': [['bed', 'Wards & Beds']],
+    Consultations: [['rx', 'Consultations']]
   };
   var hist = ['Dashboard'], hi = 0;
   function renderCrumb(key) {
@@ -1918,8 +1939,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1934,6 +1955,7 @@ window.bootApp = function () {
     if (vid === 'view-aud') loadAudit();
     if (vid === 'view-plan') loadPlan();
     if (vid === 'view-wards') renderWards();
+    if (vid === 'view-visits') renderVisits();
     renderCrumb(key);
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
@@ -2190,7 +2212,7 @@ window.bootApp = function () {
       e.stopPropagation(); var open = document.getElementById('kmenu'); closeKebab(); fMenu.hidden = true;
       if (open && open.dataset.id === b.dataset.id) return;
       var m = document.createElement('div'); m.className = 'menu'; m.id = 'kmenu'; m.dataset.id = r.id;
-      m.innerHTML = '<button data-k="view">View details</button><button data-k="edit">Edit appointment</button>' + (r.status === 'can' ? '' : '<button data-k="cancel">Cancel appointment</button>');
+      m.innerHTML = '<button data-k="view">View details</button>' + (canWrite('visits') && r.status !== 'can' ? '<button data-k="start">' + (apptVisit(r.id) ? 'Open consultation' : 'Start consultation') + '</button>' : '') + '<button data-k="edit">Edit appointment</button>' + (r.status === 'can' ? '' : '<button data-k="cancel">Cancel appointment</button>');
       b.parentNode.appendChild(m); return;
     }
     if (a === 'approve') { if (!approveRequest(r)) return; toast('Approved: ' + r.patient); }
@@ -2202,6 +2224,7 @@ window.bootApp = function () {
     var r = findAppt(document.getElementById('kmenu').dataset.id); if (!r) return;
     if (b.dataset.k === 'view') openRes(r.id);
     else if (b.dataset.k === 'edit') openEditAppt(r);
+    else if (b.dataset.k === 'start') startConsult(r);
     else { r.status = 'can'; saveAppt(r, 'approved'); toast('Cancelled: ' + r.patient); renderAppts(); renderDash(); }
   });
   document.addEventListener('click', function () { closeKebab(); fMenu.hidden = true; });
@@ -2519,7 +2542,7 @@ window.bootApp = function () {
     $('pfId').textContent = p.code; $('pfPhone').textContent = p.phone; $('pfEmail').textContent = p.email || 'Not provided';
     $('pfIdC').dataset.copy = p.code; $('pfPhoneC').dataset.copy = p.phone; $('pfEmailC').dataset.copy = p.email || ''; $('pfEmailC').hidden = !p.email;
     $('chIns').textContent = p.insurance; $('chProv').textContent = p.provider || 'Self-pay'; $('chPlan').textContent = p.carePlan; $('chType').textContent = p.type;
-    renderReports(); renderPCal();
+    renderReports(); renderPCal(); renderTimeline(p);
   }
   function renderReports() {
     var p = curPatient(); if (!p) return; var l = p.reports.slice().sort(function (a, b) { return (b.date + b.time) > (a.date + a.time) ? 1 : -1; });
@@ -3349,7 +3372,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3934,7 +3957,7 @@ window.bootApp = function () {
   }
   function seedHospital() {
     WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; SEED_NEW = { pts: [], txs: [] };
-    var r = lcg(4242); seedIPD(r);
+    var r = lcg(4242); seedIPD(r); seedConsults(r);
   }
   function hospitalSeedBody() { return { wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }; }
   function loadSampleModules() {
@@ -3951,6 +3974,193 @@ window.bootApp = function () {
     var c = [];
     if (canR('beds') && BEDS.length) { var s = bedStats(); c.push(statCard('bed', 'Bed Occupancy', s.occ + ' of ' + (s.total - s.maint) + ' usable beds', s.pct + '%', '<div class="bar2' + (s.pct >= 90 ? ' bad' : s.pct >= 75 ? ' warn' : '') + '"><i style="width:' + s.pct + '%"></i></div>')); }
     $('stats2').hidden = !c.length; $('stats2').innerHTML = c.join('');
+  }
+  /* ===== consultations ===== */
+
+  /* ---------- consultations and prescriptions ---------- */
+  var FREQ = { OD: 'Once daily (OD)', BD: 'Twice daily (BD)', TDS: 'Three times daily (TDS)', QID: 'Four times daily (QID)', HS: 'At bedtime (HS)', SOS: 'When needed (SOS)', STAT: 'Immediately (STAT)' };
+  var FREQ_S = { OD: 'OD · once a day', BD: 'BD · twice a day', TDS: 'TDS · 3 times a day', QID: 'QID · 4 times a day', HS: 'HS · at night', SOS: 'SOS · if needed', STAT: 'STAT · now' };
+  var COMMON_MEDS = ['Paracetamol 500 mg', 'Ibuprofen 400 mg', 'Amoxicillin 500 mg', 'Amoxicillin/Clavulanate 625 mg', 'Azithromycin 500 mg', 'Ciprofloxacin 500 mg', 'Metronidazole 400 mg', 'Cefixime 400 mg', 'Omeprazole 20 mg', 'Pantoprazole 40 mg', 'Domperidone 10 mg', 'Ondansetron 4 mg', 'Loratadine 10 mg', 'Cetirizine 10 mg', 'Montelukast 10 mg', 'Salbutamol inhaler', 'Prednisolone 5 mg', 'Metformin 500 mg', 'Glimepiride 2 mg', 'Amlodipine 5 mg', 'Losartan 50 mg', 'Atorvastatin 20 mg', 'Aspirin 75 mg', 'Clopidogrel 75 mg', 'Furosemide 40 mg', 'Diclofenac 50 mg', 'Naproxen 500 mg', 'Vitamin D3 50,000 IU', 'Vitamin C 500 mg', 'Ferrous sulfate 200 mg', 'Oral rehydration salts', 'Cough syrup', 'Calamine lotion', 'Hydrocortisone cream 1%', 'Eye drops (lubricant)', 'Nasal saline spray'];
+  var vsF = 'All', vsQ = '', vsPage = 1, VSP = 8;
+  function visitById(id) { return VISITS.filter(function (v) { return v.id === id; })[0] || null; }
+  function apptVisit(aid) { return VISITS.filter(function (v) { return v.apptId === aid; })[0] || null; }
+  function medNames() { var seen = {}, out = []; COMMON_MEDS.forEach(function (m) { seen[m.toLowerCase()] = 1; out.push(m); }); if (canR('stocks')) SUPS.forEach(function (sp) { (STK[sp.id] || []).forEach(function (x) { if (!seen[x.name.toLowerCase()]) { seen[x.name.toLowerCase()] = 1; out.push(x.name); } }); }); return out; }
+  function vsView() {
+    var q = vsQ.toLowerCase(), soon = addDays(TODAY, 7);
+    return VISITS.filter(function (v) {
+      if (vsF === 'Today' && v.date !== TODAY) return false; if (vsF === 'Draft' && v.status !== 'draft') return false; if (vsF === 'Followup' && !(v.followUp && v.followUp >= TODAY && v.followUp <= soon)) return false;
+      return !q || (v.patient + ' ' + v.doctor + ' ' + (v.diagnosis || '') + ' ' + (v.complaint || '') + ' ' + v.code + ' ' + (v.rx || []).map(function (m) { return m.med; }).join(' ')).toLowerCase().indexOf(q) > -1;
+    }).sort(function (a, b) { return (b.date + (b.time || '')) > (a.date + (a.time || '')) ? 1 : -1; });
+  }
+  function renderVisits() {
+    if (!canR('visits')) return;
+    var td = VISITS.filter(function (v) { return v.date === TODAY; }), dr = VISITS.filter(function (v) { return v.status === 'draft'; }).length, rxToday = td.filter(function (v) { return (v.rx || []).length; }).length, soon = addDays(TODAY, 7), fu = VISITS.filter(function (v) { return v.followUp && v.followUp >= TODAY && v.followUp <= soon; }).length;
+    $('vsKpis').innerHTML = kpiHtml([['steth', 'Consultations Today', td.length], ['refresh', 'Open Drafts', dr], ['rx', 'Prescriptions Today', rxToday], ['cal', 'Follow-ups This Week', fu]]);
+    $('vsAdd').hidden = !canWrite('visits');
+    var v = vsView(), pages = Math.max(1, Math.ceil(v.length / VSP)); if (vsPage > pages) vsPage = pages;
+    $('vsRows').innerHTML = v.slice((vsPage - 1) * VSP, vsPage * VSP).map(function (x) {
+      var rx = (x.rx || []);
+      return '<tr><td class="td2"><span>' + fmtDate(x.date) + '</span><small>' + (x.time ? fmtTime(x.time) : '') + '</small></td><td><div class="nm2"><b>' + (x.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + x.pid + '"><b>' + esc(x.patient) + '</b></button>' : esc(x.patient)) + '</b><small>' + esc(x.code) + '</small></div></td><td>' + esc(x.doctor || '—') + '</td><td style="white-space:normal;min-width:190px;max-width:280px">' + esc(x.diagnosis || x.complaint || '—') + '</td>' +
+        '<td>' + (rx.length ? '<span class="hm-tag cons">' + rx.length + (rx.length === 1 ? ' medicine' : ' medicines') + '</span>' : '<span class="hm-sub">None</span>') + '</td><td>' + (x.followUp ? fmtDate(x.followUp) : '—') + '</td><td><span class="pl ' + (x.status === 'final' ? 'good' : 'warn') + '">' + (x.status === 'final' ? 'Completed' : 'Draft') + '</span></td>' +
+        '<td><span class="kw"><button class="kebab" data-a="vmenu" data-id="' + esc(x.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(x.patient) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
+    }).join('');
+    $('vsEmpty').hidden = v.length > 0; $('vsPager').innerHTML = v.length ? pagerHtml(vsPage, pages) : '';
+  }
+  $('vsQ').addEventListener('input', function (e) { vsQ = e.target.value.trim(); vsPage = 1; renderVisits(); });
+  $('vsF').addEventListener('change', function () { vsF = this.value; vsPage = 1; renderVisits(); });
+  $('vsPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; vsPage = +b.dataset.p; renderVisits(); });
+  $('vsAdd').addEventListener('click', function () { openVisit({}); });
+  $('vsRows').addEventListener('click', function (e) {
+    var l = e.target.closest('[data-a="pt"]'); if (l) { curPid = +l.dataset.pid; go('PatientProfile'); return; }
+    var k = e.target.closest('[data-a="vmenu"]'); if (!k) return; e.stopPropagation(); var v = visitById(k.dataset.id), it = [['open', canWrite('visits') ? (v.status === 'final' ? 'Open consultation' : 'Continue consultation') : 'View consultation']];
+    if ((v.rx || []).length) it.push(['print', 'Print prescription']); if (v.pid && canR('patients')) it.push(['pt', 'Open patient profile']); if (canWrite('visits')) it.push(['del', 'Delete consultation']);
+    rowMenu(k, it, function (a) { if (a === 'open') openVisit({ visitId: v.id }); else if (a === 'print') printRx(v); else if (a === 'pt') { curPid = v.pid; go('PatientProfile'); } else { VISITS = VISITS.filter(function (x) { return x !== v; }); unpersist('visits', v.id); renderVisits(); toast('Deleted consultation ' + v.code); } });
+  });
+
+  /* the consultation drawer: complaint, vitals, diagnosis, prescription lines, advice, follow-up */
+  function rxRowHtml(m) {
+    return '<tr><td><input class="in" data-f="med" list="medList" placeholder="Medicine" value="' + esc(m.med || '') + '" autocomplete="off"></td><td><input class="in" data-f="dose" placeholder="e.g. 1 tablet" value="' + esc(m.dose || '') + '"></td><td><select class="in sel" data-f="freq">' + optList(Object.keys(FREQ_S).map(function (k) { return [k, FREQ_S[k]]; }), m.freq || 'BD') + '</select></td><td><input class="in" data-f="days" type="number" min="1" max="365" placeholder="5" value="' + esc(m.days || '') + '" style="width:64px"></td><td><input class="in" data-f="note" placeholder="After meals" value="' + esc(m.note || '') + '"></td><td><button type="button" class="hm-x" data-x="1" aria-label="Remove medicine">' + svg('x') + '</button></td></tr>';
+  }
+  function openVisit(o) {
+    var v = o.visitId ? visitById(o.visitId) : null, appt = o.apptId ? findAnyAppt(o.apptId) : null, token = o.tokenId ? OPDQ.filter(function (t) { return t.id === o.tokenId; })[0] : null, isNew = !v;
+    if (isNew) {
+      var ex = appt ? apptVisit(appt.id) : null; if (ex) { v = ex; isNew = false; }
+    }
+    var ed = canWrite('visits');
+    if (isNew) {
+      if (!ed) { toast('Your role cannot start a consultation.'); return; }
+      var pid = o.pid || (appt && appt.pid) || (token && token.pid) || 0, p = pid ? patientById(pid) : null, did = o.docId || (appt && appt.docId) || (token && token.docId) || 0, d = did ? staffById(did) : null;
+      v = { id: newId('vis'), code: nextCode('VIS-', VISITS), pid: pid, patient: p ? p.name : (appt ? appt.patient : token ? token.patient : ''), apptId: appt ? appt.id : 0, tokenId: token ? token.id : '', docId: did, doctor: d ? d.name : '', date: appt ? appt.date : TODAY, time: appt ? appt.time : stampNow().slice(11), status: 'draft', complaint: '', vitals: {}, diagnosis: '', advice: '', rx: [], followUp: '', ord: Date.now(), isNew: true };
+    }
+    var rx = (v.rx && v.rx.length ? v.rx : (isNew ? [{}] : [])).map(function (m) { return Object.assign({}, m); }), vt = v.vitals || {}, pat = v.pid ? patientById(v.pid) : null;
+    var labOrders = LABS.filter(function (l) { return l.visitId === v.id; });
+    hdw('visW', { title: (isNew ? 'New Consultation' : 'Consultation ' + v.code), wide: true, noFocus: !ed,
+      foot: ed ? '<button type="button" class="lnk" data-act="cancel">Cancel</button><span class="grow"></span><button type="button" class="ghost" data-act="print">Print prescription</button><button type="button" class="ghost" data-act="draft">Save draft</button><button type="submit" class="pri">Finish consultation</button>' : '<button type="button" class="lnk" data-act="cancel">Close</button><span class="grow"></span>' + ((v.rx || []).length ? '<button type="button" class="pri" data-act="print">Print prescription</button>' : ''),
+      body: '<fieldset' + (ed ? '' : ' disabled') + '>' +
+        '<div class="row2">' +
+          '<div class="fl"><label class="lb" for="vsP">Patient</label>' + (v.pid ? '<input class="in" id="vsP" value="' + esc(v.patient) + '" readonly style="background:#f7f8fb">' : ptPickHtml('vsP')) + '</div>' +
+          '<div class="fl"><label class="lb" for="vsD">Doctor</label><select class="in sel" id="vsD">' + docOptions(v.docId, 'Select doctor') + '</select></div></div>' +
+        (pat ? '<div class="hm-sub" style="margin:-4px 0 14px">' + esc(pat.code) + ' · ' + esc(ageGender(pat)) + (pat.insurance && pat.insurance !== 'Not Covered' ? ' · ' + esc(pat.provider || pat.insurance) : '') + (v.apptId ? ' · From appointment ' + fmtDate(v.date) + ' ' + fmtTime(v.time) : '') + '</div>' : '') +
+        '<div class="fl"><div class="lb"><label for="vsC">Complaint and history</label></div><textarea class="in" id="vsC" style="height:84px" maxlength="1200" placeholder="Why the patient came, for how long, what they have tried">' + esc(v.complaint || '') + '</textarea></div>' +
+        '<h4 class="hm-h">Vitals <small>(all optional)</small></h4><div class="hm-row5">' +
+          '<div class="fl"><label class="lb" for="vsBP">Blood pressure</label><input class="in" id="vsBP" placeholder="120/80" value="' + esc(vt.bp || '') + '" autocomplete="off"></div>' +
+          '<div class="fl"><label class="lb" for="vsPU">Pulse (bpm)</label><input class="in" id="vsPU" type="number" min="20" max="250" placeholder="76" value="' + esc(vt.pulse || '') + '"></div>' +
+          '<div class="fl"><label class="lb" for="vsTM">Temp (&deg;C)</label><input class="in" id="vsTM" type="number" step="0.1" min="30" max="45" placeholder="36.8" value="' + esc(vt.temp || '') + '"></div>' +
+          '<div class="fl"><label class="lb" for="vsWT">Weight (kg)</label><input class="in" id="vsWT" type="number" step="0.1" min="1" max="400" placeholder="70" value="' + esc(vt.weight || '') + '"></div>' +
+          '<div class="fl"><label class="lb" for="vsSP">SpO&#8322; (%)</label><input class="in" id="vsSP" type="number" min="50" max="100" placeholder="98" value="' + esc(vt.spo2 || '') + '"></div></div>' +
+        '<div class="fl"><label class="lb" for="vsDx">Diagnosis</label><input class="in" id="vsDx" placeholder="e.g. Acute tonsillitis" value="' + esc(v.diagnosis || '') + '" autocomplete="off"></div>' +
+        '<h4 class="hm-h">Prescription <small>medicine, dose, how often, for how many days</small></h4>' +
+        '<datalist id="medList">' + medNames().map(function (m) { return '<option value="' + esc(m) + '">'; }).join('') + '</datalist>' +
+        '<table class="hm-mini" id="vsRx"><thead><tr><th>Medicine</th><th>Dose</th><th>Frequency</th><th>Days</th><th>Instructions</th><th></th></tr></thead><tbody>' + rx.map(rxRowHtml).join('') + '</tbody></table>' +
+        (ed ? '<button type="button" class="hm-addrow" id="vsAddRx">' + svg('plus') + 'Add medicine</button>' : '') +
+        '<div id="vsLabBox">' + (typeof labPickerHtml === 'function' ? labPickerHtml(v, labOrders) : '') + '</div>' +
+        '<div class="fl" style="margin-top:18px"><div class="lb"><label for="vsA">Advice to the patient</label></div><textarea class="in" id="vsA" style="height:70px" maxlength="800" placeholder="Rest, fluids, diet, warning signs">' + esc(v.advice || '') + '</textarea></div>' +
+        '<div class="row2"><div class="fl"><span class="lb">Follow-up date <span class="opt">(Optional)</span></span><div id="vsFU"></div></div><div class="fl"></div></div></fieldset>',
+      ready: function (D) {
+        D.fu = mkdp('vsFU', v.followUp || '', 1, 2);
+        D.$('#vsAddRx') && D.$('#vsAddRx').addEventListener('click', function () { D.$('#vsRx tbody').insertAdjacentHTML('beforeend', rxRowHtml({})); var l = D.$('#vsRx tbody tr:last-child input'); if (l) l.focus(); });
+        D.$('#vsRx').addEventListener('click', function (e) { var x = e.target.closest('[data-x]'); if (x) x.closest('tr').remove(); });
+        if (typeof labPickerReady === 'function') labPickerReady(D, v);
+      },
+      act: function (name, D) {
+        var res = collect(D); if (res.err) return D.err(res.err[0], res.err[1]);
+        if (name === 'print') { saveVisit(res.v, 'keep', D, function () { printRx(res.v); }); } else if (name === 'draft') saveVisit(res.v, 'draft', D);
+      },
+      submit: function (D) { var res = collect(D); if (res.err) return D.err(res.err[0], res.err[1]); saveVisit(res.v, 'final', D); } });
+    function collect(D) {
+      var p = v.pid ? patientById(v.pid) : ptFromInput('vsP'); if (!p) return { err: ['Choose a registered patient from the list.', '#vsP'] };
+      var did = +D.$('#vsD').value; if (!did) return { err: ['Select the doctor.', '#vsD'] };
+      var bp = D.$('#vsBP').value.trim(); if (bp && !/^\d{2,3}\s*\/\s*\d{2,3}$/.test(bp)) return { err: ['Blood pressure looks like 120/80.', '#vsBP'] };
+      var nums = [['#vsPU', 20, 250, 'Pulse'], ['#vsTM', 30, 45, 'Temperature'], ['#vsWT', 1, 400, 'Weight'], ['#vsSP', 50, 100, 'SpO2']];
+      for (var i = 0; i < nums.length; i++) { var val = D.$(nums[i][0]).value; if (val !== '' && (+val < nums[i][1] || +val > nums[i][2])) return { err: [nums[i][3] + ' should be between ' + nums[i][1] + ' and ' + nums[i][2] + '.', nums[i][0]] }; }
+      var lines = [], bad = null; D.f.querySelectorAll('#vsRx tbody tr').forEach(function (tr) {
+        var m = { med: tr.querySelector('[data-f=med]').value.trim(), dose: tr.querySelector('[data-f=dose]').value.trim(), freq: tr.querySelector('[data-f=freq]').value, days: tr.querySelector('[data-f=days]').value.trim(), note: tr.querySelector('[data-f=note]').value.trim() };
+        if (!m.med && !m.dose && !m.days && !m.note) return; if (!m.med) { bad = tr.querySelector('[data-f=med]'); return; } lines.push(m);
+      });
+      if (bad) return { err: ['Each prescription line needs a medicine name.', bad] };
+      var doc = staffById(did), n = Object.assign({}, v); n.pid = p.id; n.patient = p.name; n.docId = did; n.doctor = doc ? doc.name : ''; n.complaint = D.$('#vsC').value.trim(); n.vitals = { bp: bp, pulse: D.$('#vsPU').value, temp: D.$('#vsTM').value, weight: D.$('#vsWT').value, spo2: D.$('#vsSP').value };
+      n.diagnosis = D.$('#vsDx').value.trim(); n.rx = lines; n.advice = D.$('#vsA').value.trim(); n.followUp = D.fu.val || ''; delete n.isNew;
+      if (typeof labPickerRead === 'function') n._labs = labPickerRead(D);
+      return { v: n };
+    }
+    function saveVisit(n, mode, D, after) {
+      if (mode === 'final' && !n.diagnosis && !n.complaint && !n.rx.length) { return D.err('Write at least a complaint, a diagnosis or a prescription.', '#vsC'); }
+      if (mode === 'final') n.status = 'final'; else if (mode === 'draft') n.status = n.status === 'final' ? 'final' : 'draft';
+      var labs = n._labs; delete n._labs; n.ord = n.ord || Date.now();
+      var idx = VISITS.indexOf(v); if (idx >= 0) VISITS[idx] = n; else VISITS.unshift(n);
+      v = n; persist('visits', n);
+      var ap = n.apptId ? findAnyAppt(n.apptId) : null; if (ap && ap.status !== 'can' && approved.indexOf(ap) > -1) { var ns = n.status === 'final' ? 'fin' : 'ses'; if (ap.status !== ns && !(ap.status === 'fin' && ns === 'ses')) { ap.status = ns; saveAppt(ap, ap.list || 'approved'); refreshAppts(); } }
+      var tk = n.tokenId ? OPDQ.filter(function (t) { return t.id === n.tokenId; })[0] : null; if (tk) { tk.visitId = n.id; if (n.status === 'final' && tk.status !== 'done') { tk.status = 'done'; tk.doneAt = Date.now(); } persist('opdq', tk); if (typeof renderQueue === 'function') renderQueue(); }
+      if (labs && labs.length && typeof placeLabOrder === 'function') placeLabOrder(n, labs);
+      renderVisits(); if ($('view-profile') && !$('view-profile').hidden) renderPtProfile();
+      if (mode === 'final') { D.close(); toast('Consultation completed' + (n.rx.length ? '. You can print the prescription from the list.' : '')); } else if (after) { toast('Saved'); after(); } else { toast('Draft saved'); }
+      renderDash();
+    }
+  }
+  function printRx(v) {
+    var p = v.pid ? patientById(v.pid) : null, d = v.docId ? staffById(v.docId) : null, vt = v.vitals || {}, vitals = [];
+    if (vt.bp) vitals.push('BP ' + vt.bp); if (vt.pulse) vitals.push('Pulse ' + vt.pulse + '/min'); if (vt.temp) vitals.push('Temp ' + vt.temp + ' &deg;C'); if (vt.weight) vitals.push('Weight ' + vt.weight + ' kg'); if (vt.spo2) vitals.push('SpO2 ' + vt.spo2 + '%');
+    var labs = LABS.filter(function (l) { return l.visitId === v.id; }).reduce(function (a, l) { return a.concat(l.items.map(function (i) { return i.name; })); }, []);
+    printDoc('Prescription ' + v.code,
+      letterhead('Prescription', (d ? d.name + (d.sub ? ', ' + d.sub : '') : v.doctor)) +
+      metaRows([['Patient', v.patient], ['Patient ID', p ? p.code : ''], ['Age / gender', p ? ageGender(p) : ''], ['Date', fmtDate(v.date)], ['Doctor', v.doctor], ['Visit no.', v.code]]) +
+      (v.complaint ? '<h2>Complaint</h2><div>' + esc(v.complaint) + '</div>' : '') +
+      (vitals.length ? '<h2>Vitals</h2><div>' + vitals.join(' &nbsp;·&nbsp; ') + '</div>' : '') +
+      (v.diagnosis ? '<h2>Diagnosis</h2><div><b>' + esc(v.diagnosis) + '</b></div>' : '') +
+      '<h2>Rx</h2>' + ((v.rx || []).length ? '<table><thead><tr><th>#</th><th>Medicine</th><th>Dose</th><th>Frequency</th><th>Days</th><th>Instructions</th></tr></thead><tbody>' + v.rx.map(function (m, i) { return '<tr><td>' + (i + 1) + '</td><td><b>' + esc(m.med) + '</b></td><td>' + esc(m.dose || '') + '</td><td>' + esc(FREQ[m.freq] || m.freq || '') + '</td><td>' + esc(m.days || '') + '</td><td>' + esc(m.note || '') + '</td></tr>'; }).join('') + '</tbody></table>' : '<div>No medicines prescribed.</div>') +
+      (labs.length ? '<h2>Tests advised</h2><div>' + labs.map(esc).join(', ') + '</div>' : '') +
+      (v.advice ? '<h2>Advice</h2><div class="box">' + esc(v.advice) + '</div>' : '') +
+      (v.followUp ? '<h2>Follow-up</h2><div>Please come back on <b>' + esc(fmtDate(v.followUp)) + '</b>.</div>' : '') +
+      '<div class="sig"><div>' + esc(v.doctor || 'Doctor') + (d && d.info && d.info.license ? ' · Licence ' + esc(d.info.license) : '') + '<br>Signature and stamp</div></div>');
+  }
+  /* "Start consultation" from an approved appointment */
+  function startConsult(r) {
+    if (r.date > TODAY) { toast('This appointment is on ' + fmtDate(r.date) + '. You can start it on the day.'); return; }
+    var ex = apptVisit(r.id); if (!ex && r.status === 'can') { toast('This appointment was cancelled.'); return; }
+    if (!ex && r.status === 'sch') { r.status = 'ses'; saveAppt(r, r.list || 'approved'); refreshAppts(); }
+    openVisit({ apptId: r.id });
+  }
+
+  /* ---------- patient profile: care timeline (visits, admissions, lab, bills) ---------- */
+  function timelineOf(p) {
+    var ev = [];
+    if (canR('visits')) VISITS.forEach(function (v) { if (v.pid === p.id) ev.push({ at: v.date + ' ' + (v.time || '00:00'), ic: 'rx', cls: 'blue', t: 'Consultation' + (v.diagnosis ? ': ' + v.diagnosis : ''), s: (v.doctor || '') + ((v.rx || []).length ? ' · ' + v.rx.length + ' medicine' + (v.rx.length > 1 ? 's' : '') : ''), st: v.status === 'final' ? ['good', 'Completed'] : ['warn', 'Draft'], run: function () { openVisit({ visitId: v.id }); } }); });
+    if (canR('admissions')) ADMS.forEach(function (a) { if (a.pid !== p.id) return; ev.push({ at: a.admitAt, ic: 'bed', cls: 'teal', t: 'Admitted to ' + a.ward + ', bed ' + a.bed, s: a.reason || '', st: a.status === 'admitted' ? ['warn', 'In hospital'] : ['mute', 'Admission'], run: function () { openAdmDetail(a.id); } }); if (a.status === 'discharged') ev.push({ at: a.dischargeAt, ic: 'v', cls: 'green', t: 'Discharged (' + (a.condition || '') + ')', s: (a.charge ? a.charge.days + ' day' + (a.charge.days === 1 ? '' : 's') + ' stay' : ''), st: ['good', 'Discharged'], run: function () { openAdmDetail(a.id); } }); });
+    if (canR('labs')) LABS.forEach(function (l) { if (l.pid === p.id) ev.push({ at: l.createdAt, ic: 'flask', cls: 'purple', t: 'Lab / radiology ' + l.code, s: l.items.map(function (i) { return i.name; }).join(', '), st: [l.status === 'resulted' ? 'good' : 'warn', LAB_ST[l.status] || l.status], run: function () { if (typeof openLabView === 'function') openLabView(l.id); } }); });
+    if (canR('txs')) TXC.forEach(function (x) { if (x.pid === p.id || (!x.pid && x.name === p.name)) { var due = txDue(x); ev.push({ at: x.dt, ic: 'tx', cls: 'amber', t: (x.inv ? 'Invoice ' + x.id : x.svc), s: fmtNum(x.amt) + ' EGP' + (due > 0 ? ' · ' + fmtNum(due) + ' due' : ''), st: [TXPILL[x.status] || 'mute', x.status], run: function () { if (x.inv && typeof openInvoice === 'function') openInvoice(x.id); else go('Transactions'); } }); } });
+    ev.sort(function (a, b) { return a.at < b.at ? 1 : -1; }); return ev;
+  }
+  function renderTimeline(p) {
+    var host = $('ptTl'); if (!host) return; var ev = timelineOf(p), all = ev.length; ev = ev.slice(0, 30);
+    $('tlCount').textContent = all ? all + ' event' + (all === 1 ? '' : 's') : '';
+    host.innerHTML = ev.length ? ev.map(function (e, i) { return '<button class="tl-i" data-i="' + i + '"><span class="tl-d ' + e.cls + '">' + svg(e.ic) + '</span><span class="tl-t"><b>' + esc(e.t) + '</b><small>' + esc(e.s) + '</small></span><span class="tl-r"><time>' + fmtDate(e.at.slice(0, 10)) + '</time><span class="pl ' + e.st[0] + '" style="height:22px;padding:0 10px;font-size:11px">' + esc(e.st[1]) + '</span></span></button>'; }).join('') : '<div class="no-ev" style="padding:22px 0">No visits, admissions, lab orders or bills yet for this patient.</div>';
+    host.onclick = function (e) { var b = e.target.closest('.tl-i'); if (b) ev[+b.dataset.i].run(); };
+  }
+
+  /* sample consultations: from finished appointments, plus open drafts for sessions running today */
+  var DX = [
+    ['Fever and sore throat for 3 days', 'Acute tonsillitis', [['Amoxicillin 500 mg', '1 capsule', 'TDS', 5, 'After meals'], ['Paracetamol 500 mg', '1 tablet', 'SOS', 3, 'For fever']]],
+    ['Cough and runny nose, worse at night', 'Upper respiratory tract infection', [['Cetirizine 10 mg', '1 tablet', 'HS', 5, ''], ['Cough syrup', '10 ml', 'TDS', 5, 'Shake well']]],
+    ['Burning in the stomach after meals', 'Gastritis', [['Omeprazole 20 mg', '1 capsule', 'OD', 14, 'Before breakfast'], ['Domperidone 10 mg', '1 tablet', 'TDS', 5, 'Before meals']]],
+    ['Headache and high blood pressure reading at home', 'Hypertension, stage 1', [['Amlodipine 5 mg', '1 tablet', 'OD', 30, 'Morning'], ['Aspirin 75 mg', '1 tablet', 'OD', 30, 'After lunch']]],
+    ['Increased thirst, tiredness', 'Type 2 diabetes, review', [['Metformin 500 mg', '1 tablet', 'BD', 30, 'With meals'], ['Vitamin D3 50,000 IU', '1 capsule', 'OD', 7, 'Once a week']]],
+    ['Lower back pain after lifting', 'Mechanical low back pain', [['Diclofenac 50 mg', '1 tablet', 'BD', 5, 'After meals'], ['Omeprazole 20 mg', '1 capsule', 'OD', 5, '']]],
+    ['Itchy red rash on both arms', 'Contact dermatitis', [['Hydrocortisone cream 1%', 'Thin layer', 'BD', 7, 'Apply on the rash only'], ['Loratadine 10 mg', '1 tablet', 'OD', 7, '']]],
+    ['Wheezing and breathlessness on exertion', 'Mild asthma', [['Salbutamol inhaler', '2 puffs', 'SOS', 30, 'When breathless'], ['Montelukast 10 mg', '1 tablet', 'HS', 30, '']]],
+    ['Routine check-up, no complaints', 'Healthy, no treatment needed', []],
+    ['Burning urine, frequent passing', 'Urinary tract infection', [['Ciprofloxacin 500 mg', '1 tablet', 'BD', 5, 'Drink plenty of water']]],
+    ['Knee pain when climbing stairs', 'Osteoarthritis of the knee', [['Naproxen 500 mg', '1 tablet', 'BD', 7, 'After meals'], ['Vitamin D3 50,000 IU', '1 capsule', 'OD', 7, 'Once a week']]]
+  ];
+  function seedConsults(r) {
+    var past = approved.filter(function (a) { return a.status === 'fin' && a.date >= addDays(TODAY, -16) && a.pid; }), ses = approved.filter(function (a) { return a.status === 'ses' && a.date === TODAY && a.pid; }).slice(0, 3), n = 0;
+    function mk(a, status, i) {
+      var d = DX[(a.id + i) % DX.length], p = patientById(a.pid), doc = staffById(a.docId); if (!p || !doc) return;
+      var v = { id: 'vis' + (++n), code: 'VIS-' + (1000 + n), pid: p.id, patient: p.name, apptId: a.id, tokenId: '', docId: doc.id, doctor: doc.name, date: a.date, time: a.time, status: status, complaint: d[0], vitals: { bp: (105 + r(35)) + '/' + (65 + r(25)), pulse: String(62 + r(30)), temp: (36.3 + r(14) / 10).toFixed(1), weight: String(52 + r(48)), spo2: String(95 + r(5)) }, diagnosis: status === 'final' ? d[1] : '', advice: status === 'final' ? 'Rest, drink plenty of fluids and come back if symptoms get worse.' : '', rx: status === 'final' ? d[2].map(function (m) { return { med: m[0], dose: m[1], freq: m[2], days: String(m[3]), note: m[4] }; }) : [], followUp: status === 'final' && r(3) === 0 ? addDays(a.date, 7 + r(14)) : '', ord: 2000 - n };
+      VISITS.push(v);
+    }
+    past.filter(function (a, i) { return i % 2 === 0; }).slice(0, 26).forEach(function (a, i) { mk(a, 'final', i); }); ses.forEach(function (a, i) { mk(a, 'draft', i); });
+    /* a few follow-ups due in the next days */
+    VISITS.filter(function (v) { return v.status === 'final'; }).slice(0, 4).forEach(function (v, i) { v.followUp = addDays(TODAY, 1 + i * 2); });
   }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
@@ -3970,7 +4180,7 @@ window.bootApp = function () {
     api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS), wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }).catch(function (e) { if (e.status !== 409) saveFail(); });
   }
   function rerenderAll() {
-    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards();
+    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits();
   }
   function hydrate(srv) {
     if (!srv) { seedServer(); rerenderAll(); return; }
@@ -4021,7 +4231,7 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
