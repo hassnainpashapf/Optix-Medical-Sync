@@ -968,6 +968,7 @@
     </nav>
     <div class="group">CLINICAL</div>
     <nav class="nav">
+      <a href="#queue" data-ic="ticket">OPD Queue</a>
       <a href="#consultations" data-ic="rx">Consultations</a>
       <a href="#wards" data-ic="bed">Wards &amp; Beds</a>
     </nav>
@@ -1056,6 +1057,20 @@
           <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Prescription</th><th>Follow-up</th><th>Status</th><th>Actions</th></tr></thead><tbody id="vsRows"></tbody></table></div>
           <div class="empty" id="vsEmpty" hidden>No consultations match.</div>
           <nav class="pager" id="vsPager" aria-label="Pages"></nav>
+        </section>
+      </div>
+
+      <div class="view" id="view-opd" hidden>
+        <div class="head"><div><h1>OPD Queue</h1><p>Issue tokens, call the next patient and show the queue on the waiting-room screen</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="kpis" id="oqKpis"></div>
+          <div class="tools">
+            <select class="in sel" id="oqDoc" aria-label="Doctor" style="width:300px;height:40px"></select>
+            <span class="hm-sub" id="oqSync" style="margin-left:4px"></span>
+            <button class="btn-soft" id="oqTv" style="margin-left:auto">Display screen <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M8 20h8M12 16v4"/></svg></button>
+            <button class="addbtn" id="oqIssue" style="margin-left:0">Issue Token <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="oq-board" id="oqBoard"></div>
         </section>
       </div>
 
@@ -1672,6 +1687,13 @@
     </form>
   </div>
 </div>
+<div class="opd-tv" id="opdTv" hidden aria-label="Waiting room screen">
+  <div class="tv-top"><div class="tv-brand"><span class="tv-mk"><svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><div><b id="tvName">Hospital</b><small>Outpatient queue</small></div></div>
+    <div class="tv-ctl"><label class="chk" style="margin:0"><input type="checkbox" id="tvNames"> Show first names</label><button type="button" class="btn-soft" id="tvSound">Sound off</button><button type="button" class="btn-soft" id="tvFull">Full screen</button><button type="button" class="btn-soft" id="tvClose">Close</button></div>
+    <div class="tv-clock"><b id="tvTime">--:--</b><small id="tvDate"></small></div></div>
+  <div class="tv-grid" id="tvGrid"></div>
+  <div class="tv-foot" id="tvFoot">Please wait for your number to be called.</div>
+</div>
 <div class="login" id="login" hidden>
   <aside class="lg-side">
     <div class="lg-brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><b>Optix</b><span class="brand-s">Medical Sync</span></div>
@@ -1928,7 +1950,8 @@ window.bootApp = function () {
     Peripherals: [['print', 'Peripherals']],
     Dashboard: [['grid', 'Dashboard']],
     'Wards & Beds': [['bed', 'Wards & Beds']],
-    Consultations: [['rx', 'Consultations']]
+    Consultations: [['rx', 'Consultations']],
+    'OPD Queue': [['ticket', 'OPD Queue']]
   };
   var hist = ['Dashboard'], hi = 0;
   function renderCrumb(key) {
@@ -1939,8 +1962,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1956,6 +1979,7 @@ window.bootApp = function () {
     if (vid === 'view-plan') loadPlan();
     if (vid === 'view-wards') renderWards();
     if (vid === 'view-visits') renderVisits();
+    if (vid === 'view-opd') { renderQueue(); syncQueue().then(renderQueue); }
     renderCrumb(key);
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
@@ -3372,7 +3396,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3957,7 +3981,7 @@ window.bootApp = function () {
   }
   function seedHospital() {
     WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; SEED_NEW = { pts: [], txs: [] };
-    var r = lcg(4242); seedIPD(r); seedConsults(r);
+    var r = lcg(4242); seedIPD(r); seedConsults(r); seedQueue(r);
   }
   function hospitalSeedBody() { return { wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }; }
   function loadSampleModules() {
@@ -4162,6 +4186,148 @@ window.bootApp = function () {
     /* a few follow-ups due in the next days */
     VISITS.filter(function (v) { return v.status === 'final'; }).slice(0, 4).forEach(function (v, i) { v.followUp = addDays(TODAY, 1 + i * 2); });
   }
+  /* ===== OPD queue ===== */
+
+  /* ---------- OPD queue: tokens per doctor per day ---------- */
+  var oqDoc = 'all', ST_TOK = { waiting: 'Waiting', in: 'In consultation', done: 'Done', noshow: 'No-show' };
+  function tokNo(t) { return pad2(t.no); }
+  function todayToks() { return OPDQ.filter(function (t) { return t.date === TODAY; }); }
+  function tokByDoc(docId, list) { return (list || todayToks()).filter(function (t) { return t.docId === docId; }).sort(function (a, b) { return a.no - b.no; }); }
+  function apptsToday(docId) { return approved.filter(function (a) { return a.date === TODAY && a.docId === docId && a.status !== 'can'; }).sort(function (a, b) { return a.time < b.time ? -1 : 1; }); }
+  function queueDocs() {
+    var ids = {}; todayToks().forEach(function (t) { ids[t.docId] = 1; }); if (canR('appts')) approved.forEach(function (a) { if (a.date === TODAY && a.status !== 'can') ids[a.docId] = 1; });
+    return docStaff.filter(function (d) { return ids[d.id] && (oqDoc === 'all' || String(d.id) === String(oqDoc)); }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+  }
+  function waitMin(t) { return Math.max(0, Math.floor((Date.now() - (t.issuedAt || Date.now())) / 60000)); }
+  function renderQueue() {
+    if (!canR('opdq')) return;
+    var tk = todayToks(), c = { waiting: 0, in: 0, done: 0, noshow: 0 }; tk.forEach(function (t) { c[t.status] = (c[t.status] || 0) + 1; });
+    $('oqKpis').innerHTML = kpiHtml([['clock', 'Waiting', c.waiting], ['steth', 'In Consultation', c.in], ['v', 'Done Today', c.done], ['x', 'No-show', c.noshow]]);
+    var all = docStaff.filter(function (d) { return tokByDoc(d.id, tk).length || apptsToday(d.id).length; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+    $('oqDoc').innerHTML = '<option value="all">All doctors with a queue today</option>' + all.map(function (d) { return '<option value="' + d.id + '"' + (String(d.id) === String(oqDoc) ? ' selected' : '') + '>' + esc(d.name) + '</option>'; }).join('');
+    var w = canWrite('opdq'); $('oqIssue').hidden = !w;
+    var docs = queueDocs(), h = '';
+    docs.forEach(function (d) {
+      var toks = tokByDoc(d.id, tk), cur = toks.filter(function (t) { return t.status === 'in'; })[0], waiting = toks.filter(function (t) { return t.status === 'waiting'; }), fin = toks.filter(function (t) { return t.status === 'done' || t.status === 'noshow'; });
+      var booked = apptsToday(d.id).filter(function (a) { return !toks.some(function (t) { return t.apptId === a.id; }) && a.status !== 'fin'; });
+      h += '<article class="oq-doc"><div class="oq-h"><span class="pic">' + (d.photo ? '<img src="' + d.photo + '" alt="">' : faces[d.face]) + '</span><div class="nm2"><b>' + esc(d.name) + '</b><small>' + esc(d.sub) + ' · ' + waiting.length + ' waiting</small></div><div class="oq-now' + (cur ? ' on' : '') + '"><small>Now serving</small><b>' + (cur ? tokNo(cur) : '—') + '</b></div></div>' +
+        (w ? '<div class="oq-call"><button class="addbtn" data-a="next" data-d="' + d.id + '"' + (waiting.length ? '' : ' disabled') + ' style="margin:0;height:38px">Call next' + (waiting.length ? ' (' + tokNo(waiting[0]) + ')' : '') + '</button><button class="btn-soft" data-a="issue" data-d="' + d.id + '" style="height:38px">Issue token</button></div>' : '') +
+        '<div class="oq-list">' + (cur ? tokRow(cur, w) : '') + waiting.map(function (t) { return tokRow(t, w); }).join('') + (!cur && !waiting.length ? '<div class="no-ev" style="padding:14px 0">Nobody is waiting.</div>' : '') + '</div>' +
+        (booked.length ? '<div class="oq-bk"><small>Booked today, not checked in</small>' + booked.slice(0, 4).map(function (a) { return '<div class="oq-b"><span>' + fmtTime(a.time) + '</span><b>' + esc(a.patient) + '</b>' + (w ? '<button class="hm-mini-btn" data-a="checkin" data-id="' + a.id + '">Check in</button>' : '') + '</div>'; }).join('') + (booked.length > 4 ? '<div class="hm-sub">+' + (booked.length - 4) + ' more</div>' : '') + '</div>' : '') +
+        (fin.length ? '<details class="oq-fin"><summary>Finished (' + fin.length + ')</summary>' + fin.map(function (t) { return tokRow(t, w); }).join('') + '</details>' : '') + '</article>';
+    });
+    $('oqBoard').innerHTML = h || '<div class="empty">No queue today yet. Issue a token for a walk-in or check in a booked appointment.' + (w ? '<br><button class="addbtn hm-empty-act" id="oqIssue2" style="margin-left:0">Issue Token</button>' : '') + '</div>';
+    var i2 = $('oqIssue2'); if (i2) i2.addEventListener('click', function () { openToken(); });
+    $('oqSync').textContent = 'Updated ' + pad2(new Date().getHours()) + ':' + pad2(new Date().getMinutes()) + ' · refreshes every 10 seconds';
+  }
+  function tokRow(t, w) {
+    var acts = '';
+    if (w) {
+      if (t.status === 'waiting') acts = '<button class="hm-mini-btn" data-a="call" data-id="' + t.id + '">Call</button><button class="hm-x" data-a="noshow" data-id="' + t.id + '" title="Mark as no-show" aria-label="No-show">' + svg('x') + '</button>';
+      else if (t.status === 'in') acts = (canWrite('visits') ? '<button class="hm-mini-btn solid" data-a="start" data-id="' + t.id + '">Consultation</button>' : '') + '<button class="hm-mini-btn" data-a="done" data-id="' + t.id + '">Done</button>';
+      else acts = '<button class="hm-mini-btn" data-a="back" data-id="' + t.id + '">Undo</button>';
+    }
+    return '<div class="oq-t st-' + t.status + '"><span class="oq-n">' + tokNo(t) + '</span><div class="oq-p"><b>' + esc(t.patient) + '</b><small>' + (t.walkin ? 'Walk-in' : 'Appointment') + ' · ' + (t.status === 'waiting' ? 'waiting ' + waitMin(t) + ' min' : ST_TOK[t.status]) + '</small></div><div class="oq-a">' + acts + '</div></div>';
+  }
+  $('oqDoc').addEventListener('change', function () { oqDoc = this.value; renderQueue(); });
+  $('oqIssue').addEventListener('click', function () { openToken(); });
+  function setTok(t, st, extra) { t.status = st; for (var k in (extra || {})) t[k] = extra[k]; persist('opdq', t); renderQueue(); renderDash(); }
+  $('oqBoard').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]'); if (!b) return; var a = b.dataset.a, t = b.dataset.id ? OPDQ.filter(function (x) { return x.id === b.dataset.id; })[0] : null;
+    if (a === 'issue') openToken({ docId: +b.dataset.d });
+    else if (a === 'checkin') { var ap = findAnyAppt(b.dataset.id); if (ap) issueToken({ docId: ap.docId, pid: ap.pid, patient: ap.patient, apptId: ap.id }); }
+    else if (a === 'next') callNext(+b.dataset.d);
+    else if (a === 'call' && t) { var cur = todayToks().filter(function (x) { return x.docId === t.docId && x.status === 'in'; })[0]; if (cur) setTok(cur, 'done', { doneAt: Date.now() }); setTok(t, 'in', { calledAt: Date.now() }); toast('Calling token ' + tokNo(t) + ': ' + t.patient); }
+    else if (a === 'noshow' && t) { setTok(t, 'noshow', { doneAt: Date.now() }); toast('Token ' + tokNo(t) + ' marked as no-show'); }
+    else if (a === 'done' && t) { setTok(t, 'done', { doneAt: Date.now() }); toast('Token ' + tokNo(t) + ' is done'); }
+    else if (a === 'back' && t) { setTok(t, 'waiting', { doneAt: 0, calledAt: 0 }); }
+    else if (a === 'start' && t) { openVisit({ tokenId: t.id }); }
+  });
+  function callNext(docId) {
+    var toks = tokByDoc(docId), w = toks.filter(function (t) { return t.status === 'waiting'; })[0]; if (!w) { toast('Nobody is waiting.'); return; }
+    var cur = toks.filter(function (t) { return t.status === 'in'; })[0]; if (cur) { cur.status = 'done'; cur.doneAt = Date.now(); persist('opdq', cur); }
+    setTok(w, 'in', { calledAt: Date.now() }); toast('Calling token ' + tokNo(w) + ': ' + w.patient);
+  }
+  /* issue a token; the server refuses a number that was just given to someone else, then we take the next one */
+  function issueToken(o, done) {
+    var d = staffById(o.docId); if (!d) { toast('Choose a doctor.'); return; }
+    var dup = todayToks().filter(function (t) { return t.docId === o.docId && (t.status === 'waiting' || t.status === 'in') && ((o.pid && t.pid === o.pid) || (!o.pid && t.patient === o.patient)); })[0];
+    if (dup) { toast(o.patient + ' already has token ' + tokNo(dup) + ' for ' + d.name + '.'); return; }
+    var tries = 0;
+    (function attempt() {
+      var no = tokByDoc(o.docId).reduce(function (m, t) { return Math.max(m, t.no); }, 0) + 1, t = { id: newId('tk'), date: TODAY, docId: o.docId, doctor: d.name, no: no, pid: o.pid || 0, patient: o.patient, apptId: o.apptId || 0, walkin: !o.apptId, status: 'waiting', issuedAt: Date.now(), by: ME.name || '', ord: Date.now() };
+      saveNow('opdq', t).then(function () { OPDQ.unshift(t); renderQueue(); renderDash(); toast('Token ' + tokNo(t) + ' for ' + t.patient + ' (' + d.name + ')'); if (done) done(t); })
+        .catch(function (e) { if (e.status === 409 && tries++ < 3) { syncQueue().then(attempt); } else toast(e.message || 'Could not issue the token.'); });
+    })();
+  }
+  function openToken(o) {
+    o = o || {}; var mode = 'appt', apps = approved.filter(function (a) { return a.date === TODAY && a.status !== 'can' && a.status !== 'fin' && !OPDQ.some(function (t) { return t.date === TODAY && t.apptId === a.id; }); }).sort(function (a, b) { return a.time < b.time ? -1 : 1; });
+    if (!apps.length || o.docId) mode = 'pt';
+    function docOpts(sel) { return optList(docStaff.slice().sort(byName).map(function (d) { return [d.id, d.name + ' (' + d.sub + ')' + (d.days[dayIdx(TODAY)] ? '' : ' · off today')]; }), sel, 'Select doctor'); }
+    hdw('tokW', { title: 'Issue Token', mid: true, save: 'Issue token',
+      body: '<div class="hm-seg" id="tkSeg" role="tablist"><button type="button" data-m="appt">From appointment</button><button type="button" data-m="pt">Registered patient</button><button type="button" data-m="new">New walk-in</button></div>' +
+        '<div id="tkA" style="margin-top:18px"><div class="fl"><label class="lb" for="tkAp">Booked appointment today</label><select class="in sel" id="tkAp">' + optList(apps.map(function (a) { return [a.id, fmtTime(a.time) + ' · ' + a.patient + ' · ' + dirOf(a)[0]]; }), '', apps.length ? 'Select appointment' : 'No booked appointments left today') + '</select></div></div>' +
+        '<div id="tkP" style="margin-top:18px" hidden><div class="fl"><label class="lb" for="tkPt">Patient</label>' + ptPickHtml('tkPt') + '</div><div class="fl"><label class="lb" for="tkD1">Doctor</label><select class="in sel" id="tkD1">' + docOpts(o.docId) + '</select></div></div>' +
+        '<div id="tkN" style="margin-top:18px" hidden><div class="fl"><label class="lb" for="tkNm">Full name</label><input class="in" id="tkNm" placeholder="Walk-in patient name" autocomplete="off"></div><div class="row2"><div class="fl"><label class="lb" for="tkAg">Age</label><input class="in" id="tkAg" type="number" min="0" max="110" placeholder="35"></div><div class="fl"><label class="lb" for="tkPh">Phone</label><input class="in" id="tkPh" inputmode="tel" placeholder="e.g. 01012345678" autocomplete="off"></div></div><div class="row2"><div class="fl"><span class="lb" id="tkGl">Gender</span><div class="rads" role="radiogroup" aria-labelledby="tkGl"><label class="rad"><input type="radio" name="tkG" value="Male" checked><i></i>Male</label><label class="rad"><input type="radio" name="tkG" value="Female"><i></i>Female</label></div></div><div class="fl"><label class="lb" for="tkD2">Doctor</label><select class="in sel" id="tkD2">' + docOpts(o.docId) + '</select></div></div></div>',
+      ready: function (D) {
+        function set(m) { mode = m; D.$('#tkA').hidden = m !== 'appt'; D.$('#tkP').hidden = m !== 'pt'; D.$('#tkN').hidden = m !== 'new'; D.f.querySelectorAll('#tkSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.m === m); }); D.err(''); }
+        D.f.querySelector('#tkSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) set(b.dataset.m); }); set(mode);
+      },
+      submit: function (D) {
+        if (mode === 'appt') { var ap = findAnyAppt(D.$('#tkAp').value); if (!ap) return D.err('Choose the booked appointment.', '#tkAp'); D.close(); issueToken({ docId: ap.docId, pid: ap.pid, patient: ap.patient, apptId: ap.id }); }
+        else if (mode === 'pt') { var p = ptFromInput('tkPt'); if (!p) return D.err('Choose a registered patient from the list, or use New walk-in.', '#tkPt'); var did = +D.$('#tkD1').value; if (!did) return D.err('Select the doctor.', '#tkD1'); D.close(); issueToken({ docId: did, pid: p.id, patient: p.name }); }
+        else {
+          var n = D.$('#tkNm').value.trim(), age = D.$('#tkAg').value, ph = D.$('#tkPh').value.replace(/[\s-]/g, ''), did2 = +D.$('#tkD2').value;
+          if (n.length < 2) return D.err('Enter the patient name.', '#tkNm'); if (age === '' || +age < 0 || +age > 110) return D.err('Enter the age.', '#tkAg'); if (!/^\d{7,12}$/.test(ph)) return D.err('Enter a valid phone number (7 to 12 digits).', '#tkPh'); if (!did2) return D.err('Select the doctor.', '#tkD2');
+          var dup = patients.filter(function (x) { return x.name.toLowerCase() === n.toLowerCase(); })[0], pt = dup;
+          if (!pt) { if (!canWrite('patients')) return D.err('Your role cannot register new patients.'); pt = mkPatient({ name: n, gender: D.f.elements.tkG.value, age: +age, phone: '+20 ' + ph.replace(/^0/, ''), nationality: '' }); patients.unshift(pt); pt.ord = Date.now(); persist('patients', pt); }
+          D.close(); issueToken({ docId: did2, pid: pt.id, patient: pt.name });
+        }
+      } });
+  }
+  /* keep the board fresh when more than one desk uses it */
+  function syncQueue() {
+    if (!canR('opdq')) return Promise.resolve();
+    return api('GET', '/api/opdq?date=' + TODAY).then(function (r) { OPDQ = OPDQ.filter(function (t) { return t.date !== TODAY; }).concat(r.tokens.sort(byOrd)); return r; }).catch(function () { /* offline: keep what we have */ });
+  }
+  setInterval(function () { if (!$('view-opd').hidden && !document.querySelector('.dw-wrap[data-h]:not([hidden])')) syncQueue().then(renderQueue); }, 10000);
+
+  /* ---------- the waiting-room screen (full screen, big numbers, refreshes by itself) ---------- */
+  var tvTimer = 0, tvClock = 0, tvPrev = '', tvSound = false, tvNames = false, tvAudio = null;
+  try { tvNames = localStorage.getItem('nx_tv_names') === '1'; } catch (e) { /* storage blocked */ }
+  function tvBeep() { if (!tvSound) return; try { tvAudio = tvAudio || new (window.AudioContext || window.webkitAudioContext)(); var o = tvAudio.createOscillator(), g = tvAudio.createGain(); o.type = 'sine'; o.frequency.value = 880; g.gain.setValueAtTime(.0001, tvAudio.currentTime); g.gain.exponentialRampToValueAtTime(.25, tvAudio.currentTime + .03); g.gain.exponentialRampToValueAtTime(.0001, tvAudio.currentTime + .9); o.connect(g); g.connect(tvAudio.destination); o.start(); o.stop(tvAudio.currentTime + .95); } catch (e) { /* no audio */ } }
+  function tvName(t) { return tvNames ? ' <small>' + esc(String(t.patient).split(' ')[0]) + '</small>' : ''; }
+  function renderTv() {
+    var tk = todayToks(), ids = {}; tk.forEach(function (t) { if (t.status === 'waiting' || t.status === 'in') ids[t.docId] = 1; });
+    var docs = docStaff.filter(function (d) { return ids[d.id]; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; }), sig = '';
+    $('tvGrid').innerHTML = docs.map(function (d) {
+      var toks = tokByDoc(d.id, tk), cur = toks.filter(function (t) { return t.status === 'in'; })[0], nx = toks.filter(function (t) { return t.status === 'waiting'; }).slice(0, 4); sig += d.id + ':' + (cur ? cur.no : 0) + ';';
+      return '<section class="tv-doc"><div class="tv-dn"><b>' + esc(d.name) + '</b><small>' + esc(d.sub) + '</small></div><div class="tv-now' + (cur ? ' on' : '') + '"><small>Now serving</small><b>' + (cur ? tokNo(cur) : '—') + '</b>' + (cur ? tvName(cur) : '') + '</div><div class="tv-nx"><small>Next</small><div>' + (nx.length ? nx.map(function (t) { return '<span>' + tokNo(t) + tvName(t) + '</span>'; }).join('') : '<em>No one waiting</em>') + '</div></div></section>';
+    }).join('') || '<div class="tv-none">No patients are waiting right now.</div>';
+    if (tvPrev && sig !== tvPrev) tvBeep(); tvPrev = sig;
+    var n = new Date(); $('tvTime').textContent = pad2(n.getHours() % 12 || 12) + ':' + pad2(n.getMinutes()) + ' ' + (n.getHours() < 12 ? 'AM' : 'PM'); $('tvDate').textContent = shortLong(TODAY);
+  }
+  function openTv() {
+    $('tvName').textContent = wsName(); $('tvNames').checked = tvNames; $('tvSound').textContent = tvSound ? 'Sound on' : 'Sound off'; tvPrev = ''; $('opdTv').hidden = false; renderTv();
+    clearInterval(tvTimer); clearInterval(tvClock); tvTimer = setInterval(function () { syncQueue().then(renderTv); }, 8000); tvClock = setInterval(renderTv, 20000); syncQueue().then(renderTv);
+  }
+  function closeTv() { $('opdTv').hidden = true; clearInterval(tvTimer); clearInterval(tvClock); if (document.fullscreenElement) document.exitFullscreen(); renderQueue(); }
+  $('oqTv').addEventListener('click', openTv); $('tvClose').addEventListener('click', closeTv);
+  $('tvNames').addEventListener('change', function () { tvNames = this.checked; try { localStorage.setItem('nx_tv_names', tvNames ? '1' : '0'); } catch (e) { /* ignore */ } renderTv(); });
+  $('tvSound').addEventListener('click', function () { tvSound = !tvSound; this.textContent = tvSound ? 'Sound on' : 'Sound off'; if (tvSound) tvBeep(); });
+  $('tvFull').addEventListener('click', function () { var el = $('opdTv'); if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen().catch(function () { toast('Full screen is blocked by the browser. Press F11 instead.'); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('opdTv').hidden && !document.fullscreenElement) closeTv(); });
+
+  function seedQueue(r) {
+    var now = Date.now(), roster = docStaff.slice(0, 12), n = 0, docsToday = roster.filter(function (d) { return apptsToday(d.id).length; }).slice(0, 5);
+    if (docsToday.length < 3) roster.forEach(function (d) { if (docsToday.length < 3 && docsToday.indexOf(d) < 0 && d.days[dayIdx(TODAY)]) docsToday.push(d); });
+    docsToday.forEach(function (d, di) {
+      var ap = apptsToday(d.id).slice(0, 5), no = 0, hasIn = false;
+      function tok(pt, apptId, st, mins) { no++; OPDQ.push({ id: 'tk' + (++n), date: TODAY, docId: d.id, doctor: d.name, no: no, pid: pt.id, patient: pt.name, apptId: apptId || 0, walkin: !apptId, status: st, issuedAt: now - mins * 60000, calledAt: st === 'in' || st === 'done' ? now - (mins - 5) * 60000 : 0, doneAt: st === 'done' ? now - Math.max(1, mins - 18) * 60000 : 0, by: 'Reception', ord: 3000 - n }); }
+      ap.forEach(function (a, i) { var pt = patientById(a.pid); if (!pt) return; var left = ap.length - i; var st = a.status === 'fin' ? 'done' : (a.status === 'ses' && !hasIn) ? 'in' : 'waiting'; if (st === 'in') hasIn = true; tok(pt, a.id, st, 12 + left * 9); });
+      var extra = di === 0 ? 3 : 1; for (var k = 0; k < extra; k++) { var p = patients[(di * 17 + k * 5 + 11) % patients.length], st2 = (k === 0 && !hasIn) ? 'in' : (di === 1 && k === 0 ? 'noshow' : 'waiting'); if (st2 === 'in') hasIn = true; if (!OPDQ.some(function (t) { return t.docId === d.id && t.pid === p.id; })) tok(p, 0, st2, 6 + (extra - k) * 4); }
+    });
+  }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
   function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403 || e.status === 409) toast(e.message); else saveFail(); }); }
@@ -4180,7 +4346,7 @@ window.bootApp = function () {
     api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS), wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }).catch(function (e) { if (e.status !== 409) saveFail(); });
   }
   function rerenderAll() {
-    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits();
+    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits(); renderQueue();
   }
   function hydrate(srv) {
     if (!srv) { seedServer(); rerenderAll(); return; }
@@ -4231,7 +4397,7 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
