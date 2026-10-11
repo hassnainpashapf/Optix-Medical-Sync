@@ -140,3 +140,12 @@ test('the Users page gets the role matrix from the server, so what it shows is w
   for (const [role, perms] of Object.entries(EXPECT)) for (const col of NEW) assert.equal(u.j.matrix[role][col] || '', perms[col], `${role} ${col}`);
   assert.equal((await call('GET', '/api/users', undefined, jar.doctor)).s, 403);
 });
+
+test('the workspace currency: only a Super Admin sets it, and only a plain currency code is accepted', async () => {
+  assert.equal((await put('kv', { id: 'currency', v: 'USD' }, jar.accounts)).s, 403, 'an Accountant cannot change it');
+  assert.equal((await put('kv', { id: 'currency', v: 'usd$' }, jar.admin)).s, 400, 'not a code');
+  assert.equal((await put('kv', { id: 'currency', v: 'PKR' }, jar.admin)).s, 200);
+  const d = await call('GET', '/api/data', undefined, jar.accounts);
+  assert.equal(d.j.collections.kv.find((o) => o.id === 'currency').v, 'PKR', 'every role can read it');
+  assert.equal((await put('kv', { id: 'other-setting', v: 'x' }, jar.accounts)).s, 200, 'other settings are unaffected');
+});

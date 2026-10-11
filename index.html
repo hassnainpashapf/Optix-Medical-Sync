@@ -1113,10 +1113,10 @@
         </div>
         <section class="card ap-card" style="padding-top:18px"><div class="kpis" id="repKpis" style="--k:5;border-bottom:0"></div></section>
         <div class="rep-grid">
-          <section class="card rcard"><h3>Revenue and purchases</h3><div class="sub">Paid transactions per month, in EGP</div><div class="legend"><span><i style="background:#2f6df0"></i>Revenue (patients)</span><span><i style="background:#d9731a"></i>Purchases (suppliers)</span></div><div id="repChart"></div><details class="dt"><summary>Show data table</summary><div class="tbl-wrap" id="repChartT"></div></details></section>
+          <section class="card rcard"><h3>Revenue and purchases</h3><div class="sub">Paid transactions per month, in <span class="cur">EGP</span></div><div class="legend"><span><i style="background:#2f6df0"></i>Revenue (patients)</span><span><i style="background:#d9731a"></i>Purchases (suppliers)</span></div><div id="repChart"></div><details class="dt"><summary>Show data table</summary><div class="tbl-wrap" id="repChartT"></div></details></section>
           <section class="card rcard"><h3>Visit types</h3><div class="sub">Appointments in the period</div><div id="repVisit"></div><h3 style="margin-top:22px">Busiest doctors</h3><div class="sub">Appointments in the period</div><div id="repDocs"></div></section>
         </div>
-        <section class="card rcard"><h3>Top services by revenue</h3><div class="sub">Paid patient transactions in the period</div><div class="tbl-wrap"><table style="min-width:520px"><thead><tr><th>Service</th><th>Transactions</th><th>Revenue (EGP)</th><th>Share</th></tr></thead><tbody id="repSvc"></tbody></table></div></section>
+        <section class="card rcard"><h3>Top services by revenue</h3><div class="sub">Paid patient transactions in the period</div><div class="tbl-wrap"><table style="min-width:520px"><thead><tr><th>Service</th><th>Transactions</th><th>Revenue (<span class="cur">EGP</span>)</th><th>Share</th></tr></thead><tbody id="repSvc"></tbody></table></div></section>
       </div>
 
       <div class="view" id="view-usr" hidden>
@@ -1134,6 +1134,7 @@
           <div class="ws-box"><div><small>Workspace</small><b id="wsName"></b></div><div><small>Workspace code (needed to sign in)</small><b id="wsCode"></b></div><div><small>Status</small><b id="wsStatus"></b></div></div>
           <div id="wsMeters"></div>
         </section>
+        <section class="card ap-card" style="padding-top:18px" id="curCard"><h2 style="margin:0 0 4px;font-size:16px;font-weight:600">Currency</h2><p style="margin:0 0 12px;font-size:12.5px;color:var(--ink-2)">The currency shown on bills, invoices, reports and the dashboard of this workspace. Only a Super Admin can change it. It does not convert existing amounts.</p><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><select class="in sel" id="curSel" aria-label="Currency" style="width:160px;height:40px"></select><span id="curNote" style="font-size:12.5px;color:var(--ink-2)"></span></div></section>
         <section class="card ap-card" style="padding-top:18px"><h2 style="margin:0 0 4px;font-size:16px;font-weight:600">Plans</h2><p style="margin:0 0 16px;font-size:12.5px;color:var(--ink-2)" id="plNote"></p><div class="pl-grid" id="plGrid"></div></section>
       </div>
 
@@ -1264,7 +1265,7 @@
             <div class="fwrap"><button class="fbtn" id="skFBtn" aria-haspopup="true"><span id="skFLbl">Filter</span><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button><div class="menu" id="skFMenu" hidden></div></div>
             <button class="addbtn" id="skAdd">Add New Stock <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
           </div>
-          <div class="tbl-wrap"><table><thead><tr id="skHead"><th data-k="name"><button>Stock Name <span class="sort"><i></i><i></i></span></button></th><th data-k="sup"><button>Supplier <span class="sort"><i></i><i></i></span></button></th><th data-k="cat"><button>Category <span class="sort"><i></i><i></i></span></button></th><th data-k="qty"><button>Quantity Available <span class="sort"><i></i><i></i></span></button></th><th data-k="unit"><button>Unit <span class="sort"><i></i><i></i></span></button></th><th data-k="price"><button>Price per Unit (EGP) <span class="sort"><i></i><i></i></span></button></th><th data-k="status"><button>Stock Status <span class="sort"><i></i><i></i></span></button></th><th>Actions</th></tr></thead><tbody id="skRows"></tbody></table></div>
+          <div class="tbl-wrap"><table><thead><tr id="skHead"><th data-k="name"><button>Stock Name <span class="sort"><i></i><i></i></span></button></th><th data-k="sup"><button>Supplier <span class="sort"><i></i><i></i></span></button></th><th data-k="cat"><button>Category <span class="sort"><i></i><i></i></span></button></th><th data-k="qty"><button>Quantity Available <span class="sort"><i></i><i></i></span></button></th><th data-k="unit"><button>Unit <span class="sort"><i></i><i></i></span></button></th><th data-k="price"><button>Price per Unit (<span class="cur">EGP</span>) <span class="sort"><i></i><i></i></span></button></th><th data-k="status"><button>Stock Status <span class="sort"><i></i><i></i></span></button></th><th>Actions</th></tr></thead><tbody id="skRows"></tbody></table></div>
           <div class="empty" id="skEmpty" hidden>No stock items match your search.</div>
           <nav class="pager" id="skPager" aria-label="Pages"></nav>
         </section>
@@ -1313,7 +1314,7 @@
             <div class="fwrap"><button class="fbtn" id="stkFBtn" aria-haspopup="true"><span id="stkFLbl">Filter</span><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button><div class="menu" id="stkFMenu" hidden></div></div>
             <button class="addbtn" id="stkAdd">Add New Stock <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
           </div>
-          <div class="tbl-wrap"><table><thead><tr id="stkHead"><th data-k="name"><button>Stock Name <span class="sort"><i></i><i></i></span></button></th><th data-k="cat"><button>Category <span class="sort"><i></i><i></i></span></button></th><th data-k="qty"><button>Quantity Available <span class="sort"><i></i><i></i></span></button></th><th data-k="unit"><button>Unit <span class="sort"><i></i><i></i></span></button></th><th data-k="price"><button>Price per Unit (EGP) <span class="sort"><i></i><i></i></span></button></th><th data-k="status"><button>Stock Status <span class="sort"><i></i><i></i></span></button></th><th>Actions</th></tr></thead><tbody id="stkRows"></tbody></table></div>
+          <div class="tbl-wrap"><table><thead><tr id="stkHead"><th data-k="name"><button>Stock Name <span class="sort"><i></i><i></i></span></button></th><th data-k="cat"><button>Category <span class="sort"><i></i><i></i></span></button></th><th data-k="qty"><button>Quantity Available <span class="sort"><i></i><i></i></span></button></th><th data-k="unit"><button>Unit <span class="sort"><i></i><i></i></span></button></th><th data-k="price"><button>Price per Unit (<span class="cur">EGP</span>) <span class="sort"><i></i><i></i></span></button></th><th data-k="status"><button>Stock Status <span class="sort"><i></i><i></i></span></button></th><th>Actions</th></tr></thead><tbody id="stkRows"></tbody></table></div>
           <div class="empty" id="stkEmpty" hidden>No stock items match your search.</div>
           <nav class="pager" id="stkPager" aria-label="Pages"></nav>
         </section>
@@ -1613,7 +1614,7 @@
         <div class="fl" id="stkSupBox" hidden><label class="lb" for="stkS">Supplier</label><select class="in sel ph" id="stkS"></select></div>
         <div class="fl"><label class="lb" for="stkN">Stock Name</label><input class="in" id="stkN" placeholder="e.g. Paracetamol 500mg" autocomplete="off"></div>
         <div class="row2"><div class="fl"><label class="lb" for="stkC">Category</label><select class="in sel ph" id="stkC"></select></div><div class="fl"><label class="lb" for="stkU">Unit</label><select class="in sel" id="stkU"><option>Box</option><option>Bottle</option><option>Strip</option><option>Pack</option><option>Vial</option></select></div></div>
-        <div class="row2"><div class="fl"><label class="lb" for="stkQ2">Quantity Available</label><input class="in" id="stkQ2" type="number" min="0" placeholder="0"></div><div class="fl"><label class="lb" for="stkP">Price per Unit (EGP)</label><input class="in" id="stkP" type="number" min="0" step="0.5" placeholder="0"></div></div>
+        <div class="row2"><div class="fl"><label class="lb" for="stkQ2">Quantity Available</label><input class="in" id="stkQ2" type="number" min="0" placeholder="0"></div><div class="fl"><label class="lb" for="stkP">Price per Unit (<span class="cur">EGP</span>)</label><input class="in" id="stkP" type="number" min="0" step="0.5" placeholder="0"></div></div>
         <div class="fl"><label class="lb" for="stkR"><span>Low-stock level <span class="opt">(Optional)</span></span></label><input class="in" id="stkR" type="number" min="0" placeholder="50"></div>
       </div>
       <div class="dr-err" id="stkErr" role="alert"></div>
@@ -1711,8 +1712,8 @@
             <div class="fl"><label class="lb" for="fCover">Full Coverage</label><select class="in sel" id="fCover"><option value="100">Full Coverage (100% Covered)</option><option value="80" selected>Co-Insurance (80% Covered / 20% Patient Pays)</option><option value="70">Co-Insurance (70% Covered / 30% Patient Pays)</option><option value="50">Co-Insurance (50% Covered / 50% Patient Pays)</option></select></div>
           </div>
           <div class="split">
-            <div class="fl" id="insPaysBox"><span class="lb" id="lIns">Insurance Pays (80%)</span><div class="in" id="vIns">800 EGP</div></div>
-            <div class="fl"><span class="lb" id="lPat">Patient Pays (20%)</span><div class="in" id="vPat">200 EGP</div></div>
+            <div class="fl" id="insPaysBox"><span class="lb" id="lIns">Insurance Pays (80%)</span><div class="in" id="vIns">800 <span class="cur">EGP</span></div></div>
+            <div class="fl"><span class="lb" id="lPat">Patient Pays (20%)</span><div class="in" id="vPat">200 <span class="cur">EGP</span></div></div>
           </div>
           <div class="fl"><div class="lb"><span>Attached Files <span class="opt">(Optional)</span></span><span class="cnt">Maximum Upload File : 10MB</span></div>
             <label class="drop" id="drop"><span class="ico"><svg class="ic" viewBox="0 0 24 24"><path d="M4 13l2.5-7h11L20 13v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg></span><span><u>Click here</u> to upload or drop files here</span><input type="file" id="fFile" multiple></label>
@@ -1947,7 +1948,7 @@ window.bootApp = function () {
     if (!col || !months[active]) { tip.style.display = 'none'; return; }
     tip.style.display = '';
     var m = months[active];
-    tip.innerHTML = '<h4>' + FULL[m.name] + ' Cash Flow</h4><div>CashFlow <b>' + fmtNum(m.cash) + ' EGP</b></div><div>Out Flow <b>-' + fmtNum(m.out) + ' EGP</b></div>';
+    tip.innerHTML = '<h4>' + FULL[m.name] + ' Cash Flow</h4><div>CashFlow <b>' + fmtNum(m.cash) + ' ' + CUR + '</b></div><div>Out Flow <b>-' + fmtNum(m.out) + ' ' + CUR + '</b></div>';
     var ar = area.getBoundingClientRect(), cr = col.getBoundingClientRect(), w = 224;
     var left = cr.right - ar.left + 16, flip = false;
     if (left + w > ar.width) { left = cr.left - ar.left - w - 16; flip = true; }
@@ -2359,7 +2360,7 @@ window.bootApp = function () {
   });
 
   /* payment split + files */
-  function egp(n) { return n.toLocaleString('en-US') + ' EGP'; }
+  function egp(n) { return n.toLocaleString('en-US') + ' ' + CUR + ''; }
   function updateSplit() {
     var ins = $('fPay').value === 'Insurance', pct = ins ? +$('fCover').value : 0;
     $('insBox').hidden = !ins; $('insPaysBox').hidden = !ins;
@@ -3068,6 +3069,10 @@ window.bootApp = function () {
   }
   function kpiHtml(list) { return list.map(function (k) { return '<div class="kpi"><span class="kb">' + svg(k[0]) + '</span><div><small>' + k[1] + '</small><b>' + k[2] + '</b></div></div>'; }).join(''); }
   function fmtNum(n) { return Math.round(n).toLocaleString('en-US'); }
+  /* the workspace currency (set by the Super Admin on the Plan & Usage page; kept in the settings record 'currency') */
+  var CUR = 'PKR';
+  var CURRENCIES = ['PKR', 'USD', 'EUR', 'GBP', 'AED', 'SAR', 'INR', 'BDT', 'EGP'];
+  function setCur(c) { c = String(c || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5); CUR = c || 'PKR'; [].forEach.call(document.querySelectorAll('.cur'), function (e) { e.textContent = CUR; }); }
   function filterMenu(menuEl, options, getCur, setCur, onPick) {
     menuEl.innerHTML = options.map(function (v) { return '<button data-v="' + v + '">' + (v === 'All' ? 'All' : v) + '</button>'; }).join('');
     function mark() { menuEl.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === getCur()); }); } mark();
@@ -3097,7 +3102,7 @@ window.bootApp = function () {
   var supPage = 1, supSort = null, supDir = 1, supQ = '', supStat = 'All', SUPP = 7;
   function supView() { var q = supQ.toLowerCase(); var l = SUPS.filter(function (x) { return (supStat === 'All' || x.status === supStat) && (!q || (x.name + ' ' + x.cat + ' ' + x.loc).toLowerCase().indexOf(q) > -1); }); return supSort ? sortBy(l, supSort, supDir) : l; }
   function renderSup() {
-    $('supKpis').innerHTML = kpiHtml([['store', 'Total Suppliers', SUPS.length], ['box', 'Total Orders Placed', fmtNum(SUPS.reduce(function (m, x) { return m + (+x.orders || 0); }, 0))], ['tx', 'Total Purchases', fmtNum((typeof TXS === 'undefined' ? [] : TXS).reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0)) + ' EGP'], ['v', 'Active Suppliers', SUPS.filter(function (x) { return x.status === 'Active'; }).length]]);
+    $('supKpis').innerHTML = kpiHtml([['store', 'Total Suppliers', SUPS.length], ['box', 'Total Orders Placed', fmtNum(SUPS.reduce(function (m, x) { return m + (+x.orders || 0); }, 0))], ['tx', 'Total Purchases', fmtNum((typeof TXS === 'undefined' ? [] : TXS).reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0)) + ' ' + CUR + ''], ['v', 'Active Suppliers', SUPS.filter(function (x) { return x.status === 'Active'; }).length]]);
     var v = supView(), pages = Math.max(1, Math.ceil(v.length / SUPP)); if (supPage > pages) supPage = pages;
     $('supRows').innerHTML = v.slice((supPage - 1) * SUPP, supPage * SUPP).map(function (x) {
       return '<tr><td><div class="dcell">' + logoHtml(x) + '<button class="lk nm2" data-a="open" data-id="' + x.id + '"><b>' + x.name + '</b><small>' + x.loc + '</small></button></div></td><td>' + x.cat + '</td><td>' + x.orders + ' Orders</td><td>' + x.terms + '</td><td>' + fmtDate(x.last) + '</td>' +
@@ -3163,10 +3168,10 @@ window.bootApp = function () {
     var st = stocksOf(supCur), placed = supCur.orders || 0, buy = TXS.reduce(function (m, x) { return m + (x.supId === supCur.id && x.status === 'Paid' ? x.amt : 0); }, 0), lowN = st.filter(function (x) { return x.status === 'Low'; }).length;
     $('spLogo').outerHTML = logoHtml(supCur, true).replace('class="slogo lg"', 'class="slogo lg" id="spLogo"');
     $('spName').textContent = supCur.name; $('spLoc').textContent = supCur.loc;
-    $('spKpis').innerHTML = kpiHtml([['box', 'Total Stocks', st.length], ['box', 'Total Orders Placed', placed], ['tx', 'Total Purchases', fmtNum(buy) + ' EGP'], ['refresh', 'Low Stock Items', lowN]]);
+    $('spKpis').innerHTML = kpiHtml([['box', 'Total Stocks', st.length], ['box', 'Total Orders Placed', placed], ['tx', 'Total Purchases', fmtNum(buy) + ' ' + CUR + ''], ['refresh', 'Low Stock Items', lowN]]);
     var v = stkView(), pages = Math.max(1, Math.ceil(v.length / STKP)); if (stkPage > pages) stkPage = pages;
     $('stkRows').innerHTML = v.slice((stkPage - 1) * STKP, stkPage * STKP).map(function (x) {
-      return '<tr><td><div class="dcell"><span class="sthumb">' + (x.img ? '<img src="' + x.img + '" alt="">' : PILL) + '</span><div class="nm2"><b>' + x.name + '</b><small>' + x.code + '</small></div></div></td><td>' + x.cat + '</td><td>' + x.qty + '</td><td>' + x.unit + '</td><td>' + x.price + ' EGP</td>' +
+      return '<tr><td><div class="dcell"><span class="sthumb">' + (x.img ? '<img src="' + x.img + '" alt="">' : PILL) + '</span><div class="nm2"><b>' + x.name + '</b><small>' + x.code + '</small></div></div></td><td>' + x.cat + '</td><td>' + x.qty + '</td><td>' + x.unit + '</td><td>' + x.price + ' ' + CUR + '</td>' +
         '<td><span class="pl ' + (x.status === 'Available' ? 'good' : 'bad') + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" aria-haspopup="true" aria-label="Actions for ' + x.name + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('stkEmpty').hidden = v.length > 0; $('stkPager').innerHTML = v.length ? pagerHtml(stkPage, pages) : '';
@@ -3230,7 +3235,7 @@ window.bootApp = function () {
     }
     for (var j = 0; j < 120; j++) { var sp = SUPS[r(SUPS.length)], dd = new Date(Date.UTC(+TODAY.slice(0, 4), +TODAY.slice(5, 7) - 1, +TODAY.slice(8) - 1 - Math.floor(j / 3))), y = r(10); TXS.push({ id: 'PO' + ('000' + (j + 1)).slice(-4), supId: sp.id, name: sp.name, svc: sp.cat, amt: 2000 + r(40) * 250, pay: ['Bank Transfer', 'Cheque', 'Cash'][r(3)], dt: isoOf(dd.getUTCFullYear(), dd.getUTCMonth(), dd.getUTCDate()) + ' ' + hhmm(9 * 60 + r(500)), status: y < 6 ? 'Paid' : y < 9 ? 'Pending' : 'Failed' }); }
   })();
-  var TXCOLS = { customers: [['id', 'Transaction ID'], ['name', 'Patient Name'], ['svc', 'Service'], ['amt', 'Amount (EGP)'], ['due', 'Balance Due'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']], suppliers: [['id', 'Transaction ID'], ['name', 'Supplier Name'], ['svc', 'Category'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']] };
+  var TXCOLS = { customers: [['id', 'Transaction ID'], ['name', 'Patient Name'], ['svc', 'Service'], ['amt', 'Amount (' + CUR + ')'], ['due', 'Balance Due'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']], suppliers: [['id', 'Transaction ID'], ['name', 'Supplier Name'], ['svc', 'Category'], ['amt', 'Amount (' + CUR + ')'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']] };
   function txList() { return txTab === 'customers' ? TXC : TXS; }
   function txView() { var q = txQ.toLowerCase(); var l = txList().filter(function (x) { return (txStat === 'All' || (txStat === 'Dues' ? (txTab === 'customers' ? txDue(x) > 0 : x.status === 'Pending') : x.status === txStat)) && (!q || (x.id + ' ' + x.name + ' ' + x.svc + ' ' + x.pay).toLowerCase().indexOf(q) > -1); }); return txSort ? sortBy(l, txSort, txDir, function (x, k) { return k === 'due' ? txDue(x) : x[k]; }) : l; }
   var TXPILL = { Paid: 'good', Pending: 'warn', Partial: 'warn', Failed: 'bad' };
@@ -3238,13 +3243,13 @@ window.bootApp = function () {
     var list = txList(), pend = 0, cust = txTab === 'customers', dues = 0; if (!cust) list.forEach(function (x) { if (x.status === 'Pending') pend += x.amt; }); else TXC.forEach(function (x) { dues += txDue(x); });
     $('txKpis').style.setProperty('--k', cust ? 4 : 3);
     var revPaid = TXC.reduce(function (m, x) { return m + txPaid(x); }, 0), buyPaid = TXS.reduce(function (m, x) { return m + (x.status === 'Paid' ? x.amt : 0); }, 0);
-    $('txKpis').innerHTML = cust ? kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Revenue', fmtNum(revPaid) + ' EGP'], ['refresh', 'Net Revenue', fmtNum(revPaid - buyPaid) + ' EGP'], ['clock', 'Outstanding Dues', fmtNum(dues) + ' EGP']]) : kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Purchases', fmtNum(buyPaid) + ' EGP'], ['refresh', 'Pending Payments', fmtNum(pend) + ' EGP']]);
+    $('txKpis').innerHTML = cust ? kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Revenue', fmtNum(revPaid) + ' ' + CUR + ''], ['refresh', 'Net Revenue', fmtNum(revPaid - buyPaid) + ' ' + CUR + ''], ['clock', 'Outstanding Dues', fmtNum(dues) + ' ' + CUR + '']]) : kpiHtml([['tx', 'Total Transactions', list.length], ['cash', 'Total Purchases', fmtNum(buyPaid) + ' ' + CUR + ''], ['refresh', 'Pending Payments', fmtNum(pend) + ' ' + CUR + '']]);
     $('txHead').innerHTML = TXCOLS[txTab].map(function (c) { return '<th data-k="' + c[0] + '"' + (txSort === c[0] ? ' data-dir="' + (txDir === 1 ? 'asc' : 'desc') + '"' : '') + '><button>' + c[1] + ' <span class="sort"><i></i><i></i></span></button></th>'; }).join('') + '<th>Actions</th>';
     $('txQ').placeholder = cust ? 'Search By Name or Service' : 'Search By Supplier or Category'; $('txNew').hidden = !(cust && canWrite('txs'));
     var v = txView(), pages = Math.max(1, Math.ceil(v.length / TXP)); if (txPage > pages) txPage = pages;
     $('txRows').innerHTML = v.slice((txPage - 1) * TXP, txPage * TXP).map(function (x) {
       var p = x.dt.split(' '), due = cust ? txDue(x) : 0;
-      return '<tr><td>' + x.id + '</td><td>' + esc(x.name) + '</td><td title="' + esc(x.svc) + '">' + esc(x.svc) + '</td><td>' + fmtNum(x.amt) + ' EGP</td>' + (cust ? '<td>' + (due > 0 ? '<b style="color:var(--bad);font-weight:700">' + fmtNum(due) + ' EGP</b>' : '<span class="hm-sub">—</span>') + '</td>' : '') + '<td>' + esc(x.pay) + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
+      return '<tr><td>' + x.id + '</td><td>' + esc(x.name) + '</td><td title="' + esc(x.svc) + '">' + esc(x.svc) + '</td><td>' + fmtNum(x.amt) + ' ' + CUR + '</td>' + (cust ? '<td>' + (due > 0 ? '<b style="color:var(--bad);font-weight:700">' + fmtNum(due) + ' ' + CUR + '</b>' : '<span class="hm-sub">—</span>') + '</td>' : '') + '<td>' + esc(x.pay) + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
         '<td><span class="pl ' + (TXPILL[x.status] || 'mute') + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" aria-haspopup="true" aria-label="Actions for ' + x.id + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('txEmpty').hidden = v.length > 0; $('txPager').innerHTML = v.length ? pagerHtml(txPage, pages) : '';
@@ -3261,7 +3266,7 @@ window.bootApp = function () {
   $('exMenu').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return; this.hidden = true;
     var v = txView(), rows = b.dataset.x === 'page' ? v.slice((txPage - 1) * TXP, txPage * TXP) : v;
-    csvDownload('transactions-' + txTab + '.csv', ['Transaction ID', txTab === 'customers' ? 'Patient Name' : 'Supplier Name', txTab === 'customers' ? 'Service' : 'Category', 'Amount (EGP)'].concat(txTab === 'customers' ? ['Paid (EGP)', 'Balance Due (EGP)'] : [], ['Payment Method', 'Date & Time', 'Status']), rows.map(function (x) { return [x.id, x.name, x.svc, x.amt].concat(txTab === 'customers' ? [txPaid(x), txDue(x)] : [], [x.pay, x.dt, x.status]); }));
+    csvDownload('transactions-' + txTab + '.csv', ['Transaction ID', txTab === 'customers' ? 'Patient Name' : 'Supplier Name', txTab === 'customers' ? 'Service' : 'Category', 'Amount (' + CUR + ')'].concat(txTab === 'customers' ? ['Paid (' + CUR + ')', 'Balance Due (' + CUR + ')'] : [], ['Payment Method', 'Date & Time', 'Status']), rows.map(function (x) { return [x.id, x.name, x.svc, x.amt].concat(txTab === 'customers' ? [txPaid(x), txDue(x)] : [], [x.pay, x.dt, x.status]); }));
     toast('Exported ' + rows.length + ' transactions');
   });
   $('txRows').addEventListener('click', function (e) {
@@ -3272,7 +3277,7 @@ window.bootApp = function () {
     items.push(['copy', 'Copy transaction ID']);
     rowMenu(k, items, function (a) {
       if (a === 'view') { openInvoice(x.id); return; } if (a === 'pay') { openPayment(x.id); return; } if (a === 'inv') { printInvoice(x); return; }
-      if (a === 'print') { if (cust) { var iv = invOf(x); printReceipt(x, iv.pays.length ? iv.pays.length - 1 : 0); if (!iv.pays.length) { var pp0 = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Patient', x.name], ['Service', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp0[0]) + ' ' + fmtTime(pp0[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' EGP', 1]]); } return; } var pp = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Supplier', x.name], ['Category', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp[0]) + ' ' + fmtTime(pp[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' EGP', 1]]); return; }
+      if (a === 'print') { if (cust) { var iv = invOf(x); printReceipt(x, iv.pays.length ? iv.pays.length - 1 : 0); if (!iv.pays.length) { var pp0 = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Patient', x.name], ['Service', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp0[0]) + ' ' + fmtTime(pp0[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' ' + CUR + '', 1]]); } return; } var pp = x.dt.split(' '); printRows('Receipt ' + x.id, 'Payment receipt ' + x.id, [['Supplier', x.name], ['Category', x.svc], ['Payment method', x.pay], ['Date', fmtDate(pp[0]) + ' ' + fmtTime(pp[1])], ['Status', x.status], ['Amount', fmtNum(x.amt) + ' ' + CUR + '', 1]]); return; }
       if (a === 'paid') { if (cust && (x.items || x.payments)) { var iv2 = invOf(x); x.payments = iv2.pays.slice(); x.payments.push({ at: stampNow(), amt: iv2.due, method: x.pay && x.pay !== '—' ? x.pay : 'Cash' }); x.status = invStatusOf(x); } else x.status = 'Paid'; persist('txs', x); rebuildChart(); renderTx(); renderDash(); toast(x.id + ' marked as paid'); } else copyText(x.id, 'Transaction ID');
     });
   });
@@ -3287,11 +3292,11 @@ window.bootApp = function () {
   }
   function renderStocks() {
     var all = skAll(), low = 0, val = 0; all.forEach(function (r) { if (r.x.status === 'Low') low++; val += r.x.qty * r.x.price; });
-    $('skKpis').innerHTML = kpiHtml([['box', 'Total Stock Items', fmtNum(all.length)], ['refresh', 'Low Stock Items', low], ['cash', 'Inventory Value', fmtNum(val) + ' EGP'], ['store', 'Suppliers', SUPS.length]]);
+    $('skKpis').innerHTML = kpiHtml([['box', 'Total Stock Items', fmtNum(all.length)], ['refresh', 'Low Stock Items', low], ['cash', 'Inventory Value', fmtNum(val) + ' ' + CUR + ''], ['store', 'Suppliers', SUPS.length]]);
     var v = skView(), pages = Math.max(1, Math.ceil(v.length / SKP)); if (skPage > pages) skPage = pages;
     $('skRows').innerHTML = v.slice((skPage - 1) * SKP, skPage * SKP).map(function (r) {
       var x = r.x;
-      return '<tr><td><div class="dcell"><span class="sthumb">' + (x.img ? '<img src="' + x.img + '" alt="">' : PILL) + '</span><div class="nm2"><b>' + x.name + '</b><small>' + x.code + '</small></div></div></td><td><button class="lk nm2" data-a="sup" data-sid="' + r.sup.id + '"><b>' + r.sup.name + '</b></button></td><td>' + x.cat + '</td><td>' + x.qty + '</td><td>' + x.unit + '</td><td>' + x.price + ' EGP</td>' +
+      return '<tr><td><div class="dcell"><span class="sthumb">' + (x.img ? '<img src="' + x.img + '" alt="">' : PILL) + '</span><div class="nm2"><b>' + x.name + '</b><small>' + x.code + '</small></div></div></td><td><button class="lk nm2" data-a="sup" data-sid="' + r.sup.id + '"><b>' + r.sup.name + '</b></button></td><td>' + x.cat + '</td><td>' + x.qty + '</td><td>' + x.unit + '</td><td>' + x.price + ' ' + CUR + '</td>' +
         '<td><span class="pl ' + (x.status === 'Available' ? 'good' : 'bad') + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" data-sid="' + r.sup.id + '" aria-haspopup="true" aria-label="Actions for ' + x.name + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('skEmpty').hidden = v.length > 0; $('skPager').innerHTML = v.length ? pagerHtml(skPage, pages) : '';
@@ -3406,8 +3411,8 @@ window.bootApp = function () {
       '<div><span class="ib">' + svg('steth') + '</span><div><small>Doctor Name</small><b>' + d[0] + '</b></div></div><div><span class="ib">' + svg('bag') + '</span><div><small>Visit Type</small><b>' + r.visit + '</b></div></div>' +
       '<div><span class="ib">' + svg('cal') + '</span><div><small>Date And Time</small><b>' + shortLong(r.date).slice(0, -5) + ' - ' + longTime(st) + ' to ' + longTime(st + (r.dur || 45)) + '</b></div></div>' +
       '<div><span class="ib">' + svg('tx') + '</span><div><small>Billing Status</small><b class="' + (b.paid ? 'good' : 'warn') + '">' + (b.paid ? 'Paid' : 'Pending') + '</b></div></div></div>' +
-      '<div class="pay2"><div class="pb"><small>Insurance Pays (' + r.cover + '%)</small><div class="pv"><span>' + fmtNum(b.ins) + ' EGP</span>' + q(b.insDone) + '</div></div>' +
-      '<div class="pb"><small>Patient Pays (' + (100 - r.cover) + '%)</small><div class="pv"><span>' + fmtNum(b.pat) + ' EGP</span>' + q(b.patDone) + '</div></div></div>' +
+      '<div class="pay2"><div class="pb"><small>Insurance Pays (' + r.cover + '%)</small><div class="pv"><span>' + fmtNum(b.ins) + ' ' + CUR + '</span>' + q(b.insDone) + '</div></div>' +
+      '<div class="pb"><small>Patient Pays (' + (100 - r.cover) + '%)</small><div class="pv"><span>' + fmtNum(b.pat) + ' ' + CUR + '</span>' + q(b.patDone) + '</div></div></div>' +
       '<h4 class="rh4">Quick Note</h4><div class="nbox' + (r.note ? '' : ' empty-note') + '">' + (r.note ? r.note.replace(/</g, '&lt;') : 'No note was added for this reservation.') + '</div>' +
       '<h4 class="rh4">Attached Files</h4>' + ((r.files || []).length ? r.files.map(function (f) { return '<div class="rfile"><a href="/api/files/' + f.id + '" download="' + f.name.replace(/"/g, '') + '" style="display:flex;align-items:center;gap:10px"><span class="fi2">' + (f.name.split('.').pop() || 'FILE').slice(0, 4).toUpperCase() + '</span><div><b>' + f.name.replace(/</g, '&lt;') + '</b><small>' + fileSize(f.size) + '</small></div></a></div>'; }).join('') : '<div class="rfile"><small>No files attached.</small></div>');
   }
@@ -3463,7 +3468,7 @@ window.bootApp = function () {
   function printRows(title, sub, rows, foot) { printHtml(title, '<h1>' + esc(wsName()) + '</h1><div class="sub">' + esc(sub) + '</div><table>' + rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td' + (r[2] ? ' class="tot"' : '') + '>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table><div class="foot">' + esc(foot || 'Printed ' + new Date().toLocaleString()) + '</div>'); }
   $('resPrint').addEventListener('click', function () {
     var r = resCtx; if (!r) return; var d = dirOf(r), b = billOf(r), st = toMin(r.time);
-    printRows('Appointment slip', 'Appointment slip', [['Patient', r.patient], ['Doctor', d[0] + (d[1] ? ' (' + d[1] + ')' : '')], ['Visit type', r.visit], ['Date', shortLong(r.date)], ['Time', longTime(st) + ' to ' + longTime(st + (r.dur || 45))], ['Status', STL[r.status]], ['Insurance pays', fmtNum(b.ins) + ' EGP'], ['Patient pays', fmtNum(b.pat) + ' EGP', 1]]);
+    printRows('Appointment slip', 'Appointment slip', [['Patient', r.patient], ['Doctor', d[0] + (d[1] ? ' (' + d[1] + ')' : '')], ['Visit type', r.visit], ['Date', shortLong(r.date)], ['Time', longTime(st) + ' to ' + longTime(st + (r.dur || 45))], ['Status', STL[r.status]], ['Insurance pays', fmtNum(b.ins) + ' ' + CUR + ''], ['Patient pays', fmtNum(b.pat) + ' ' + CUR + '', 1]]);
   });
 
   /* ---------- notifications ---------- */
@@ -3536,7 +3541,7 @@ window.bootApp = function () {
     var tc = TXC.filter(function (x) { return (x.status === 'Paid' || x.status === 'Partial') && inR(dtDay(x)); }), ts = TXS.filter(function (x) { return x.status === 'Paid' && inR(dtDay(x)); }), ap = approved.filter(function (x) { return inR(x.date); });
     var rev = tc.reduce(function (m, x) { return m + txPaid(x); }, 0), buy = ts.reduce(function (m, x) { return m + x.amt; }, 0);
     var past = ap.filter(function (x) { return x.date <= TODAY; }), fin = past.filter(function (x) { return x.status === 'fin'; }).length, canc = past.filter(function (x) { return x.status === 'can'; }).length;
-    $('repKpis').innerHTML = kpiHtml([['cash', 'Revenue', fmtNum(rev) + ' EGP'], ['tx', 'Purchases', fmtNum(buy) + ' EGP'], ['refresh', 'Net', fmtNum(rev - buy) + ' EGP'], ['apt', 'Appointments', ap.length], ['v', 'Completed', past.length ? Math.round(fin / past.length * 100) + '%' : '—']]);
+    $('repKpis').innerHTML = kpiHtml([['cash', 'Revenue', fmtNum(rev) + ' ' + CUR + ''], ['tx', 'Purchases', fmtNum(buy) + ' ' + CUR + ''], ['refresh', 'Net', fmtNum(rev - buy) + ' ' + CUR + ''], ['apt', 'Appointments', ap.length], ['v', 'Completed', past.length ? Math.round(fin / past.length * 100) + '%' : '—']]);
     // monthly chart
     var months = [], y = +b[0].slice(0, 4), m0 = +b[0].slice(5, 7) - 1, ye = +b[1].slice(0, 4), me = +b[1].slice(5, 7) - 1;
     if (repRange === 'All time') { var d0 = new Date(Date.UTC(+TODAY.slice(0, 4), +TODAY.slice(5, 7) - 12, 1)); y = d0.getUTCFullYear(); m0 = d0.getUTCMonth(); }
@@ -3546,14 +3551,14 @@ window.bootApp = function () {
     var W = 700, H = 250, L = 52, Bt = 28, Tp = 10, mx = niceMax(Math.max.apply(null, data.map(function (d) { return Math.max(d.r, d.p); }).concat([1]))), ph = H - Bt - Tp, gw = (W - L - 8) / Math.max(data.length, 1), bw = Math.min(26, gw / 3.2), svgc = '<svg class="rsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Revenue and purchases per month">';
     for (var t = 0; t <= 4; t++) { var yv = Tp + ph - ph * t / 4; svgc += '<line x1="' + L + '" x2="' + (W - 4) + '" y1="' + yv + '" y2="' + yv + '" stroke="' + (t ? '#e6eaf2' : '#c9d0de') + '" stroke-dasharray="' + (t ? '3 4' : '') + '"/><text x="' + (L - 8) + '" y="' + (yv + 4) + '" text-anchor="end">' + fmtK(mx / 4 * t) + '</text>'; }
     data.forEach(function (d, i) {
-      var cx = L + gw * i + gw / 2, hr = ph * d.r / mx, hp = ph * d.p / mx, tip = '<b>' + d.name + '</b><br>Revenue ' + fmtNum(d.r) + ' EGP<br>Purchases ' + fmtNum(d.p) + ' EGP';
+      var cx = L + gw * i + gw / 2, hr = ph * d.r / mx, hp = ph * d.p / mx, tip = '<b>' + d.name + '</b><br>Revenue ' + fmtNum(d.r) + ' ' + CUR + '<br>Purchases ' + fmtNum(d.p) + ' ' + CUR + '';
       svgc += '<g class="grp" data-tip="' + esc(tip) + '"><rect x="' + (cx - gw / 2) + '" y="' + Tp + '" width="' + gw + '" height="' + ph + '" fill="transparent"/>' +
         '<path class="bar" d="M' + (cx - bw - 1) + ' ' + (Tp + ph) + 'v' + (-Math.max(hr - 4, 0)) + 'a4 4 0 0 1 4 -4h' + (bw - 8) + 'a4 4 0 0 1 4 4v' + Math.max(hr - 4, 0) + 'z" fill="#2f6df0"/>' +
         '<path class="bar" d="M' + (cx + 1) + ' ' + (Tp + ph) + 'v' + (-Math.max(hp - 4, 0)) + 'a4 4 0 0 1 4 -4h' + (bw - 8) + 'a4 4 0 0 1 4 4v' + Math.max(hp - 4, 0) + 'z" fill="#d9731a"/>' +
         '<text x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + d.name + '</text></g>';
     });
     $('repChart').innerHTML = svgc + '</svg>';
-    $('repChartT').innerHTML = '<table><thead><tr><th>Month</th><th>Revenue (EGP)</th><th>Purchases (EGP)</th></tr></thead><tbody>' + data.map(function (d) { return '<tr><td>' + d.name + '</td><td>' + fmtNum(d.r) + '</td><td>' + fmtNum(d.p) + '</td></tr>'; }).join('') + '</tbody></table>';
+    $('repChartT').innerHTML = '<table><thead><tr><th>Month</th><th>Revenue (' + CUR + ')</th><th>Purchases (' + CUR + ')</th></tr></thead><tbody>' + data.map(function (d) { return '<tr><td>' + d.name + '</td><td>' + fmtNum(d.r) + '</td><td>' + fmtNum(d.p) + '</td></tr>'; }).join('') + '</tbody></table>';
     var vt = {}, dc = {}; ap.forEach(function (x) { vt[x.visit] = (vt[x.visit] || 0) + 1; dc[dirOf(x)[0]] = (dc[dirOf(x)[0]] || 0) + 1; });
     $('repVisit').innerHTML = hbars(['Consultation', 'Follow-Up', 'Check-Up'].map(function (k) { return [k, vt[k] || 0]; }));
     $('repDocs').innerHTML = hbars(Object.keys(dc).map(function (k) { return [k, dc[k]]; }).sort(function (a, c) { return c[1] - a[1]; }).slice(0, 8));
@@ -3567,7 +3572,7 @@ window.bootApp = function () {
   document.addEventListener('click', function () { repMenu.hidden = true; var t = $('tip2'); if (t) t.hidden = true; });
   document.addEventListener('mousemove', function (e) { var g = e.target.closest && e.target.closest('[data-tip]'), t = $('tip2'); if (!g) { t.hidden = true; return; } t.innerHTML = g.getAttribute('data-tip').replace(/&lt;/g, '<'); t.hidden = false; t.style.left = Math.min(e.clientX + 14, innerWidth - 190) + 'px'; t.style.top = (e.clientY + 14) + 'px'; });
   $('repExA').addEventListener('click', function () { var b = repBounds(), rows = approved.filter(function (x) { return x.date >= b[0] && x.date <= b[1]; }); csvDownload('appointments.csv', ['Patient', 'Visit type', 'Doctor', 'Specialty', 'Date', 'Time', 'Status', 'Billing'], rows.map(function (x) { var d = dirOf(x); return [x.patient, x.visit, d[0], d[1], x.date, x.time, STL[x.status], billOf(x).paid ? 'Paid' : 'Pending']; })); toast('Exported ' + rows.length + ' appointments'); });
-  $('repExT').addEventListener('click', function () { var b = repBounds(), rows = TXC.concat(TXS).filter(function (x) { return dtDay(x) >= b[0] && dtDay(x) <= b[1]; }); csvDownload('transactions.csv', ['Transaction ID', 'Name', 'Service or category', 'Amount (EGP)', 'Payment method', 'Date and time', 'Status'], rows.map(function (x) { return [x.id, x.name, x.svc, x.amt, x.pay, x.dt, x.status]; })); toast('Exported ' + rows.length + ' transactions'); });
+  $('repExT').addEventListener('click', function () { var b = repBounds(), rows = TXC.concat(TXS).filter(function (x) { return dtDay(x) >= b[0] && dtDay(x) <= b[1]; }); csvDownload('transactions.csv', ['Transaction ID', 'Name', 'Service or category', 'Amount (' + CUR + ')', 'Payment method', 'Date and time', 'Status'], rows.map(function (x) { return [x.id, x.name, x.svc, x.amt, x.pay, x.dt, x.status]; })); toast('Exported ' + rows.length + ' transactions'); });
 
   /* ---------- users (Super Admin) ---------- */
   var USERS = [], ROLES = [], MATRIX = null, usEditId = 0;
@@ -3644,11 +3649,13 @@ window.bootApp = function () {
   function meter(label, cur, max, fmt) { var pct = max < 0 ? 0 : Math.min(100, max ? cur / max * 100 : 0); return '<div class="meter2' + (max >= 0 && cur >= max ? ' full' : '') + '"><div class="mh"><b style="font-weight:500">' + label + '</b><span>' + fmt(cur) + ' of ' + (max < 0 ? 'unlimited' : fmt(max)) + '</span></div><div class="bar"><i style="width:' + (max < 0 ? 4 : pct) + '%"></i></div></div>'; }
   function renderPlan() {
     var w = WS; if (!w) return;
+    (function () { var sel = $('curSel'), adm = ROLE === 'Super Admin'; sel.innerHTML = CURRENCIES.concat(CURRENCIES.indexOf(CUR) < 0 ? [CUR] : []).map(function (c) { return '<option' + (c === CUR ? ' selected' : '') + '>' + c + '</option>'; }).join(''); sel.disabled = !adm; $('curNote').textContent = adm ? '' : 'Ask a Super Admin to change this.'; })();
     $('wsName').textContent = w.name; $('wsCode').textContent = w.slug; $('wsStatus').textContent = w.status === 'trial' ? (w.trialDaysLeft > 0 ? 'Free trial, ' + w.trialDaysLeft + ' days left' : 'Trial ended') : w.status.charAt(0).toUpperCase() + w.status.slice(1);
     $('wsMeters').innerHTML = meter('Users', w.usage.users, w.plan.maxUsers, fmtNum) + meter('Patients', w.usage.patients, w.plan.maxPatients, fmtNum) + meter('File storage', w.usage.storage, w.plan.maxStorageMb < 0 ? -1 : w.plan.maxStorageMb * 1048576, mbTxt);
     $('plNote').textContent = 'You are on the ' + w.plan.name + ' plan' + (w.status === 'trial' ? ' (free trial)' : '') + '. To change plan, ' + (SUPPORT ? 'email ' + SUPPORT + ' with your workspace code.' : 'contact the platform owner with your workspace code.');
     $('plGrid').innerHTML = PLANS.map(function (p) { return '<div class="plan-c' + (p.id === w.plan.id ? ' cur' : '') + '"><h3>' + esc(p.name) + (p.id === w.plan.id ? '<span class="tag2">Current</span>' : '') + '</h3><div class="price">' + fmtNum(p.price) + ' <small>' + esc(p.currency) + ' / month</small></div><div style="font-size:12px;color:var(--ink-3)">' + esc(p.blurb) + '</div><ul><li>' + limTxt(p.max_users, ' users') + '</li><li>' + limTxt(p.max_patients, ' patients') + '</li><li>' + (p.max_storage_mb < 0 ? 'Unlimited' : mbTxt(p.max_storage_mb * 1048576)) + ' file storage</li></ul></div>'; }).join('');
   }
+  document.getElementById('curSel').addEventListener('change', function (e) { if (ROLE !== 'Super Admin') return; setCur(e.target.value); persistKV('currency', CUR); rerenderAll(); toast('Currency set to ' + CUR + '.'); });
   function loadPlan() {
     Promise.all([api('GET', '/api/account'), PLANS.length ? Promise.resolve(null) : api('GET', '/api/plans')]).then(function (r) { applyWs(r[0].workspace); if (r[1]) { PLANS = r[1].plans; SUPPORT = r[1].supportEmail || ''; } renderPlan(); }).catch(function (e) { toast(e.message); });
   }
@@ -3778,7 +3785,7 @@ window.bootApp = function () {
       var beds = BEDS.filter(function (b) { return b.wardId === w.id; }).sort(bedNoSort), occN = beds.filter(function (b) { return bedState(b) === 'occupied'; }).length;
       var items = beds.filter(function (b) { var st = bedState(b), a = admOfBed(b.id); return (wdStat === 'All' || st === wdStat) && (!q || (('bed ' + b.no) + ' ' + (a ? a.patient + ' ' + a.doctor + ' ' + a.reason : '')).toLowerCase().indexOf(q) > -1); });
       if (!items.length && (wdStat !== 'All' || q)) return;
-      h += '<section class="hm-ward"><div class="hm-wh"><b>' + esc(w.name) + '</b><span class="pl mute">' + esc(w.type) + '</span><small>Floor ' + esc(w.floor || '-') + ' · ' + fmtNum(w.rate) + ' EGP per day</small><span class="hm-occ" title="' + occN + ' of ' + beds.length + ' beds occupied"><i style="width:' + (beds.length ? occN / beds.length * 100 : 0) + '%"></i></span><small class="hm-occn">' + occN + ' of ' + beds.length + ' occupied</small></div><div class="hm-grid">' +
+      h += '<section class="hm-ward"><div class="hm-wh"><b>' + esc(w.name) + '</b><span class="pl mute">' + esc(w.type) + '</span><small>Floor ' + esc(w.floor || '-') + ' · ' + fmtNum(w.rate) + ' ' + CUR + ' per day</small><span class="hm-occ" title="' + occN + ' of ' + beds.length + ' beds occupied"><i style="width:' + (beds.length ? occN / beds.length * 100 : 0) + '%"></i></span><small class="hm-occn">' + occN + ' of ' + beds.length + ' occupied</small></div><div class="hm-grid">' +
         (items.length ? items.map(function (b) {
           var st = bedState(b), a = admOfBed(b.id), P = BED_PILL[st], days = a ? Math.max(1, dayDiff(dayOf(a.admitAt), TODAY) + 1) : 0, can = st === 'occupied' ? true : canWrite('beds') || canWrite('admissions');
           return '<span class="kw hm-cell"><button class="hm-bed ' + P[0] + '" data-id="' + esc(b.id) + '" aria-haspopup="true"' + (can ? '' : ' disabled') + ' aria-label="Bed ' + esc(b.no) + ', ' + P[1] + (a ? ', ' + esc(a.patient) : '') + '"><span class="bt"><span class="bn">Bed ' + esc(b.no) + '</span><span class="st">' + P[1] + '</span></span>' +
@@ -3805,7 +3812,7 @@ window.bootApp = function () {
     var l = wardsSorted();
     $('wrRows').innerHTML = l.map(function (w) {
       var beds = BEDS.filter(function (b) { return b.wardId === w.id; }), occ = beds.filter(function (b) { return bedState(b) === 'occupied'; }).length;
-      return '<tr><td><div class="nm2"><b>' + esc(w.name) + '</b></div></td><td><span class="pl mute">' + esc(w.type) + '</span></td><td>' + esc(w.floor || '—') + '</td><td>' + fmtNum(w.rate) + ' EGP</td><td>' + beds.length + '</td><td>' + occ + '</td>' +
+      return '<tr><td><div class="nm2"><b>' + esc(w.name) + '</b></div></td><td><span class="pl mute">' + esc(w.type) + '</span></td><td>' + esc(w.floor || '—') + '</td><td>' + fmtNum(w.rate) + ' ' + CUR + '</td><td>' + beds.length + '</td><td>' + occ + '</td>' +
         '<td>' + (canWrite('wards') ? '<span class="kw"><button class="kebab" data-a="wmenu" data-id="' + esc(w.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(w.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span>' : '') + '</td></tr>';
     }).join('');
     $('wrEmpty').hidden = l.length > 0;
@@ -3854,7 +3861,7 @@ window.bootApp = function () {
     hdw('wardW', { title: w ? 'Edit Ward' : 'Add Ward', mid: false,
       body: '<div class="fl"><label class="lb" for="wfN">Ward name</label><input class="in" id="wfN" placeholder="e.g. General Ward, Male" autocomplete="off" value="' + esc(w ? w.name : '') + '"></div>' +
         '<div class="row2"><div class="fl"><label class="lb" for="wfT">Type</label><select class="in sel" id="wfT">' + optList(WARD_TYPES.map(function (x) { return [x, x]; }), w ? w.type : 'General') + '</select></div><div class="fl"><label class="lb" for="wfF">Floor</label><input class="in" id="wfF" placeholder="e.g. 1" autocomplete="off" value="' + esc(w ? w.floor : '') + '"></div></div>' +
-        '<div class="row2"><div class="fl"><label class="lb" for="wfR">Daily rate (EGP)</label><input class="in" id="wfR" type="number" min="0" placeholder="350" value="' + (w ? w.rate : '') + '"></div>' + (w ? '' : '<div class="fl"><label class="lb" for="wfB">Number of beds</label><input class="in" id="wfB" type="number" min="0" max="60" value="6"></div>') + '</div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="wfR">Daily rate (' + CUR + ')</label><input class="in" id="wfR" type="number" min="0" placeholder="350" value="' + (w ? w.rate : '') + '"></div>' + (w ? '' : '<div class="fl"><label class="lb" for="wfB">Number of beds</label><input class="in" id="wfB" type="number" min="0" max="60" value="6"></div>') + '</div>' +
         '<p class="hm-sub">The daily rate is multiplied by the bed days when a patient is discharged. Beds are numbered 1, 2, 3... and can be renamed later.</p>',
       submit: function (D) {
         var n = D.$('#wfN').value.trim(), r = D.$('#wfR').value; if (n.length < 2) return D.err('Enter the ward name.', '#wfN'); if (r === '' || +r < 0) return D.err('Enter the daily rate.', '#wfR');
@@ -3890,7 +3897,7 @@ window.bootApp = function () {
     hdw('admW', { title: 'Admit Patient', save: 'Admit',
       body: '<div class="fl"><label class="lb" for="amP">Patient</label>' + ptPickHtml('amP') + '</div>' +
         '<div class="fl"><label class="lb" for="amD">Admitting doctor</label><select class="in sel" id="amD">' + docOptions('', 'Select doctor') + '</select></div>' +
-        '<div class="row2"><div class="fl"><label class="lb" for="amW">Ward</label><select class="in sel" id="amW">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' EGP/day']; }), w0, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="amB">Bed</label><select class="in sel" id="amB">' + bedOpts(w0, bedId) + '</select></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="amW">Ward</label><select class="in sel" id="amW">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' ' + CUR + '/day']; }), w0, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="amB">Bed</label><select class="in sel" id="amB">' + bedOpts(w0, bedId) + '</select></div></div>' +
         '<div class="fl"><label class="lb" for="amR">Reason for admission / diagnosis</label><input class="in" id="amR" placeholder="e.g. Pneumonia, chest infection" autocomplete="off"></div>' +
         '<div class="row2"><div class="fl"><span class="lb">Admission date</span><div id="amDP"></div></div><div class="fl"><label class="lb" for="amT">Time</label><input class="in" id="amT" type="time"></div></div>' +
         '<div class="fl"><div class="lb"><label for="amN"><span>Notes <span class="opt">(Optional)</span></span></label></div><textarea class="in" id="amN" maxlength="400" placeholder="Allergies, special care, relatives to call..."></textarea></div>',
@@ -3922,7 +3929,7 @@ window.bootApp = function () {
     function bedOpts(wid) { return optList(BEDS.filter(function (b) { return b.wardId === wid && bedState(b) === 'free'; }).sort(bedNoSort).map(function (b) { return [b.id, 'Bed ' + b.no]; }), '', 'Select a free bed'); }
     hdw('trW', { title: 'Transfer ' + a.patient, save: 'Transfer',
       body: '<div class="rbox" style="margin-bottom:16px"><div><small>Now in</small><b>' + esc(a.ward) + ', bed ' + esc(a.bed) + '</b></div><div class="stsel"><small>Admission</small><b>' + esc(a.code) + '</b></div></div>' +
-        '<div class="row2"><div class="fl"><label class="lb" for="trW2">Move to ward</label><select class="in sel" id="trW2">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' EGP/day']; }), a.wardId, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="trB">Bed</label><select class="in sel" id="trB">' + bedOpts(a.wardId) + '</select></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="trW2">Move to ward</label><select class="in sel" id="trW2">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' ' + CUR + '/day']; }), a.wardId, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="trB">Bed</label><select class="in sel" id="trB">' + bedOpts(a.wardId) + '</select></div></div>' +
         '<div class="fl"><label class="lb" for="trR"><span>Reason <span class="opt">(Optional)</span></span></label><input class="in" id="trR" placeholder="e.g. Moved to ICU for monitoring" autocomplete="off"></div>',
       ready: function (D) { D.$('#trW2').addEventListener('change', function () { D.$('#trB').innerHTML = bedOpts(this.value); }); },
       submit: function (D) {
@@ -3949,8 +3956,8 @@ window.bootApp = function () {
         (canWrite('txs') ? '<label class="chk" style="margin-top:12px"><input type="checkbox" id="dcInv" checked> Create an invoice for the bed charges now</label>' : '<p class="hm-sub" style="margin-top:10px">The bed charges are saved with the admission. The accounts team can add them to an invoice.</p>'),
       ready: function (D) {
         D.dp = mkdp('dcDP', isoToday(), 1, 0); D.fu = mkdp('dcF', '', 0, 2); D.$('#dcT').value = now.slice(11);
-        function charge() { var at = (D.dp.val || isoToday()) + ' ' + (D.$('#dcT').value || '00:00'), c = admCharge(a, at); D.charge = c; D.$('#dcDays').textContent = c.days + (c.days === 1 ? ' day' : ' days') + ' · ' + fmtNum(c.amount) + ' EGP';
-          D.$('#dcCh').innerHTML = '<table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate (EGP)</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + c.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '</tbody></table>'; }
+        function charge() { var at = (D.dp.val || isoToday()) + ' ' + (D.$('#dcT').value || '00:00'), c = admCharge(a, at); D.charge = c; D.$('#dcDays').textContent = c.days + (c.days === 1 ? ' day' : ' days') + ' · ' + fmtNum(c.amount) + ' ' + CUR + '';
+          D.$('#dcCh').innerHTML = '<table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate (' + CUR + ')</th><th class="num">Amount (' + CUR + ')</th></tr></thead><tbody>' + c.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '</tbody></table>'; }
         charge(); D.f.addEventListener('click', function () { setTimeout(charge, 0); }); D.$('#dcT').addEventListener('input', charge);
       },
       submit: function (D) {
@@ -3981,7 +3988,7 @@ window.bootApp = function () {
         '<h4 class="rh4">Reason for admission</h4><div class="hm-note">' + esc(a.reason || '—') + (a.note ? '\n' + esc(a.note) : '') + '</div>' +
         (adm ? '' : '<h4 class="rh4">Discharge</h4><div class="hm-note"><b>' + esc(a.condition || '') + '</b>\n' + esc(a.summary || '') + (a.meds ? '\n\nMedicines: ' + esc(a.meds) : '') + (a.advice ? '\n\nAdvice: ' + esc(a.advice) : '') + (a.followUp ? '\n\nFollow-up: ' + fmtDate(a.followUp) : '') + '</div>') +
         '<h4 class="rh4">Bed history</h4><table class="hm-mini"><thead><tr><th>Ward</th><th>Bed</th><th>From</th><th>To</th></tr></thead><tbody>' + moves + '</tbody></table>' +
-        '<h4 class="rh4">Bed charges ' + (adm ? '<small>(estimate until discharge)</small>' : '') + '</h4><table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + ch.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '<tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + fmtNum(ch.amount) + ' EGP</b></td></tr></tbody></table>' + (a.txId ? '<p class="hm-sub" style="margin-top:8px">Invoice ' + esc(a.txId) + '</p>' : '') +
+        '<h4 class="rh4">Bed charges ' + (adm ? '<small>(estimate until discharge)</small>' : '') + '</h4><table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate</th><th class="num">Amount (' + CUR + ')</th></tr></thead><tbody>' + ch.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '<tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + fmtNum(ch.amount) + ' ' + CUR + '</b></td></tr></tbody></table>' + (a.txId ? '<p class="hm-sub" style="margin-top:8px">Invoice ' + esc(a.txId) + '</p>' : '') +
         (labs.length ? '<h4 class="rh4">Lab and radiology</h4>' + labs.map(function (l) { return '<div class="hm-note" style="margin-bottom:6px"><b>' + esc(l.code) + '</b> · ' + l.items.map(function (i) { return esc(i.name); }).join(', ') + ' · ' + esc(LAB_ST[l.status] || l.status) + '</div>'; }).join('') : ''),
       act: function (name, D) { D.close(); if (name === 'print') printDischarge(a); else if (name === 'transfer') openTransfer(a.id); else if (name === 'lab') openLabOrder({ pid: a.pid, admId: a.id }); else if (name === 'discharge') openDischarge(a.id); },
       ready: function (D) { D.body.addEventListener('click', function (e) { var b = e.target.closest('.nmb'); if (b) { D.close(); curPid = +b.dataset.pid; go('PatientProfile'); } }); }, noFocus: true });
@@ -4201,7 +4208,7 @@ window.bootApp = function () {
     if (canR('visits')) VISITS.forEach(function (v) { if (v.pid === p.id) ev.push({ at: v.date + ' ' + (v.time || '00:00'), ic: 'rx', cls: 'blue', t: 'Consultation' + (v.diagnosis ? ': ' + v.diagnosis : ''), s: (v.doctor || '') + ((v.rx || []).length ? ' · ' + v.rx.length + ' medicine' + (v.rx.length > 1 ? 's' : '') : ''), st: v.status === 'final' ? ['good', 'Completed'] : ['warn', 'Draft'], run: function () { openVisit({ visitId: v.id }); } }); });
     if (canR('admissions')) ADMS.forEach(function (a) { if (a.pid !== p.id) return; ev.push({ at: a.admitAt, ic: 'bed', cls: 'teal', t: 'Admitted to ' + a.ward + ', bed ' + a.bed, s: a.reason || '', st: a.status === 'admitted' ? ['warn', 'In hospital'] : ['mute', 'Admission'], run: function () { openAdmDetail(a.id); } }); if (a.status === 'discharged') ev.push({ at: a.dischargeAt, ic: 'v', cls: 'green', t: 'Discharged (' + (a.condition || '') + ')', s: (a.charge ? a.charge.days + ' day' + (a.charge.days === 1 ? '' : 's') + ' stay' : ''), st: ['good', 'Discharged'], run: function () { openAdmDetail(a.id); } }); });
     if (canR('labs')) LABS.forEach(function (l) { if (l.pid === p.id) ev.push({ at: l.createdAt, ic: 'flask', cls: 'purple', t: 'Lab / radiology ' + l.code, s: l.items.map(function (i) { return i.name; }).join(', '), st: [l.status === 'resulted' ? 'good' : 'warn', LAB_ST[l.status] || l.status], run: function () { if (typeof openLabView === 'function') openLabView(l.id); } }); });
-    if (canR('txs')) TXC.forEach(function (x) { if (x.pid === p.id || (!x.pid && x.name === p.name)) { var due = txDue(x); ev.push({ at: x.dt, ic: 'tx', cls: 'amber', t: (x.inv ? 'Invoice ' + x.id : x.svc), s: fmtNum(x.amt) + ' EGP' + (due > 0 ? ' · ' + fmtNum(due) + ' due' : ''), st: [TXPILL[x.status] || 'mute', x.status], run: function () { if (x.inv && typeof openInvoice === 'function') openInvoice(x.id); else go('Transactions'); } }); } });
+    if (canR('txs')) TXC.forEach(function (x) { if (x.pid === p.id || (!x.pid && x.name === p.name)) { var due = txDue(x); ev.push({ at: x.dt, ic: 'tx', cls: 'amber', t: (x.inv ? 'Invoice ' + x.id : x.svc), s: fmtNum(x.amt) + ' ' + CUR + '' + (due > 0 ? ' · ' + fmtNum(due) + ' due' : ''), st: [TXPILL[x.status] || 'mute', x.status], run: function () { if (x.inv && typeof openInvoice === 'function') openInvoice(x.id); else go('Transactions'); } }); } });
     ev.sort(function (a, b) { return a.at < b.at ? 1 : -1; }); return ev;
   }
   function renderTimeline(p) {
@@ -4414,7 +4421,7 @@ window.bootApp = function () {
     var v = lbView(), pages = Math.max(1, Math.ceil(v.length / LBP)); if (lbPage > pages) lbPage = pages;
     $('lbRows').innerHTML = v.slice((lbPage - 1) * LBP, lbPage * LBP).map(function (l) {
       var abn = l.items.filter(function (i) { return i.flag === 'high' || i.flag === 'low'; }).length;
-      return '<tr><td><div class="nm2"><b>' + esc(l.code) + '</b><small>' + (l.visitId ? 'From consultation' : l.admId ? 'From admission' : 'Direct order') + '</small></div></td><td>' + (l.pid && canR('patients') ? '<button class="lk nm2" data-a="pt" data-pid="' + l.pid + '"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></button>' : '<div class="nm2"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></div>') + '</td><td style="white-space:normal;min-width:200px;max-width:300px">' + l.items.map(function (i) { return '<span class="hm-tag ' + (i.dept === 'Radiology' ? 'cons' : 'lab') + '" style="margin:2px 4px 2px 0">' + esc(i.name) + '</span>'; }).join('') + '</td><td class="td2"><span>' + fmtDate(dayOf(l.createdAt)) + '</span><small>' + fmtTime(l.createdAt.slice(11, 16) || '00:00') + '</small></td><td>' + fmtNum(labTotal(l)) + ' EGP</td>' +
+      return '<tr><td><div class="nm2"><b>' + esc(l.code) + '</b><small>' + (l.visitId ? 'From consultation' : l.admId ? 'From admission' : 'Direct order') + '</small></div></td><td>' + (l.pid && canR('patients') ? '<button class="lk nm2" data-a="pt" data-pid="' + l.pid + '"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></button>' : '<div class="nm2"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></div>') + '</td><td style="white-space:normal;min-width:200px;max-width:300px">' + l.items.map(function (i) { return '<span class="hm-tag ' + (i.dept === 'Radiology' ? 'cons' : 'lab') + '" style="margin:2px 4px 2px 0">' + esc(i.name) + '</span>'; }).join('') + '</td><td class="td2"><span>' + fmtDate(dayOf(l.createdAt)) + '</span><small>' + fmtTime(l.createdAt.slice(11, 16) || '00:00') + '</small></td><td>' + fmtNum(labTotal(l)) + ' ' + CUR + '</td>' +
         '<td><div class="hm-stack"><span class="pl ' + (l.status === 'resulted' ? 'good' : l.status === 'collected' ? 'warn' : 'mute') + '">' + esc(LAB_ST[l.status]) + '</span>' + (abn ? '<span class="hm-tag" style="background:#fdecec;color:#c2373a">' + abn + ' abnormal</span>' : '') + '</div></td>' +
         '<td><span class="kw"><button class="kebab" data-a="lmenu" data-id="' + esc(l.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(l.code) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
@@ -4425,7 +4432,7 @@ window.bootApp = function () {
     var v = ctView(), pages = Math.max(1, Math.ceil(v.length / CTP)); if (ctPage > pages) ctPage = pages;
     var w = canWrite('labtests');
     $('ctRows').innerHTML = v.slice((ctPage - 1) * CTP, ctPage * CTP).map(function (t) {
-      return '<tr><td><div class="nm2"><b>' + esc(t.name) + '</b></div></td><td><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span></td><td>' + fmtNum(t.price) + ' EGP</td><td>' + esc(t.unit || '—') + '</td><td>' + esc(refText(t)) + '</td><td>' + (w ? '<span class="kw"><button class="kebab" data-a="tmenu" data-id="' + esc(t.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(t.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span>' : '') + '</td></tr>';
+      return '<tr><td><div class="nm2"><b>' + esc(t.name) + '</b></div></td><td><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span></td><td>' + fmtNum(t.price) + ' ' + CUR + '</td><td>' + esc(t.unit || '—') + '</td><td>' + esc(refText(t)) + '</td><td>' + (w ? '<span class="kw"><button class="kebab" data-a="tmenu" data-id="' + esc(t.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(t.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span>' : '') + '</td></tr>';
     }).join('');
     var none = !LABT.length; $('ctEmpty').hidden = v.length > 0; $('ctEmpty').innerHTML = none ? 'The test catalog is empty.' + (w ? '<br><button class="btn-soft hm-empty-act" id="ctStd">Load the standard list of ' + LAB_STD.length + ' common tests</button>' : '') : 'No tests match.';
     $('ctPager').innerHTML = v.length ? pagerHtml(ctPage, pages) : '';
@@ -4457,7 +4464,7 @@ window.bootApp = function () {
   function openTestForm(t) {
     hdw('testW', { title: t ? 'Edit Test' : 'Add Test',
       body: '<div class="fl"><label class="lb" for="tfN">Test name</label><input class="in" id="tfN" placeholder="e.g. Serum Ferritin" autocomplete="off" value="' + esc(t ? t.name : '') + '"></div>' +
-        '<div class="row2"><div class="fl"><label class="lb" for="tfD">Department</label><select class="in sel" id="tfD">' + optList([['Lab', 'Laboratory'], ['Radiology', 'Radiology']], t ? t.dept : 'Lab') + '</select></div><div class="fl"><label class="lb" for="tfP">Price (EGP)</label><input class="in" id="tfP" type="number" min="0" placeholder="150" value="' + (t ? t.price : '') + '"></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="tfD">Department</label><select class="in sel" id="tfD">' + optList([['Lab', 'Laboratory'], ['Radiology', 'Radiology']], t ? t.dept : 'Lab') + '</select></div><div class="fl"><label class="lb" for="tfP">Price (' + CUR + ')</label><input class="in" id="tfP" type="number" min="0" placeholder="150" value="' + (t ? t.price : '') + '"></div></div>' +
         '<div class="row2"><div class="fl"><label class="lb" for="tfU"><span>Unit <span class="opt">(Optional)</span></span></label><input class="in" id="tfU" placeholder="e.g. mg/dL" autocomplete="off" value="' + esc(t ? t.unit : '') + '"></div><div class="fl"><label class="lb" for="tfR"><span>Reference text <span class="opt">(if not a number range)</span></span></label><input class="in" id="tfR" placeholder="e.g. Negative" autocomplete="off" value="' + esc(t ? t.ref : '') + '"></div></div>' +
         '<div class="row2"><div class="fl"><label class="lb" for="tfL"><span>Normal from <span class="opt">(Optional)</span></span></label><input class="in" id="tfL" type="number" step="any" value="' + (t && t.lo != null ? t.lo : '') + '"></div><div class="fl"><label class="lb" for="tfH"><span>Normal up to <span class="opt">(Optional)</span></span></label><input class="in" id="tfH" type="number" step="any" value="' + (t && t.hi != null ? t.hi : '') + '"></div></div>' +
         '<p class="hm-sub">When both numbers are set, a result outside the range is flagged High or Low automatically.</p>',
@@ -4478,13 +4485,13 @@ window.bootApp = function () {
   }
   function labPickList(sel) {
     return LABT.slice().sort(function (a, b) { return a.dept === b.dept ? (a.name < b.name ? -1 : 1) : (a.dept < b.dept ? -1 : 1); }).map(function (t) {
-      return '<label class="lp-i"><input type="checkbox" value="' + esc(t.id) + '"' + (sel.indexOf(t.id) > -1 ? ' checked' : '') + '><span class="lp-n">' + esc(t.name) + '</span><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span><span class="lp-p">' + fmtNum(t.price) + ' EGP</span></label>';
+      return '<label class="lp-i"><input type="checkbox" value="' + esc(t.id) + '"' + (sel.indexOf(t.id) > -1 ? ' checked' : '') + '><span class="lp-n">' + esc(t.name) + '</span><span class="hm-tag ' + (t.dept === 'Radiology' ? 'cons' : 'lab') + '">' + esc(t.dept) + '</span><span class="lp-p">' + fmtNum(t.price) + ' ' + CUR + '</span></label>';
     }).join('') || '<div class="no-ev">The test catalog is empty. Add tests in Lab &amp; Radiology first.</div>';
   }
   function labPickWire(root, onChange) {
     var q = root.querySelector('.lp-q'), box = root.querySelector('.lp-list');
     q.addEventListener('input', function () { var v = this.value.trim().toLowerCase(); box.querySelectorAll('.lp-i').forEach(function (r) { r.hidden = v && r.textContent.toLowerCase().indexOf(v) < 0; }); });
-    box.addEventListener('change', function () { var ids = [].map.call(box.querySelectorAll('input:checked'), function (c) { return c.value; }), tot = ids.reduce(function (s, id) { var t = labTestById(id); return s + (t ? t.price : 0); }, 0); root.querySelector('.lp-sum').textContent = ids.length ? ids.length + ' selected · ' + fmtNum(tot) + ' EGP' : 'Nothing selected'; if (onChange) onChange(ids); });
+    box.addEventListener('change', function () { var ids = [].map.call(box.querySelectorAll('input:checked'), function (c) { return c.value; }), tot = ids.reduce(function (s, id) { var t = labTestById(id); return s + (t ? t.price : 0); }, 0); root.querySelector('.lp-sum').textContent = ids.length ? ids.length + ' selected · ' + fmtNum(tot) + ' ' + CUR + '' : 'Nothing selected'; if (onChange) onChange(ids); });
   }
   function labPickerHtml(v, orders) {
     if (!canWrite('labs') && !(orders || []).length) return '';
@@ -4616,11 +4623,11 @@ window.bootApp = function () {
     hdw('invW', { title: 'New Invoice', wide: true, save: 'Save invoice',
       body: '<div class="row2"><div class="fl"><label class="lb" for="ivP">Patient</label>' + ptPickHtml('ivP') + '</div><div class="fl"><span class="lb">Invoice date</span><div id="ivDP"></div></div></div>' +
         '<h4 class="hm-h">Items <small>a line for each charge</small></h4>' +
-        '<table class="hm-mini" id="ivT"><thead><tr><th>Description</th><th>Qty</th><th>Unit price (EGP)</th><th class="num">Amount</th><th></th></tr></thead><tbody></tbody></table>' +
+        '<table class="hm-mini" id="ivT"><thead><tr><th>Description</th><th>Qty</th><th>Unit price (' + CUR + ')</th><th class="num">Amount</th><th></th></tr></thead><tbody></tbody></table>' +
         '<div class="iv-add"><button type="button" class="hm-addrow" id="ivPull">' + svg('plus') + 'Add this patient\'s pending charges</button><button type="button" class="hm-addrow" id="ivFee">' + svg('plus') + 'Consultation fee</button><button type="button" class="hm-addrow" id="ivX">' + svg('plus') + 'Custom line</button></div>' +
         '<div id="ivPend" hidden></div>' +
-        '<div class="hm-grid2" style="margin-top:20px"><div><div class="fl"><label class="lb" for="ivDisc"><span>Discount (EGP) <span class="opt">(Optional)</span></span></label><input class="in" id="ivDisc" type="number" min="0" step="any" placeholder="0"></div>' +
-          '<h4 class="hm-h" style="margin-top:6px">Payment received now <small>(Optional)</small></h4><div class="row2"><div class="fl"><label class="lb" for="ivPay">Amount (EGP)</label><input class="in" id="ivPay" type="number" min="0" step="any" placeholder="0"></div><div class="fl"><label class="lb" for="ivM">Method</label><select class="in sel" id="ivM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>' +
+        '<div class="hm-grid2" style="margin-top:20px"><div><div class="fl"><label class="lb" for="ivDisc"><span>Discount (' + CUR + ') <span class="opt">(Optional)</span></span></label><input class="in" id="ivDisc" type="number" min="0" step="any" placeholder="0"></div>' +
+          '<h4 class="hm-h" style="margin-top:6px">Payment received now <small>(Optional)</small></h4><div class="row2"><div class="fl"><label class="lb" for="ivPay">Amount (' + CUR + ')</label><input class="in" id="ivPay" type="number" min="0" step="any" placeholder="0"></div><div class="fl"><label class="lb" for="ivM">Method</label><select class="in sel" id="ivM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>' +
           '<div class="fl"><label class="lb" for="ivN"><span>Note <span class="opt">(Optional)</span></span></label><input class="in" id="ivN" placeholder="Shown on the invoice" autocomplete="off" maxlength="160"></div></div>' +
           '<div class="iv-tot" id="ivTot"></div></div>',
       ready: function (D) {
@@ -4628,7 +4635,7 @@ window.bootApp = function () {
         function calc() {
           var sub = 0; tb.querySelectorAll('tr').forEach(function (tr) { var q = +tr.querySelector('[data-f=qty]').value || 0, pr = +tr.querySelector('[data-f=price]').value || 0; sub += q * pr; tr.querySelector('[data-amt]').textContent = fmtNum(q * pr); });
           var disc = Math.min(Math.max(+D.$('#ivDisc').value || 0, 0), sub), total = sub - disc, paid = Math.min(Math.max(+D.$('#ivPay').value || 0, 0), total), due = total - paid;
-          D.$('#ivTot').innerHTML = '<div><span>Subtotal</span><b>' + fmtNum(sub) + ' EGP</b></div><div><span>Discount</span><b>- ' + fmtNum(disc) + ' EGP</b></div><div class="t"><span>Total</span><b>' + fmtNum(total) + ' EGP</b></div><div><span>Paid now</span><b>' + fmtNum(paid) + ' EGP</b></div><div class="d' + (due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(due) + ' EGP</b></div>';
+          D.$('#ivTot').innerHTML = '<div><span>Subtotal</span><b>' + fmtNum(sub) + ' ' + CUR + '</b></div><div><span>Discount</span><b>- ' + fmtNum(disc) + ' ' + CUR + '</b></div><div class="t"><span>Total</span><b>' + fmtNum(total) + ' ' + CUR + '</b></div><div><span>Paid now</span><b>' + fmtNum(paid) + ' ' + CUR + '</b></div><div class="d' + (due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(due) + ' ' + CUR + '</b></div>';
         }
         function add(i) { tb.insertAdjacentHTML('beforeend', ivRowHtml(i)); if (i.ref) tb.lastChild.dataset.ref = i.ref; calc(); }
         D.add = add; D.calc = calc; calc();
@@ -4639,7 +4646,7 @@ window.bootApp = function () {
         D.$('#ivPull').addEventListener('click', function () {
           var pt = ptFromInput('ivP'), box = D.$('#ivPend'); if (!pt) return D.err('Choose the patient first, then add the charges.', '#ivP'); D.err('');
           var have = {}; tb.querySelectorAll('tr').forEach(function (tr) { if (tr.dataset.ref) have[tr.dataset.ref] = 1; }); var l = pendingCharges(pt.id).filter(function (c) { return !c.items.some(function (i) { return have[i.ref]; }); });
-          box.hidden = false; box.innerHTML = l.length ? '<div class="lp"><div class="lp-list thin" style="max-height:190px">' + l.map(function (c, n) { return '<label class="lp-i"><input type="checkbox" value="' + n + '" checked><span class="lp-n">' + esc(c.label) + '</span><span class="lp-p">' + fmtNum(c.amount) + ' EGP</span></label>'; }).join('') + '</div><div style="margin-top:8px;display:flex;gap:8px"><button type="button" class="hm-mini-btn solid" id="ivAddSel">Add selected</button><button type="button" class="hm-mini-btn" id="ivHide">Close</button></div></div>' : '<div class="hm-note">Nothing is waiting to be billed for ' + esc(pt.name) + '. Bed days appear after discharge, lab orders when they are placed and consultations once an appointment is finished.</div>';
+          box.hidden = false; box.innerHTML = l.length ? '<div class="lp"><div class="lp-list thin" style="max-height:190px">' + l.map(function (c, n) { return '<label class="lp-i"><input type="checkbox" value="' + n + '" checked><span class="lp-n">' + esc(c.label) + '</span><span class="lp-p">' + fmtNum(c.amount) + ' ' + CUR + '</span></label>'; }).join('') + '</div><div style="margin-top:8px;display:flex;gap:8px"><button type="button" class="hm-mini-btn solid" id="ivAddSel">Add selected</button><button type="button" class="hm-mini-btn" id="ivHide">Close</button></div></div>' : '<div class="hm-note">Nothing is waiting to be billed for ' + esc(pt.name) + '. Bed days appear after discharge, lab orders when they are placed and consultations once an appointment is finished.</div>';
           var as = D.$('#ivAddSel'); if (as) as.addEventListener('click', function () { box.querySelectorAll('input:checked').forEach(function (c) { l[+c.value].items.forEach(function (i) { add(i); }); }); box.hidden = true; });
           var hd = D.$('#ivHide'); if (hd) hd.addEventListener('click', function () { box.hidden = true; });
         });
@@ -4654,10 +4661,10 @@ window.bootApp = function () {
         });
         if (bad) return D.err(bad[1], bad[0]); if (!items.length) return D.err('Add at least one line.', '#ivPull');
         var sub = items.reduce(function (s, i) { return s + i.qty * i.price; }, 0), disc = +D.$('#ivDisc').value || 0, pay = +D.$('#ivPay').value || 0;
-        if (disc < 0 || disc > sub) return D.err('The discount cannot be more than the subtotal (' + fmtNum(sub) + ' EGP).', '#ivDisc'); if (pay < 0 || pay > sub - disc + 0.001) return D.err('The payment cannot be more than the total (' + fmtNum(sub - disc) + ' EGP).', '#ivPay');
+        if (disc < 0 || disc > sub) return D.err('The discount cannot be more than the subtotal (' + fmtNum(sub) + ' ' + CUR + ').', '#ivDisc'); if (pay < 0 || pay > sub - disc + 0.001) return D.err('The payment cannot be more than the total (' + fmtNum(sub - disc) + ' ' + CUR + ').', '#ivPay');
         if (!D.dp.val) return D.err('Choose the invoice date.', D.dp.btn);
         var at = D.dp.val + ' ' + stampNow().slice(11), x = makeInvoice({ pid: pt.id, name: pt.name, items: items, discount: disc, dt: at, note: D.$('#ivN').value.trim(), payments: pay > 0 ? [{ at: at, amt: pay, method: D.$('#ivM').value }] : [] });
-        TXC.unshift(x); persist('txs', x); D.close(); txSetTab('customers'); rebuildChart(); renderDash(); toast('Invoice ' + x.id + ' saved' + (txDue(x) > 0 ? ' · ' + fmtNum(txDue(x)) + ' EGP due' : '')); openInvoice(x.id);
+        TXC.unshift(x); persist('txs', x); D.close(); txSetTab('customers'); rebuildChart(); renderDash(); toast('Invoice ' + x.id + ' saved' + (txDue(x) > 0 ? ' · ' + fmtNum(txDue(x)) + ' ' + CUR + ' due' : '')); openInvoice(x.id);
       } });
   }
   function openInvoice(id) {
@@ -4667,35 +4674,35 @@ window.bootApp = function () {
       body: '<div class="rbox"><div><small>Patient</small><b>' + (x.pid && canR('patients') ? '<button class="nmb" type="button" data-pid="' + x.pid + '">' + esc(x.name) + '</button>' : esc(x.name)) + '</b></div><div class="stsel"><small>Status</small><span class="pl ' + (TXPILL[x.status] || 'mute') + '">' + esc(x.status) + '</span></div></div>' +
         '<p class="hm-sub" style="margin:10px 0 0">' + fmtDate(pp[0]) + ', ' + fmtTime(pp[1] || '00:00') + (x.note ? ' · ' + esc(x.note) : '') + '</p>' +
         '<table class="hm-mini" style="margin-top:14px"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th></tr></thead><tbody>' + v.items.map(function (i) { return '<tr><td><span class="hm-tag ' + (SRC_TAG[i.src] || 'oth') + '" style="margin-right:8px">' + esc(SRC_LBL[i.src] || 'Other') + '</span>' + esc(i.desc) + '</td><td class="num">' + i.qty + '</td><td class="num">' + fmtNum(i.price) + '</td><td class="num"><b>' + fmtNum(i.qty * i.price) + '</b></td></tr>'; }).join('') + '</tbody></table>' +
-        '<div class="iv-tot" style="margin-top:14px"><div><span>Subtotal</span><b>' + fmtNum(v.sub) + ' EGP</b></div>' + (v.disc ? '<div><span>Discount</span><b>- ' + fmtNum(v.disc) + ' EGP</b></div>' : '') + '<div class="t"><span>Total</span><b>' + fmtNum(v.total) + ' EGP</b></div><div><span>Paid</span><b>' + fmtNum(v.paid) + ' EGP</b></div><div class="d' + (v.due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(v.due) + ' EGP</b></div></div>' +
-        '<h4 class="hm-h">Payments</h4>' + (v.pays.length ? '<table class="hm-mini"><thead><tr><th>Date</th><th>Method</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + v.pays.map(function (p) { return '<tr><td>' + fmtStamp(p.at) + '</td><td>' + esc(p.method) + '</td><td class="num"><b>' + fmtNum(p.amt) + '</b></td></tr>'; }).join('') + '</tbody></table>' : '<div class="hm-note">No payment received yet.</div>'),
+        '<div class="iv-tot" style="margin-top:14px"><div><span>Subtotal</span><b>' + fmtNum(v.sub) + ' ' + CUR + '</b></div>' + (v.disc ? '<div><span>Discount</span><b>- ' + fmtNum(v.disc) + ' ' + CUR + '</b></div>' : '') + '<div class="t"><span>Total</span><b>' + fmtNum(v.total) + ' ' + CUR + '</b></div><div><span>Paid</span><b>' + fmtNum(v.paid) + ' ' + CUR + '</b></div><div class="d' + (v.due > 0 ? ' bad' : '') + '"><span>Balance due</span><b>' + fmtNum(v.due) + ' ' + CUR + '</b></div></div>' +
+        '<h4 class="hm-h">Payments</h4>' + (v.pays.length ? '<table class="hm-mini"><thead><tr><th>Date</th><th>Method</th><th class="num">Amount (' + CUR + ')</th></tr></thead><tbody>' + v.pays.map(function (p) { return '<tr><td>' + fmtStamp(p.at) + '</td><td>' + esc(p.method) + '</td><td class="num"><b>' + fmtNum(p.amt) + '</b></td></tr>'; }).join('') + '</tbody></table>' : '<div class="hm-note">No payment received yet.</div>'),
       act: function (name, D) { if (name === 'print') printInvoice(x); else if (name === 'receipt') printReceipt(x, v.pays.length - 1); else if (name === 'pay') { D.close(); openPayment(x.id); } },
       ready: function (D) { D.body.addEventListener('click', function (e) { var b = e.target.closest('.nmb'); if (b) { D.close(); curPid = +b.dataset.pid; go('PatientProfile'); } }); } });
   }
   function openPayment(id) {
     var x = TXC.filter(function (t) { return t.id === id; })[0]; if (!x) return; var v = invOf(x); if (v.due <= 0) { toast('Nothing is due on ' + x.id); return; }
     hdw('payW', { title: 'Record payment · ' + x.id, mid: false, save: 'Save payment',
-      body: '<div class="rbox" style="margin-bottom:16px"><div><small>' + esc(x.name) + '</small><b>Balance due ' + fmtNum(v.due) + ' EGP</b></div><div class="stsel"><small>Total</small><b>' + fmtNum(v.total) + ' EGP</b></div></div>' +
-        '<div class="row2"><div class="fl"><label class="lb" for="pyA">Amount received (EGP)</label><input class="in" id="pyA" type="number" min="0" step="any" value="' + v.due + '"></div><div class="fl"><label class="lb" for="pyM">Method</label><select class="in sel" id="pyM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>',
+      body: '<div class="rbox" style="margin-bottom:16px"><div><small>' + esc(x.name) + '</small><b>Balance due ' + fmtNum(v.due) + ' ' + CUR + '</b></div><div class="stsel"><small>Total</small><b>' + fmtNum(v.total) + ' ' + CUR + '</b></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="pyA">Amount received (' + CUR + ')</label><input class="in" id="pyA" type="number" min="0" step="any" value="' + v.due + '"></div><div class="fl"><label class="lb" for="pyM">Method</label><select class="in sel" id="pyM">' + optList(PAY_METHODS.map(function (m) { return [m, m]; }), 'Cash') + '</select></div></div>',
       submit: function (D) {
-        var a = +D.$('#pyA').value; if (!(a > 0)) return D.err('Enter the amount received.', '#pyA'); if (a > v.due + 0.001) return D.err('That is more than the balance due (' + fmtNum(v.due) + ' EGP).', '#pyA');
-        x.payments = v.pays.slice(); x.payments.push({ at: stampNow(), amt: a, method: D.$('#pyM').value }); x.pay = D.$('#pyM').value; x.status = invStatusOf(x); persist('txs', x); D.close(); renderTx(); rebuildChart(); renderDash(); toast(fmtNum(a) + ' EGP received' + (x.status === 'Paid' ? '. ' + x.id + ' is fully paid' : '. ' + fmtNum(txDue(x)) + ' EGP still due')); openInvoice(x.id);
+        var a = +D.$('#pyA').value; if (!(a > 0)) return D.err('Enter the amount received.', '#pyA'); if (a > v.due + 0.001) return D.err('That is more than the balance due (' + fmtNum(v.due) + ' ' + CUR + ').', '#pyA');
+        x.payments = v.pays.slice(); x.payments.push({ at: stampNow(), amt: a, method: D.$('#pyM').value }); x.pay = D.$('#pyM').value; x.status = invStatusOf(x); persist('txs', x); D.close(); renderTx(); rebuildChart(); renderDash(); toast(fmtNum(a) + ' ' + CUR + ' received' + (x.status === 'Paid' ? '. ' + x.id + ' is fully paid' : '. ' + fmtNum(txDue(x)) + ' ' + CUR + ' still due')); openInvoice(x.id);
       } });
   }
   function printInvoice(x) {
     var v = invOf(x), p = x.pid ? patientById(x.pid) : null, pp = x.dt.split(' ');
     printDoc('Invoice ' + x.id,
       letterhead('Invoice', 'Invoice no. ' + x.id) + metaRows([['Patient', x.name], ['Patient ID', p ? p.code : ''], ['Date', fmtDate(pp[0])], ['Status', x.status]]) +
-      '<h2>Charges</h2><table><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount (EGP)</th></tr></thead><tbody>' + v.items.map(function (i) { return '<tr><td>' + esc(i.desc) + '</td><td class="r">' + i.qty + '</td><td class="r">' + fmtNum(i.price) + '</td><td class="r">' + fmtNum(i.qty * i.price) + '</td></tr>'; }).join('') +
+      '<h2>Charges</h2><table><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount (' + CUR + ')</th></tr></thead><tbody>' + v.items.map(function (i) { return '<tr><td>' + esc(i.desc) + '</td><td class="r">' + i.qty + '</td><td class="r">' + fmtNum(i.price) + '</td><td class="r">' + fmtNum(i.qty * i.price) + '</td></tr>'; }).join('') +
       '<tr class="tot"><td colspan="3" class="r">Subtotal</td><td class="r">' + fmtNum(v.sub) + '</td></tr>' + (v.disc ? '<tr><td colspan="3" class="r">Discount</td><td class="r">- ' + fmtNum(v.disc) + '</td></tr>' : '') + '<tr><td colspan="3" class="r"><b>Total</b></td><td class="r"><b>' + fmtNum(v.total) + '</b></td></tr></tbody></table>' +
-      (v.pays.length ? '<h2>Payments received</h2><table><thead><tr><th>Date</th><th>Method</th><th class="r">Amount (EGP)</th></tr></thead><tbody>' + v.pays.map(function (q) { return '<tr><td>' + esc(fmtStamp(q.at)) + '</td><td>' + esc(q.method) + '</td><td class="r">' + fmtNum(q.amt) + '</td></tr>'; }).join('') + '</tbody></table>' : '') +
-      '<table style="margin-top:12px"><tbody><tr class="tot"><td class="r" style="font-size:15px">Balance due</td><td class="r" style="font-size:15px;width:160px">' + fmtNum(v.due) + ' EGP</td></tr></tbody></table>' + (x.note ? '<div class="box" style="margin-top:14px">' + esc(x.note) + '</div>' : '') + '<div class="sig"><div>Cashier signature and stamp</div></div>');
+      (v.pays.length ? '<h2>Payments received</h2><table><thead><tr><th>Date</th><th>Method</th><th class="r">Amount (' + CUR + ')</th></tr></thead><tbody>' + v.pays.map(function (q) { return '<tr><td>' + esc(fmtStamp(q.at)) + '</td><td>' + esc(q.method) + '</td><td class="r">' + fmtNum(q.amt) + '</td></tr>'; }).join('') + '</tbody></table>' : '') +
+      '<table style="margin-top:12px"><tbody><tr class="tot"><td class="r" style="font-size:15px">Balance due</td><td class="r" style="font-size:15px;width:160px">' + fmtNum(v.due) + ' ' + CUR + '</td></tr></tbody></table>' + (x.note ? '<div class="box" style="margin-top:14px">' + esc(x.note) + '</div>' : '') + '<div class="sig"><div>Cashier signature and stamp</div></div>');
   }
   function printReceipt(x, idx) {
     var v = invOf(x), q = v.pays[idx]; if (!q) return; var before = v.pays.slice(0, idx + 1).reduce(function (s, p) { return s + p.amt; }, 0);
     printDoc('Receipt ' + x.id,
       letterhead('Payment Receipt', 'Receipt for ' + x.id) + metaRows([['Received from', x.name], ['Date', fmtStamp(q.at)], ['For', (x.inv ? 'Invoice ' : 'Transaction ') + x.id], ['Payment method', q.method]]) +
-      '<table style="margin-top:14px"><tbody><tr><td>Invoice total</td><td class="r">' + fmtNum(v.total) + ' EGP</td></tr><tr><td>Paid up to this receipt</td><td class="r">' + fmtNum(before) + ' EGP</td></tr><tr class="tot"><td style="font-size:16px">Amount received</td><td class="r" style="font-size:16px">' + fmtNum(q.amt) + ' EGP</td></tr><tr><td>Balance still due</td><td class="r">' + fmtNum(Math.max(0, v.total - before)) + ' EGP</td></tr></tbody></table><div class="sig"><div>Cashier signature and stamp</div></div>');
+      '<table style="margin-top:14px"><tbody><tr><td>Invoice total</td><td class="r">' + fmtNum(v.total) + ' ' + CUR + '</td></tr><tr><td>Paid up to this receipt</td><td class="r">' + fmtNum(before) + ' ' + CUR + '</td></tr><tr class="tot"><td style="font-size:16px">Amount received</td><td class="r" style="font-size:16px">' + fmtNum(q.amt) + ' ' + CUR + '</td></tr><tr><td>Balance still due</td><td class="r">' + fmtNum(Math.max(0, v.total - before)) + ' ' + CUR + '</td></tr></tbody></table><div class="sig"><div>Cashier signature and stamp</div></div>');
   }
 
   /* sample invoices for people who were discharged or tested */
@@ -4722,7 +4729,7 @@ window.bootApp = function () {
     if (canR('beds') && BEDS.length) { var s = bedStats(); c.push(statCard('bed', 'Bed Occupancy', s.occ + ' of ' + (s.total - s.maint) + ' usable beds', s.pct + '%', '<div class="bar2' + (s.pct >= 90 ? ' bad' : s.pct >= 75 ? ' warn' : '') + '"><i style="width:' + s.pct + '%"></i></div>')); }
     if (canR('opdq')) { var tk = todayToks(), w = tk.filter(function (t) { return t.status === 'waiting'; }).length, inn = tk.filter(function (t) { return t.status === 'in'; }).length; c.push(statCard('ticket', 'OPD Today', 'Tokens issued today', tk.length, '<div class="sx"><b>' + w + '</b> in the queue · <b>' + inn + '</b> in consultation</div>')); }
     if (canR('labs')) { var o = LABS.filter(function (l) { return l.status === 'ordered'; }).length, co = LABS.filter(function (l) { return l.status === 'collected'; }).length; c.push(statCard('flask', 'Pending Lab Orders', 'Waiting for sample or result', o + co, '<div class="sx"><b>' + o + '</b> awaiting sample · <b>' + co + '</b> awaiting result</div>')); }
-    if (canR('txs')) { var due = duesTotal(); c.push(statCard('cash', 'Revenue Today', 'Cash received today', fmtNum(revenueOn(TODAY)) + ' <small style="font-size:13px;font-weight:700;color:var(--ink-3)">EGP</small>', '<div class="sx">Outstanding dues <b style="color:' + (due > 0 ? 'var(--bad)' : 'inherit') + '">' + fmtNum(due) + ' EGP</b></div>')); }
+    if (canR('txs')) { var due = duesTotal(); c.push(statCard('cash', 'Revenue Today', 'Cash received today', fmtNum(revenueOn(TODAY)) + ' <small style="font-size:13px;font-weight:700;color:var(--ink-3)">' + CUR + '</small>', '<div class="sx">Outstanding dues <b style="color:' + (due > 0 ? 'var(--bad)' : 'inherit') + '">' + fmtNum(due) + ' ' + CUR + '</b></div>')); }
     $('stats2').hidden = !c.length; $('stats2').innerHTML = c.join('');
     renderDashCharts();
   }
@@ -4749,16 +4756,16 @@ window.bootApp = function () {
       var from = addDays(TODAY, -29), by = { cons: 0, bed: 0, lab: 0, oth: 0 }, tot = 0;
       TXC.forEach(function (x) { if (x.status !== 'Paid' && x.status !== 'Partial') return; var d = dayOf(x.dt); if (d < from || d > TODAY) return; revParts(x).forEach(function (q) { by[q[2]] += q[1]; tot += q[1]; }); });
       var keys = ['cons', 'bed', 'lab', 'oth'], R = 62, C = 2 * Math.PI * R, off = 0, dn = '<svg viewBox="0 0 160 160" class="don" role="img" aria-label="Revenue by source, last 30 days"><circle cx="80" cy="80" r="' + R + '" fill="none" stroke="#eef2f8" stroke-width="22"/>';
-      if (tot > 0) keys.forEach(function (k) { var len = by[k] / tot * C; if (len > 0.5) { dn += '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="' + DASH_COL[k] + '" stroke-width="22" stroke-dasharray="' + (len - 1.5).toFixed(2) + ' ' + (C - len + 1.5).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 80 80)"><title>' + SRC_LBL[k] + ': ' + fmtNum(by[k]) + ' EGP</title></circle>'; } off += len; });
+      if (tot > 0) keys.forEach(function (k) { var len = by[k] / tot * C; if (len > 0.5) { dn += '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="' + DASH_COL[k] + '" stroke-width="22" stroke-dasharray="' + (len - 1.5).toFixed(2) + ' ' + (C - len + 1.5).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 80 80)"><title>' + SRC_LBL[k] + ': ' + fmtNum(by[k]) + ' ' + CUR + '</title></circle>'; } off += len; });
       dn += '<text x="80" y="76" text-anchor="middle" style="font-size:11px;fill:#8b94a7;font-weight:600">Last 30 days</text><text x="80" y="96" text-anchor="middle" style="font-size:17px;font-weight:800;fill:#1b2a4a">' + fmtK(tot) + '</text></svg>';
-      $('srcChart').innerHTML = tot > 0 ? '<div class="don-w">' + dn + '<div class="don-l">' + keys.map(function (k) { return '<div><i style="background:' + DASH_COL[k] + '"></i><span>' + SRC_LBL[k] + '</span><b>' + fmtNum(by[k]) + ' EGP</b><em>' + Math.round(by[k] / tot * 100) + '%</em></div>'; }).join('') + '</div></div>' : '<div class="empty" style="padding:30px 0">No paid transactions in the last 30 days.</div>';
+      $('srcChart').innerHTML = tot > 0 ? '<div class="don-w">' + dn + '<div class="don-l">' + keys.map(function (k) { return '<div><i style="background:' + DASH_COL[k] + '"></i><span>' + SRC_LBL[k] + '</span><b>' + fmtNum(by[k]) + ' ' + CUR + '</b><em>' + Math.round(by[k] / tot * 100) + '%</em></div>'; }).join('') + '</div></div>' : '<div class="empty" style="padding:30px 0">No paid transactions in the last 30 days.</div>';
     }
   }
   function alertsHospital(a) {
     if (canR('opdq')) { var w = todayToks().filter(function (t) { return t.status === 'waiting'; }).length; if (w) a.push({ key: 'oq' + w, ic: 'ticket', cls: '', t: w + ' patient' + (w > 1 ? 's' : '') + ' waiting in the OPD queue', s: 'Open the queue', run: function () { go('OPD Queue'); } }); }
     if (canR('labs')) { var p = LABS.filter(function (l) { return l.status !== 'resulted'; }).length; if (p) a.push({ key: 'lb' + p, ic: 'flask', cls: '', t: p + ' lab or radiology order' + (p > 1 ? 's' : '') + ' waiting for a result', s: 'Open lab and radiology', run: function () { lbSt = 'All'; go('Lab & Radiology'); } }); }
     if (canR('beds') && BEDS.length) { var s = bedStats(); if (s.pct >= 90) a.push({ key: 'bd' + s.pct, ic: 'bed', cls: 'warn', t: 'Beds are almost full (' + s.pct + '%)', s: 'Open the bed board', run: function () { go('Wards & Beds'); } }); }
-    if (canR('txs')) { var n = TXC.filter(function (x) { return txDue(x) > 0; }).length; if (n) a.push({ key: 'du' + n, ic: 'cash', cls: 'warn', t: n + ' bill' + (n > 1 ? 's' : '') + ' with an unpaid balance (' + fmtNum(duesTotal()) + ' EGP)', s: 'Open transactions filtered by dues', run: function () { txStat = 'Dues'; txPage = 1; txSetTab('customers'); go('Transactions'); } }); }
+    if (canR('txs')) { var n = TXC.filter(function (x) { return txDue(x) > 0; }).length; if (n) a.push({ key: 'du' + n, ic: 'cash', cls: 'warn', t: n + ' bill' + (n > 1 ? 's' : '') + ' with an unpaid balance (' + fmtNum(duesTotal()) + ' ' + CUR + ')', s: 'Open transactions filtered by dues', run: function () { txStat = 'Dues'; txPage = 1; txSetTab('customers'); go('Transactions'); } }); }
     return a;
   }
   /* ===== reminders ===== */
@@ -4842,11 +4849,13 @@ window.bootApp = function () {
     if (!srv) { seedServer(); rerenderAll(); return; }
     if (srv.empty && srv.seed) { seedServer(); rerenderAll(); return; }
     if (srv.empty) {
+      setCur('PKR');
       docStaff = []; genStaffL = []; SUPS = []; STK = {}; TXC = []; TXS = []; DEVS = []; patients = []; approved = []; requests = []; WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; uid = 0; sUid = 0; supUid = 0; ptUid = 0; stkUid = 0; devUid = 0; curPid = 0; supCur = null;
       rerenderAll(); return;
     }
     var C = srv.collections || {}, kv = {};
     (C.kv || []).forEach(function (o) { kv[o.id] = o.v; });
+    setCur(kv.currency);
     patients = (C.patients || []).slice().sort(byOrd);
     var ap = (C.appts || []).slice().sort(byOrd);
     approved = ap.filter(function (r) { return r.list === 'approved'; }); requests = ap.filter(function (r) { return r.list === 'requests'; });

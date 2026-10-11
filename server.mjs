@@ -467,6 +467,8 @@ async function tenantApi(req, res, p, m, auth, url) {
       let b; try { b = JSON.parse((await readBuf(req, 12_000_000)).toString('utf8')); } catch (e) { return sendJson(res, e.code === 413 ? 413 : 400, { error: 'Bad record' }); }
       if (!b || typeof b !== 'object' || Array.isArray(b) || String(b.id) !== id) return sendJson(res, 400, { error: 'Record id mismatch' });
       const existed = db.prepare('SELECT 1 FROM records WHERE col = ? AND id = ?').get(col, id);
+      if (col === 'kv' && id === 'currency' && user.role !== 'Super Admin') return sendJson(res, 403, { error: 'Only a Super Admin can change the currency.' });
+      if (col === 'kv' && id === 'currency' && !/^[A-Z]{2,5}$/.test(String(b.v))) return sendJson(res, 400, { error: 'Use a currency code such as PKR or USD.' });
       const rule = RULES[col], ruleErr = rule ? rule(db, id, b) : ''; if (ruleErr) return sendJson(res, 409, { error: ruleErr });
       if (!existed && col === 'patients' && over(usageOf(ctx).patients, plan.max_patients)) return sendJson(res, 402, { error: `Your ${plan.name} plan allows ${plan.max_patients} patients. Upgrade to add more.`, code: 'limit' });
       db.prepare('INSERT OR REPLACE INTO records (col, id, data, updated) VALUES (?, ?, ?, ?)').run(col, id, JSON.stringify(b), Date.now());
