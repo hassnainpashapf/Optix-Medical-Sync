@@ -1122,9 +1122,10 @@
       <div class="view" id="view-usr" hidden>
         <div class="head"><div><h1>Users</h1><p>People who can sign in, and what each role is allowed to do</p></div></div>
         <section class="card ap-card" style="padding-top:18px">
-          <div class="tools" style="margin-top:0"><span class="sbox" style="font-size:12px;color:var(--ink-2);display:flex;align-items:center">Roles: Super Admin (everything), Doctor and Receptionist (appointments and patients), Accountant (transactions and billing), Pharmacist (suppliers, stocks and prescriptions). Wards and beds: Super Admin, Doctor and Receptionist can admit and discharge; Accountant and Pharmacist can view.</span><button class="btn-soft" id="usBackup" style="margin-left:auto">Back up now</button><button class="addbtn" id="usAdd" style="margin-left:0">Add User <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+          <div class="tools" style="margin-top:0"><span class="sbox" style="font-size:12.5px;color:var(--ink-2);display:flex;align-items:center">Pick a role for each person. The table under the list shows what every role may do.</span><button class="btn-soft" id="usBackup" style="margin-left:auto">Back up now</button><button class="addbtn" id="usAdd" style="margin-left:0">Add User <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
           <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody id="usRows"></tbody></table></div>
         </section>
+        <section class="card ap-card" style="padding-top:18px"><h2 style="margin:0 0 4px;font-size:16px;font-weight:600">What each role can do</h2><p style="margin:0 0 14px;font-size:12.5px;color:var(--ink-2)">Enforced on the server: a role never receives data it may not read.</p><div class="tbl-wrap" style="margin-top:0"><table class="hm-mini" id="roleMx" style="min-width:640px"></table></div></section>
       </div>
 
       <div class="view" id="view-plan" hidden>
@@ -3569,11 +3570,17 @@ window.bootApp = function () {
   $('repExT').addEventListener('click', function () { var b = repBounds(), rows = TXC.concat(TXS).filter(function (x) { return dtDay(x) >= b[0] && dtDay(x) <= b[1]; }); csvDownload('transactions.csv', ['Transaction ID', 'Name', 'Service or category', 'Amount (EGP)', 'Payment method', 'Date and time', 'Status'], rows.map(function (x) { return [x.id, x.name, x.svc, x.amt, x.pay, x.dt, x.status]; })); toast('Exported ' + rows.length + ' transactions'); });
 
   /* ---------- users (Super Admin) ---------- */
-  var USERS = [], ROLES = [], usEditId = 0;
+  var USERS = [], ROLES = [], MATRIX = null, usEditId = 0;
   function loadUsers() {
-    api('GET', '/api/users').then(function (r) { USERS = r.users; ROLES = r.roles; $('usR').innerHTML = ROLES.map(function (x) { return '<option>' + x + '</option>'; }).join(''); renderUsers(); }).catch(function (e) { toast(e.message); });
+    api('GET', '/api/users').then(function (r) { USERS = r.users; ROLES = r.roles; MATRIX = r.matrix || null; $('usR').innerHTML = ROLES.map(function (x) { return '<option>' + x + '</option>'; }).join(''); renderUsers(); }).catch(function (e) { toast(e.message); });
+  }
+  var MX_ROWS = [['appts', 'Appointments and calendar'], ['patients', 'Patients'], ['visits', 'Consultations and prescriptions'], ['admissions', 'Admissions (discharge, transfer)'], ['beds', 'Beds'], ['wards', 'Wards'], ['opdq', 'OPD queue'], ['labs', 'Lab and radiology orders'], ['labtests', 'Lab test catalog'], ['txs', 'Transactions and invoices'], ['staff', 'Staff list'], ['suppliers', 'Suppliers'], ['stocks', 'Stocks'], ['devices', 'Peripherals']];
+  function renderMatrix() {
+    var t = $('roleMx'); if (!MATRIX || !ROLES.length) { t.innerHTML = ''; return; }
+    t.innerHTML = '<thead><tr><th>Area</th>' + ROLES.map(function (r) { return '<th>' + esc(r) + '</th>'; }).join('') + '</tr></thead><tbody>' + MX_ROWS.map(function (a) { return '<tr><td><b>' + a[1] + '</b></td>' + ROLES.map(function (r) { var v = (MATRIX[r] || {})[a[0]]; return '<td>' + (v === 'rw' ? '<span class="pl good" style="height:24px;padding:0 11px;font-size:11px">Edit</span>' : v === 'r' ? '<span class="pl mute" style="height:24px;padding:0 11px;font-size:11px">View</span>' : '<span class="hm-sub">No access</span>') + '</td>'; }).join('') + '</tr>'; }).join('') + '<tr><td><b>Users, plan and audit log</b></td>' + ROLES.map(function (r) { return '<td>' + (r === 'Super Admin' ? '<span class="pl good" style="height:24px;padding:0 11px;font-size:11px">Edit</span>' : '<span class="hm-sub">No access</span>') + '</td>'; }).join('') + '</tr></tbody>';
   }
   function renderUsers() {
+    renderMatrix();
     $('usRows').innerHTML = USERS.map(function (u) {
       return '<tr><td><div class="dcell"><span class="sthumb">' + avatarHtml(u.name) + '</span><div class="nm2"><b>' + esc(u.name) + (u.username === ME.username ? ' (you)' : '') + '</b></div></div></td><td>' + esc(u.username) + '</td><td>' + esc(u.email || '—') + '</td><td><span class="pl ' + (u.role === 'Super Admin' ? 'warn' : 'good') + '">' + esc(u.role) + '</span></td><td><span class="pl ' + (u.active ? 'good' : 'bad') + '">' + (u.active ? 'Active' : 'Locked') + '</span></td><td>' + (u.created ? fmtDate(new Date(u.created).toISOString().slice(0, 10)) : '—') + '</td><td><span class="kw"><button class="kebab" data-id="' + u.id + '" aria-haspopup="true" aria-label="Actions for ' + esc(u.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');

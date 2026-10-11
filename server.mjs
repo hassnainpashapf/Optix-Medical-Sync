@@ -422,7 +422,7 @@ async function tenantApi(req, res, p, m, auth, url) {
     if (user.role !== 'Super Admin') return sendJson(res, 403, { error: 'Only a Super Admin can do this.' });
     if (p === '/api/audit' && m === 'GET') return sendJson(res, 200, { rows: db.prepare('SELECT id, ts, user, action, area, ref, summary FROM audit ORDER BY id DESC LIMIT 1500').all() });
     if (p === '/api/backup' && m === 'POST') { const f = backupDb(db, path.join(ctx.dir, 'backups'), 'nexura'); tenantAudit(ctx, user.username, 'Backup', 'System', null, f); return sendJson(res, 200, { file: f }); }
-    if (p === '/api/users' && m === 'GET') return sendJson(res, 200, { users: db.prepare('SELECT id, username, name, role, active, created, email FROM users ORDER BY id').all(), roles: ROLES });
+    if (p === '/api/users' && m === 'GET') return sendJson(res, 200, { users: db.prepare('SELECT id, username, name, role, active, created, email FROM users ORDER BY id').all(), roles: ROLES, matrix: PERMS });
     const b = await readJson(req);
     const um = p.match(/^\/api\/users\/(\d+)(\/invite)?$/);
     if (p === '/api/users' && m === 'POST') {

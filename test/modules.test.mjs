@@ -134,3 +134,9 @@ test('sample data: the seed accepts the new collections; modules can be loaded i
   const l = await call('POST', '/api/login', { workspace: 'delta-care', username: 'rec', password: 'password123' });
   assert.equal((await call('POST', '/api/seed-modules', body, l.cookie)).s, 403);
 });
+
+test('the Users page gets the role matrix from the server, so what it shows is what is enforced', async () => {
+  const u = await call('GET', '/api/users', undefined, jar.admin); assert.equal(u.s, 200);
+  for (const [role, perms] of Object.entries(EXPECT)) for (const col of NEW) assert.equal(u.j.matrix[role][col] || '', perms[col], `${role} ${col}`);
+  assert.equal((await call('GET', '/api/users', undefined, jar.doctor)).s, 403);
+});
