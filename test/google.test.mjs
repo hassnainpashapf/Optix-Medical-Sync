@@ -129,7 +129,7 @@ test('Google signup + login', async (t) => {
     const wrongWs = await call('POST', '/api/login/google', { workspace: 'real-clinic', credential: cred('sara@gmail.com') }); assert.equal(wrongWs.s, 401);
     assert.equal(wrongWs.j.error, nomatch.j.error);
     const ghost = await call('POST', '/api/login/google', { workspace: 'no-such-clinic', credential: cred('sara@gmail.com') }); assert.equal(ghost.s, 401); assert.equal(ghost.j.error, nomatch.j.error);
-    await addUser('Gone User', 'gone', 'gone@gmail.com'); const gone = own = (await call('GET', '/api/users', null, ownCookie)).j.users.find((u) => u.username === 'gone');
+    await addUser('Gone User', 'gone', 'gone@gmail.com'); const gone = (await call('GET', '/api/users', null, ownCookie)).j.users.find((u) => u.username === 'gone');
     assert.equal((await call('PUT', '/api/users/' + gone.id, { active: false }, ownCookie)).s, 200);
     assert.equal((await call('POST', '/api/login/google', { workspace: 'alpha-care', credential: cred('gone@gmail.com') })).s, 401);
   });
