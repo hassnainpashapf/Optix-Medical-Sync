@@ -19,7 +19,9 @@ const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 const SESSION_MS = 7 * 24 * 3600 * 1000;
 const MAX_FILE = 10 * 1024 * 1024;
 const TRIAL_DAYS = 14;
-const COLLECTIONS = new Set(['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv']);
+const COLLECTIONS = new Set(['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs']);
+/* the hospital modules added after the first release: wards and beds (IPD), consultations, OPD queue, lab and radiology */
+const HOSPITAL_COLS = ['wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs'];
 const ALLOWED_HOSTS = new Set((process.env.ALLOWED_HOSTS || `localhost:${PORT},127.0.0.1:${PORT}`).split(',').map((h) => h.trim()));
 const TRUST_PROXY = process.env.TRUST_PROXY === '1';
 const SECURE_COOKIES = process.env.SECURE_COOKIES === '1';
@@ -62,13 +64,27 @@ const ROLES = ['Super Admin', 'Doctor', 'Receptionist', 'Accountant', 'Pharmacis
 const rw = (...c) => Object.fromEntries(c.map((x) => [x, 'rw']));
 const ro = (...c) => Object.fromEntries(c.map((x) => [x, 'r']));
 const PERMS = {
-  'Super Admin': rw('appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv'),
-  Doctor: { ...rw('appts', 'patients', 'kv'), ...ro('staff') },
-  Receptionist: { ...rw('appts', 'patients', 'kv'), ...ro('staff') },
-  Accountant: { ...rw('txs', 'kv'), ...ro('appts', 'patients', 'staff', 'suppliers', 'stocks') },
-  Pharmacist: { ...rw('suppliers', 'stocks', 'kv'), ...ro('devices', 'staff') },
+  'Super Admin': rw('appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', ...HOSPITAL_COLS),
+  Doctor: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs'), ...ro('staff') },
+  Receptionist: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'opdq', 'labtests', 'labs'), ...ro('staff', 'visits') },
+  Accountant: { ...rw('txs', 'kv'), ...ro('appts', 'patients', 'staff', 'suppliers', 'stocks', 'wards', 'beds', 'admissions', 'labtests', 'labs') },
+  Pharmacist: { ...rw('suppliers', 'stocks', 'kv'), ...ro('devices', 'staff', 'wards', 'beds', 'admissions', 'visits') },
 };
-const AREA = { appts: 'Appointments', patients: 'Patients', staff: 'Staff', suppliers: 'Suppliers', stocks: 'Stocks', txs: 'Transactions', devices: 'Peripherals', resv: 'Reservations', kv: 'Settings' };
+const AREA = { appts: 'Appointments', patients: 'Patients', staff: 'Staff', suppliers: 'Suppliers', stocks: 'Stocks', txs: 'Transactions', devices: 'Peripherals', resv: 'Reservations', kv: 'Settings', wards: 'Wards', beds: 'Beds', admissions: 'Admissions', visits: 'Consultations', opdq: 'OPD queue', labtests: 'Lab catalog', labs: 'Lab orders' };
+/* Rules the server enforces on top of the role matrix, so two users on two screens cannot break the data. Return an error text or ''. */
+const jget = (db, col, where, ...args) => db.prepare(`SELECT 1 FROM records WHERE col = '${col}' AND ${where}`).get(...args);
+const RULES = {
+  admissions(db, id, b) {
+    if (b.status !== 'admitted') return '';
+    if (b.bedId && jget(db, 'admissions', "id != ? AND json_extract(data, '$.status') = 'admitted' AND json_extract(data, '$.bedId') = ?", id, String(b.bedId))) return 'That bed is already occupied. Pick another bed.';
+    if (b.pid !== undefined && jget(db, 'admissions', "id != ? AND json_extract(data, '$.status') = 'admitted' AND json_extract(data, '$.pid') = ?", id, b.pid ?? null)) return 'This patient is already admitted.';
+    return '';
+  },
+  opdq(db, id, b) {
+    if (jget(db, 'opdq', "id != ? AND json_extract(data, '$.docId') = ? AND json_extract(data, '$.date') = ? AND json_extract(data, '$.no') = ?", id, b.docId ?? null, String(b.date), b.no ?? null)) return 'That token number was just issued to someone else. Refresh and try again.';
+    return '';
+  },
+};
 const can = (user, col, mode) => { const p = (PERMS[user.role] || {})[col] || ''; return mode === 'w' ? p === 'rw' : p !== ''; };
 const validSlug = (s) => typeof s === 'string' && /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(s) && !RESERVED.has(s);
 
@@ -336,7 +352,7 @@ async function publicApi(req, res, p, m, url) {
 }
 
 /* ================= tenant API ================= */
-async function tenantApi(req, res, p, m, auth) {
+async function tenantApi(req, res, p, m, auth, url) {
   const { t, ctx, user } = auth, db = ctx.db;
   if (p === '/api/session' && m === 'GET') return sendJson(res, 200, { user: publicUser(user), workspace: wsInfo(t, ctx) });
   if (p === '/api/logout' && m === 'POST') { tenantAudit(ctx, user.username, 'Signed out', 'Account', null, null); pdb.prepare('DELETE FROM sessions WHERE token = ?').run(auth.token); return sendJson(res, 200, { ok: true }, setCookie(req, 'sid', '', 0)); }
@@ -359,6 +375,23 @@ async function tenantApi(req, res, p, m, auth) {
     db.exec('BEGIN');
     try { for (const col of Object.keys(b)) { if (!COLLECTIONS.has(col) || !Array.isArray(b[col])) continue; for (const o of b[col]) if (o && o.id !== undefined) { ins.run(col, String(o.id), JSON.stringify(o), Date.now()); n++; } } db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; }
     tenantAudit(ctx, user.username, 'Loaded sample data', 'System', null, n + ' records'); return sendJson(res, 200, { ok: true, count: n });
+  }
+  if (p === '/api/seed-modules' && m === 'POST') {
+    /* sample data for the hospital modules (wards, beds, visits, queue, lab) in a workspace that already had data before they existed */
+    if (user.role !== 'Super Admin') return sendJson(res, 403, { error: 'Only a Super Admin can load sample data.' });
+    if (!t.sample) return sendJson(res, 403, { error: 'This workspace was created without sample data.' });
+    if (db.prepare(`SELECT 1 FROM records WHERE col IN (${HOSPITAL_COLS.map(() => '?').join(',')}) LIMIT 1`).get(...HOSPITAL_COLS)) return sendJson(res, 409, { error: 'The hospital modules already have data' });
+    let b; try { b = JSON.parse((await readBuf(req, 20_000_000)).toString('utf8')); } catch (e) { return sendJson(res, e.code === 413 ? 413 : 400, { error: 'Bad seed payload' }); }
+    const ins = db.prepare('INSERT OR REPLACE INTO records (col, id, data, updated) VALUES (?, ?, ?, ?)'); let n = 0;
+    db.exec('BEGIN');
+    try { for (const col of HOSPITAL_COLS) { if (!Array.isArray(b[col])) continue; for (const o of b[col]) if (o && o.id !== undefined) { ins.run(col, String(o.id), JSON.stringify(o), Date.now()); n++; } } db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; }
+    tenantAudit(ctx, user.username, 'Loaded sample data', 'System', null, n + ' hospital-module records'); return sendJson(res, 200, { ok: true, count: n });
+  }
+  if (p === '/api/opdq' && m === 'GET') {
+    /* the waiting-room screen polls this small list instead of the whole data set */
+    if (!can(user, 'opdq', 'r')) return sendJson(res, 403, { error: 'Your role cannot open the OPD queue.' });
+    const date = String(url.searchParams.get('date') || '').slice(0, 10), rows = db.prepare("SELECT data FROM records WHERE col = 'opdq'" + (/^\d{4}-\d{2}-\d{2}$/.test(date) ? " AND json_extract(data, '$.date') = ?" : '')).all(...(/^\d{4}-\d{2}-\d{2}$/.test(date) ? [date] : []));
+    return sendJson(res, 200, { tokens: rows.map((r) => JSON.parse(r.data)), now: Date.now() });
   }
   if (p === '/api/password' && m === 'POST') {
     const b = await readJson(req), u = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
@@ -434,13 +467,14 @@ async function tenantApi(req, res, p, m, auth) {
       let b; try { b = JSON.parse((await readBuf(req, 12_000_000)).toString('utf8')); } catch (e) { return sendJson(res, e.code === 413 ? 413 : 400, { error: 'Bad record' }); }
       if (!b || typeof b !== 'object' || Array.isArray(b) || String(b.id) !== id) return sendJson(res, 400, { error: 'Record id mismatch' });
       const existed = db.prepare('SELECT 1 FROM records WHERE col = ? AND id = ?').get(col, id);
+      const rule = RULES[col], ruleErr = rule ? rule(db, id, b) : ''; if (ruleErr) return sendJson(res, 409, { error: ruleErr });
       if (!existed && col === 'patients' && over(usageOf(ctx).patients, plan.max_patients)) return sendJson(res, 402, { error: `Your ${plan.name} plan allows ${plan.max_patients} patients. Upgrade to add more.`, code: 'limit' });
       db.prepare('INSERT OR REPLACE INTO records (col, id, data, updated) VALUES (?, ?, ?, ?)').run(col, id, JSON.stringify(b), Date.now());
       if (col !== 'kv') tenantAudit(ctx, user.username, existed ? 'Updated' : 'Created', AREA[col], id, b.name || b.patient || (b.status ? col + ' ' + id + ' (' + b.status + ')' : col + ' ' + id));
       return sendJson(res, 200, { ok: true });
     }
     if (m === 'DELETE') {
-      const old = db.prepare('SELECT data FROM records WHERE col = ? AND id = ?').get(col, id); let nm = col + ' ' + id; try { const o = JSON.parse(old.data); nm = o.name || o.patient || nm; } catch { /* keep */ }
+      const old = db.prepare('SELECT data FROM records WHERE col = ? AND id = ?').get(col, id); if (!old) return sendJson(res, 200, { ok: true }); let nm = col + ' ' + id; try { const o = JSON.parse(old.data); nm = o.name || o.patient || nm; } catch { /* keep */ }
       db.prepare('DELETE FROM records WHERE col = ? AND id = ?').run(col, id); if (col !== 'kv') tenantAudit(ctx, user.username, 'Deleted', AREA[col], id, nm); return sendJson(res, 200, { ok: true });
     }
   }
@@ -531,7 +565,7 @@ async function api(req, res, url) {
   const auth = tenantAuth(req);
   if (!auth) return sendJson(res, 401, { error: 'Not signed in' });
   if (auth.t.status === 'suspended') return sendJson(res, 403, { error: 'This workspace is suspended. Contact the platform owner.', code: 'suspended' });
-  return tenantApi(req, res, p, m, auth);
+  return tenantApi(req, res, p, m, auth, url);
 }
 
 /* Google AdSense (public marketing pages only; never inside /app, /signup or /platform).

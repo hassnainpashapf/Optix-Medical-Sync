@@ -1,0 +1,87 @@
+/* Hospital modules (wards and beds, consultations, OPD queue, lab and radiology, invoices, dashboard extras).
+   Loaded after optix-app.css: same Pharmacy look (Plus Jakarta Sans, #f2f5f9 canvas, white cards, big radii, blue pill buttons). LIGHT ONLY. */
+
+/* ---------- shared bits ---------- */
+.drawer.wide { width: min(780px, 100%); }
+.drawer.mid { width: min(580px, 100%); }
+.dr-body fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.dr-foot .grow { flex: 1; }
+.dr-foot .ghost.danger { color: var(--bad); }
+.hm-h { margin: 20px 0 10px; font-size: 14px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.hm-h small { font-weight: 600; color: var(--ink-3); font-size: 11.5px; }
+.hm-sub { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+.hm-note { background: #f6f8fb; border-radius: 14px; padding: 12px 14px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5; white-space: pre-wrap; }
+.hm-note.warn { background: var(--warn-bg); color: var(--warn); }
+.hm-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.hm-row4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.hm-row5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.hm-mini { width: 100%; min-width: 0; border-collapse: separate; border-spacing: 0; }
+.hm-mini th { background: #f6f8fb; color: var(--ink-3); font-size: 11.5px; font-weight: 700; text-align: left; padding: 9px 12px; height: auto; white-space: normal; }
+.hm-mini th:first-child { border-radius: 12px 0 0 12px; } .hm-mini th:last-child { border-radius: 0 12px 12px 0; }
+.hm-mini td { height: auto; white-space: normal; padding: 10px 12px; font-size: 12.5px; border-bottom: 1px solid #edf1f6; color: var(--ink-2); font-weight: 500; vertical-align: middle; }
+.hm-mini td b { color: var(--ink); font-weight: 700; }
+.hm-mini tr:last-child td { border-bottom: 0; }
+.hm-mini .in { height: 36px; font-size: 12.5px; border-radius: 10px; padding: 0 10px; }
+.hm-mini select.in { padding-right: 28px; }
+.hm-mini .num { text-align: right; font-variant-numeric: tabular-nums; }
+.hm-x { width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--hov); color: var(--ink-2); display: grid; place-items: center; padding: 0; }
+.hm-x:hover { background: var(--bad-bg); color: var(--bad); }
+.hm-x svg { width: 13px; height: 13px; }
+.hm-addrow { margin-top: 10px; border: 1px dashed #b9c8e6; background: #f7faff; color: var(--lnk); font-weight: 700; font-size: 12.5px; border-radius: 12px; height: 38px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; }
+.hm-addrow:hover { background: var(--tintb); }
+.hm-addrow svg { width: 14px; height: 14px; stroke-width: 2.2; }
+.hm-tag { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700; background: var(--chip, #f0f4fb); color: var(--ink-2); white-space: nowrap; }
+.hm-tag.bed { background: #e4f6f3; color: #0d7c73; } .hm-tag.lab { background: #f0eaff; color: #6d3fd6; } .hm-tag.cons { background: #eaf1ff; color: #1f4fd1; } .hm-tag.oth { background: #fff4e0; color: #b45309; }
+.hm-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.hm-seg { display: inline-flex; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.hm-seg button { border: 0; background: none; height: 32px; padding: 0 16px; border-radius: 999px; font-weight: 700; font-size: 12.5px; color: var(--ink-2); }
+.hm-seg button.on { background: var(--blue); color: #fff; }
+.tools .hm-seg { margin-left: 0; }
+.hm-empty-act { display: inline-flex; margin-top: 12px; }
+
+/* ---------- bed board ---------- */
+.hm-ward { margin-top: 26px; }
+.hm-ward:first-of-type { margin-top: 18px; }
+.hm-wh { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.hm-wh b { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+.hm-wh small { color: var(--ink-3); font-size: 12px; font-weight: 600; }
+.hm-wh .pl { height: 24px; padding: 0 11px; font-size: 11px; font-weight: 700; }
+.hm-occ { width: 90px; height: 7px; border-radius: 99px; background: var(--trk); overflow: hidden; margin-left: auto; }
+.hm-occ i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #5b8cff, #2f6df6); }
+.hm-wh .hm-occn { margin-left: 0; }
+.hm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 12px; }
+.hm-cell { display: block; position: relative; }
+.hm-cell .menu { top: auto; bottom: 8px; right: 8px; z-index: 30; min-width: 210px; }
+.hm-bed { width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 18px; padding: 13px 14px 12px; background: #fff; min-height: 118px; display: flex; flex-direction: column; gap: 3px; color: var(--ink); cursor: pointer; transition: box-shadow .15s, transform .15s; }
+.hm-bed:hover { box-shadow: 0 14px 28px -16px rgba(27,42,74,.3); transform: translateY(-1px); }
+.hm-bed:disabled { cursor: default; transform: none; box-shadow: none; }
+.hm-bed .bt { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.hm-bed .bn { font-size: 11.5px; font-weight: 800; letter-spacing: .04em; color: var(--ink-3); text-transform: uppercase; }
+.hm-bed .st { font-size: 10.5px; font-weight: 800; height: 21px; padding: 0 9px; border-radius: 99px; display: inline-flex; align-items: center; }
+.hm-bed .pn { font-size: 14px; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.hm-bed .ps { font-size: 11.5px; color: var(--ink-2); font-weight: 500; line-height: 1.35; }
+.hm-bed .pr { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-top: auto; padding-top: 6px; }
+.hm-bed.free { background: #f4fbf7; border-color: #c5ecd5; } .hm-bed.free .st { background: #dff5e8; color: var(--good); }
+.hm-bed.occ { background: #f3f7ff; border-color: #cfe0ff; } .hm-bed.occ .st { background: #dbe7ff; color: #1f4fd1; }
+.hm-bed.cleaning { background: #fffaf0; border-color: #f6dcaa; } .hm-bed.cleaning .st { background: #ffeccb; color: var(--warn); }
+.hm-bed.maint { background: #f6f7f9; border-color: #dfe3ea; } .hm-bed.maint .st { background: #e6e9ef; color: #5b6474; }
+.hm-bed.free .pn, .hm-bed.cleaning .pn, .hm-bed.maint .pn { color: var(--ink-2); font-weight: 700; }
+.hm-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); font-weight: 600; margin: 4px 0 0; }
+.hm-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; }
+
+/* ---------- stat cards row 2 on the dashboard ---------- */
+.stats.two { margin-top: -2px; }
+.stat .sx { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: -8px; }
+.stat .sx b { color: var(--ink-2); font-weight: 800; }
+.stat .bar2 { height: 7px; border-radius: 99px; background: var(--trk); overflow: hidden; margin-top: -4px; }
+.stat .bar2 i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #5b8cff, #2f6df6); }
+.stat .bar2.warn i { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.stat .bar2.bad i { background: linear-gradient(90deg, #f87171, #e5484d); }
+
+@media (max-width: 1100px) {
+  .hm-row5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hm-row4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.hm-mini td:first-child, .hm-mini th:first-child { padding-left: 12px; }
+.hm-mini th.num { text-align: right; }

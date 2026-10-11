@@ -945,6 +945,7 @@
 .hubch .err{margin-top:10px;color:#b42318;font-size:12.5px}
 </style>
 <link rel="stylesheet" href="/assets/optix-app.css">
+<link rel="stylesheet" href="/assets/optix-hospital.css">
 </head>
 <body class="locked">
 <div class="frame">
@@ -964,6 +965,10 @@
       <a href="#patients" data-ic="user">Patients</a>
       <a href="#staff" data-ic="steth">Staff List</a>
       <a href="#calendar" data-ic="cal">Calander</a>
+    </nav>
+    <div class="group">CLINICAL</div>
+    <nav class="nav">
+      <a href="#wards" data-ic="bed">Wards &amp; Beds</a>
     </nav>
     <div class="group">FINANCE</div>
     <nav class="nav">
@@ -1005,6 +1010,39 @@
     <div class="tbanner" id="tBanner" hidden></div>
 
     <main class="main" id="main">
+      <div class="view" id="view-wards" hidden>
+        <div class="head"><div><h1>Wards &amp; Beds</h1><p>Admit patients, move them between beds and discharge them with a printable summary</p></div></div>
+        <section class="card ap-card">
+          <div class="tabs" role="tablist"><button class="tab on" role="tab" id="wdTabB" aria-selected="true">Bed Board</button><button class="tab" role="tab" id="wdTabA" aria-selected="false">Admissions (0)</button><button class="tab" role="tab" id="wdTabW" aria-selected="false">Wards</button></div>
+          <div class="kpis" id="wdKpis" style="margin-top:14px"></div>
+          <div id="wdPB">
+            <div class="tools">
+              <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="wdQ" type="search" placeholder="Search patient, doctor or bed" aria-label="Search the bed board"></label>
+              <select class="in sel" id="wdWard" aria-label="Ward" style="width:190px;height:40px"></select>
+              <select class="in sel" id="wdStat" aria-label="Bed status" style="width:160px;height:40px"><option value="All">All beds</option><option value="free">Free</option><option value="occupied">Occupied</option><option value="cleaning">Cleaning</option><option value="maintenance">Maintenance</option></select>
+              <button class="addbtn" id="wdAdmit">Admit Patient <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="hm-legend" style="margin-top:14px"><span><i style="background:#c5ecd5"></i>Free</span><span><i style="background:#9dbdff"></i>Occupied</span><span><i style="background:#f6dcaa"></i>Cleaning</span><span><i style="background:#cfd5df"></i>Maintenance</span></div>
+            <div id="wdBoard"></div>
+          </div>
+          <div id="wdPA" hidden>
+            <div class="tools">
+              <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="admQ" type="search" placeholder="Search patient, doctor, ward or reason" aria-label="Search admissions"></label>
+              <select class="in sel" id="admStat" aria-label="Admission status" style="width:160px;height:40px"><option>Admitted</option><option>Discharged</option><option>All</option></select>
+              <button class="addbtn" id="wdAdmit2">Admit Patient <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Patient</th><th>Ward / Bed</th><th>Doctor</th><th>Admitted</th><th>Stay</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admRows"></tbody></table></div>
+            <div class="empty" id="admEmpty" hidden>No admissions match.</div>
+            <nav class="pager" id="admPager" aria-label="Pages"></nav>
+          </div>
+          <div id="wdPW" hidden>
+            <div class="tools"><span class="sbox" style="font-size:12px;color:var(--ink-2);display:flex;align-items:center">Wards group your beds. The daily rate is charged for each bed day when a patient is discharged.</span><button class="btn-soft" id="wdAddBed" style="margin-left:auto">Add Bed</button><button class="addbtn" id="wdAddWard" style="margin-left:0">Add Ward <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Ward</th><th>Type</th><th>Floor</th><th>Daily Rate</th><th>Beds</th><th>Occupied</th><th>Actions</th></tr></thead><tbody id="wrRows"></tbody></table></div>
+            <div class="empty" id="wrEmpty" hidden>No wards yet.</div>
+          </div>
+        </section>
+      </div>
+
       <div class="view" id="view-rep" hidden>
         <div class="head"><div><h1>Reports</h1><p>Revenue, purchases and appointment activity calculated from your data</p></div></div>
         <div class="rep-bar">
@@ -1023,7 +1061,7 @@
       <div class="view" id="view-usr" hidden>
         <div class="head"><div><h1>Users</h1><p>People who can sign in, and what each role is allowed to do</p></div></div>
         <section class="card ap-card" style="padding-top:18px">
-          <div class="tools" style="margin-top:0"><span class="sbox" style="font-size:12px;color:var(--ink-2);display:flex;align-items:center">Roles: Super Admin (everything), Doctor and Receptionist (appointments and patients), Accountant (transactions), Pharmacist (suppliers and stocks).</span><button class="btn-soft" id="usBackup" style="margin-left:auto">Back up now</button><button class="addbtn" id="usAdd" style="margin-left:0">Add User <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+          <div class="tools" style="margin-top:0"><span class="sbox" style="font-size:12px;color:var(--ink-2);display:flex;align-items:center">Roles: Super Admin (everything), Doctor and Receptionist (appointments and patients), Accountant (transactions and billing), Pharmacist (suppliers, stocks and prescriptions). Wards and beds: Super Admin, Doctor and Receptionist can admit and discharge; Accountant and Pharmacist can view.</span><button class="btn-soft" id="usBackup" style="margin-left:auto">Back up now</button><button class="addbtn" id="usAdd" style="margin-left:0">Add User <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
           <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody id="usRows"></tbody></table></div>
         </section>
       </div>
@@ -1061,6 +1099,7 @@
       </div>
 
       <section class="stats" id="stats" aria-label="Summary"></section>
+      <section class="stats two" id="stats2" aria-label="Hospital summary" hidden></section>
 
       <section class="mid">
         <div class="card chart">
@@ -1694,7 +1733,13 @@ window.bootApp = function () {
     tab: '<rect x="5" y="5" width="14" height="14" rx="4"/><path d="M12 5v14"/>',
     down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
     x: '<path d="M6 6l12 12M18 6L6 18"/>',
-    v: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
+    v: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    ticket: '<path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4z"/><path d="M14 7v10" stroke-dasharray="2 2.4"/>',
+    rx: '<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 3h6v3H9zM12 10v6M9 13h6"/>',
+    flask: '<path d="M9 3h6M10 3v6.3L4.6 18.1A1.5 1.5 0 005.9 20.3h12.2a1.5 1.5 0 001.3-2.2L14 9.3V3"/><path d="M8 14h8"/>',
+    tv: '<rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M8 20h8M12 16v4"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    wa: '<path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/>'
   };
   function svg(name) { return '<svg class="ic" viewBox="0 0 24 24">' + P[name] + '</svg>'; }
   document.querySelectorAll('[data-ic]').forEach(function (el) { el.insertAdjacentHTML('afterbegin', svg(el.dataset.ic)); });
@@ -1861,7 +1906,8 @@ window.bootApp = function () {
     'Plan & Usage': [['cash', 'Plan & Usage']],
     Stocks: [['box', 'Stocks']],
     Peripherals: [['print', 'Peripherals']],
-    Dashboard: [['grid', 'Dashboard']]
+    Dashboard: [['grid', 'Dashboard']],
+    'Wards & Beds': [['bed', 'Wards & Beds']]
   };
   var hist = ['Dashboard'], hi = 0;
   function renderCrumb(key) {
@@ -1872,8 +1918,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1887,6 +1933,7 @@ window.bootApp = function () {
     if (vid === 'view-usr') loadUsers();
     if (vid === 'view-aud') loadAudit();
     if (vid === 'view-plan') loadPlan();
+    if (vid === 'view-wards') renderWards();
     renderCrumb(key);
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
@@ -2349,7 +2396,7 @@ window.bootApp = function () {
       '<button class="pg" data-p="' + pages + '" aria-label="Last page"' + (cur === pages ? ' disabled' : '') + '><svg class="ic" viewBox="0 0 24 24"><path d="M12 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>';
   }
   function renderDash() {
-    renderStats(); renderDocs();
+    renderStats(); renderStats2(); renderDocs();
     var v = dView(), pages = Math.max(1, Math.ceil(v.length / DP)); if (dPage > pages) dPage = pages;
     $('rows').innerHTML = v.slice((dPage - 1) * DP, dPage * DP).map(function (r) {
       var d = dirOf(r);
@@ -3099,7 +3146,7 @@ window.bootApp = function () {
   var TXCOLS = { customers: [['id', 'Transaction ID'], ['name', 'Patient Name'], ['svc', 'Service'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']], suppliers: [['id', 'Transaction ID'], ['name', 'Supplier Name'], ['svc', 'Category'], ['amt', 'Amount (EGP)'], ['pay', 'Payment Method'], ['dt', 'Date & Time'], ['status', 'Status']] };
   function txList() { return txTab === 'customers' ? TXC : TXS; }
   function txView() { var q = txQ.toLowerCase(); var l = txList().filter(function (x) { return (txStat === 'All' || x.status === txStat) && (!q || (x.id + ' ' + x.name + ' ' + x.svc + ' ' + x.pay).toLowerCase().indexOf(q) > -1); }); return txSort ? sortBy(l, txSort, txDir) : l; }
-  var TXPILL = { Paid: 'good', Pending: 'warn', Failed: 'bad' };
+  var TXPILL = { Paid: 'good', Pending: 'warn', Partial: 'warn', Failed: 'bad' };
   function renderTx() {
     var list = txList(), pend = 0; if (txTab === 'suppliers') list.forEach(function (x) { if (x.status === 'Pending') pend += x.amt; });
     $('txKpis').style.setProperty('--k', 3);
@@ -3302,7 +3349,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS[c]; } function canW(c) { return PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3318,7 +3365,7 @@ window.bootApp = function () {
     setTimeout(function () { f.contentWindow.focus(); f.contentWindow.print(); setTimeout(function () { f.remove(); }, 1500); }, 250);
   }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function printRows(title, sub, rows, foot) { printHtml(title, '<h1>Nexura Care</h1><div class="sub">' + esc(sub) + '</div><table>' + rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td' + (r[2] ? ' class="tot"' : '') + '>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table><div class="foot">' + esc(foot || 'Printed ' + new Date().toLocaleString()) + '</div>'); }
+  function printRows(title, sub, rows, foot) { printHtml(title, '<h1>' + esc(wsName()) + '</h1><div class="sub">' + esc(sub) + '</div><table>' + rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td' + (r[2] ? ' class="tot"' : '') + '>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table><div class="foot">' + esc(foot || 'Printed ' + new Date().toLocaleString()) + '</div>'); }
   $('resPrint').addEventListener('click', function () {
     var r = resCtx; if (!r) return; var d = dirOf(r), b = billOf(r), st = toMin(r.time);
     printRows('Appointment slip', 'Appointment slip', [['Patient', r.patient], ['Doctor', d[0] + (d[1] ? ' (' + d[1] + ')' : '')], ['Visit type', r.visit], ['Date', shortLong(r.date)], ['Time', longTime(st) + ' to ' + longTime(st + (r.dur || 45))], ['Status', STL[r.status]], ['Insurance pays', fmtNum(b.ins) + ' EGP'], ['Patient pays', fmtNum(b.pat) + ' EGP', 1]]);
@@ -3484,6 +3531,7 @@ window.bootApp = function () {
   function applyWs(w) {
     WS = w; var b = $('tBanner');
     var locked = w && ((w.status === 'trial' && w.trialDaysLeft !== null && w.trialDaysLeft <= 0) || w.status === 'cancelled' || w.status === 'suspended');
+    WSLOCK = !!locked;
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { if (locked) document.body.classList.add('ro-' + c); });
     if (!w) { b.hidden = true; return; }
     var up = ROLE === 'Super Admin' ? '<a id="tbUp">Plan &amp; Usage</a>' : '';
@@ -3504,9 +3552,409 @@ window.bootApp = function () {
     Promise.all([api('GET', '/api/account'), PLANS.length ? Promise.resolve(null) : api('GET', '/api/plans')]).then(function (r) { applyWs(r[0].workspace); if (r[1]) { PLANS = r[1].plans; SUPPORT = r[1].supportEmail || ''; } renderPlan(); }).catch(function (e) { toast(e.message); });
   }
 
+  /* =====================================================================
+     HOSPITAL MODULES: wards and beds, consultations, OPD queue, lab and radiology, invoices.
+     Same pattern as the rest of the app: arrays in memory, persist(col, record) after every change, server enforces the role matrix.
+     ===================================================================== */
+  var WARDS = [], BEDS = [], ADMS = [], VISITS = [], OPDQ = [], LABT = [], LABS = [];
+  function newId(p) { return p + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36); }
+  function stampNow() { var d = new Date(); return isoToday() + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+  function fmtStamp(s) { return s ? fmtDate(s.slice(0, 10)) + (s.length > 10 ? ', ' + fmtTime(s.slice(11, 16)) : '') : '—'; }
+  function dayOf(s) { return String(s || '').slice(0, 10); }
+  function dayDiff(a, b) { var x = a.split('-'), y = b.split('-'); return Math.round((Date.UTC(+y[0], +y[1] - 1, +y[2]) - Date.UTC(+x[0], +x[1] - 1, +x[2])) / 864e5); }
+  function byName(a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; }
+  function wardsSorted() { return WARDS.slice().sort(function (a, b) { return (a.ord || 0) - (b.ord || 0) || (a.name < b.name ? -1 : 1); }); }
+  function bedNoSort(a, b) { return String(a.no).localeCompare(String(b.no), undefined, { numeric: true }); }
+  function nextCode(prefix, list, base) { var m = base || 1000; list.forEach(function (o) { var n = +String(o.code || '').replace(/^\D+/, ''); if (n > m) m = n; }); return prefix + (m + 1); }
+  function optList(list, sel, ph) { return (ph ? '<option value="">' + ph + '</option>' : '') + list.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (String(o[0]) === String(sel) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join(''); }
+  function docOptions(sel, ph) { return optList(docStaff.slice().sort(byName).map(function (d) { return [d.id, d.name + (d.sub ? ' (' + d.sub + ')' : '')]; }), sel, ph || 'Select doctor'); }
+  var WSLOCK = false;
+  function canWrite(c) { return canW(c) && !WSLOCK; }
+  /* a patient picked by typing a name (the list suggests registered patients) */
+  function ptPickHtml(id, ph) { return '<input class="in" id="' + id + '" list="' + id + 'L" placeholder="' + (ph || 'Type the patient name') + '" autocomplete="off"><datalist id="' + id + 'L">' + patients.slice(0, 700).map(function (p) { return '<option value="' + esc(p.name) + '">' + esc(p.code) + '</option>'; }).join('') + '</datalist>'; }
+  function ptFromInput(id) { var v = $(id).value.trim().toLowerCase(); return v ? (patients.filter(function (p) { return p.name.toLowerCase() === v; })[0] || null) : null; }
+  function selText(sel) { var o = sel.options[sel.selectedIndex]; return o ? o.textContent : ''; }
+  function wsName() { return (WS && WS.name) || 'Hospital'; }
+
+  /* ---------- dynamic drawers (same look as the existing ones) ---------- */
+  function hdw(id, o) {
+    var w = $(id);
+    if (!w) {
+      w = document.createElement('div'); w.className = 'dw-wrap'; w.id = id; w.hidden = true; w.dataset.h = '1';
+      $('dw').parentNode.appendChild(w);
+      w.addEventListener('mousedown', function (e) { if (e.target === w) w.hidden = true; });
+      w.addEventListener('click', function (e) { if (e.target.closest('.dr-x')) w.hidden = true; else if (!e.target.closest('.ddw')) closeDDs(); });
+    }
+    /* a fresh form every time, so listeners from an earlier open never pile up */
+    w.innerHTML = '<form class="drawer' + (o.wide ? ' wide' : o.mid ? ' mid' : '') + '" role="dialog" aria-modal="true" novalidate><div class="dr-head"><h3></h3><button type="button" class="dr-x" aria-label="Close">' + svg('x') + '</button></div><div class="dr-body thin" style="padding-top:20px"></div><div class="dr-err" role="alert"></div><div class="dr-foot"></div></form>';
+    var f = w.firstChild, body = f.querySelector('.dr-body'), foot = f.querySelector('.dr-foot'), er = f.querySelector('.dr-err');
+    f.querySelector('h3').textContent = o.title; body.innerHTML = o.body;
+    foot.innerHTML = o.foot === undefined ? '<button type="button" class="lnk" data-act="cancel">Cancel</button><button type="submit" class="pri">' + (o.save || 'Save') + '</button>' : o.foot;
+    var D = { w: w, f: f, body: body, err: function (m, el) { er.textContent = m || ''; if (el) { var t = typeof el === 'string' ? f.querySelector(el) : el; if (t && t.focus) t.focus(); } return false; }, close: function () { w.hidden = true; }, $: function (s) { return f.querySelector(s); }, busy: function (on) { foot.querySelectorAll('button').forEach(function (b) { b.disabled = on; }); } };
+    f.onsubmit = function (e) { e.preventDefault(); if (o.submit) o.submit(D); };
+    foot.onclick = function (e) { var b = e.target.closest('[data-act]'); if (!b) return; if (b.dataset.act === 'cancel') w.hidden = true; else if (o.act) o.act(b.dataset.act, D, b); };
+    w.hidden = false; closeDDs();
+    if (o.ready) o.ready(D);
+    if (!o.noFocus) { var fi = body.querySelector('input:not([type=hidden]):not([readonly]),select,textarea'); if (fi) fi.focus(); }
+    return D;
+  }
+  document.addEventListener('keydown', function (e) { if (e.key !== 'Escape') return; var o = document.querySelectorAll('.dw-wrap[data-h]'); for (var i = o.length - 1; i >= 0; i--) if (!o[i].hidden) { o[i].hidden = true; return; } });
+  function mkdp(id, val, back, fwd) { var y = +TODAY.slice(0, 4), d = makeDP($(id), { placeholder: 'Select date', y: y, m: +TODAY.slice(5, 7) - 1, y0: y - (back === undefined ? 10 : back), y1: y + (fwd === undefined ? 2 : fwd) }); if (val) d.set(val); return d; }
+  /* server-first save for records where two people could collide (bed, token number) */
+  function saveNow(col, rec) {
+    return api('PUT', '/api/records/' + col + '/' + encodeURIComponent(rec.id), rec).catch(function (e) { if (e.message === 'signed out') throw e; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } throw e; });
+  }
+
+  /* ---------- printing: white paper, black text, the workspace name as letterhead ---------- */
+  var PCSS = 'body{font:13px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111;margin:0;padding:34px 40px;max-width:820px;margin:0 auto}h1{font-size:22px;margin:0 0 2px}h2{font-size:15px;margin:22px 0 8px;padding-bottom:4px;border-bottom:1px solid #222}.lh{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:16px}.lh .k{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:right}.lh .s{color:#444;font-size:12px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:6px 0 4px}.meta div{display:flex;gap:8px}.meta span{color:#555;min-width:92px}.meta b{font-weight:600}table{width:100%;border-collapse:collapse;margin:4px 0}th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid #222;padding:6px 8px 6px 0}td{padding:7px 8px 7px 0;border-bottom:1px solid #ccc;vertical-align:top}td.r,th.r{text-align:right}.box{border:1px solid #999;padding:10px 12px;white-space:pre-wrap}.tot td{font-weight:700;border-bottom:0;border-top:1.5px solid #222}.sig{margin-top:56px;display:flex;justify-content:space-between;gap:40px}.sig div{flex:1;border-top:1px solid #222;padding-top:5px;font-size:12px;color:#333}.foot{margin-top:26px;color:#666;font-size:11px;border-top:1px solid #ccc;padding-top:6px}.flag{font-weight:700}.pill{display:inline-block;border:1px solid #333;padding:0 8px;border-radius:10px;font-size:11px}@media print{body{padding:0}}';
+  function letterhead(kind, sub) { return '<div class="lh"><div><h1>' + esc(wsName()) + '</h1><div class="s">' + esc(sub || '') + '</div></div><div class="k">' + esc(kind) + '</div></div>'; }
+  function metaRows(rows) { return '<div class="meta">' + rows.filter(Boolean).map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b>' + esc(r[1] == null || r[1] === '' ? '—' : r[1]) + '</b></div>'; }).join('') + '</div>'; }
+  function printDoc(title, body) {
+    var html = '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' + PCSS + '</style></head><body>' + body + '<div class="foot">Printed ' + esc(new Date().toLocaleString()) + ' · ' + esc(wsName()) + '</div></body></html>';
+    window.__lastPrint = { title: title, html: html };
+    var f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(f);
+    var d = f.contentWindow.document; d.open(); d.write(html); d.close();
+    setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { /* blocked */ } setTimeout(function () { f.remove(); }, 1500); }, 250);
+  }
+  function ageGender(p) { return p ? p.age + ' yrs · ' + p.gender : ''; }
+
+  /* ---------- invoice maths (used by the discharge, lab and invoice screens) ---------- */
+  function invLines(x) { return x.items || []; }
+  function txPaid(x) { if (x.payments) return x.payments.reduce(function (s, p) { return s + (+p.amt || 0); }, 0); return x.status === 'Paid' ? x.amt : 0; }
+  function txDue(x) { if (x.kind === 'suppliers') return 0; if (x.payments || x.items) return Math.max(0, Math.round((x.amt - txPaid(x)) * 100) / 100); return x.status === 'Pending' ? x.amt : 0; }
+  function invStatusOf(x) { var paid = txPaid(x); return paid >= x.amt - 0.005 ? 'Paid' : paid > 0 ? 'Partial' : 'Pending'; }
+  function nextInvId() { var m = 1000; TXC.forEach(function (x) { var q = /^INV-(\d+)$/.exec(x.id); if (q && +q[1] > m) m = +q[1]; }); return 'INV-' + (m + 1); }
+  function svcOfItems(items) { return !items.length ? 'Invoice' : items.length === 1 ? items[0].desc : items[0].desc + ' +' + (items.length - 1) + ' more'; }
+  function makeInvoice(o) {
+    var sub = o.items.reduce(function (s, i) { return s + i.qty * i.price; }, 0), disc = Math.min(Math.max(+o.discount || 0, 0), sub), total = sub - disc, pays = (o.payments || []).filter(function (p) { return p.amt > 0; });
+    var x = { id: nextInvId(), kind: 'customers', name: o.name, pid: o.pid || 0, svc: svcOfItems(o.items), amt: total, pay: pays.length ? pays[pays.length - 1].method : '—', dt: o.dt || stampNow(), status: 'Pending', items: o.items, subtotal: sub, discount: disc, payments: pays, note: o.note || '', ord: Date.now(), inv: 1 };
+    x.status = invStatusOf(x); return x;
+  }
+  /* what has already been put on an invoice (so the same charge is not billed twice) */
+  function billedRefs() { var m = {}; TXC.forEach(function (x) { (x.items || []).forEach(function (i) { if (i.ref) m[i.ref] = x.id; }); }); return m; }
+
+  /* ---------- wards and beds ---------- */
+  function wardById(id) { return WARDS.filter(function (w) { return w.id === id; })[0] || null; }
+  function bedById(id) { return BEDS.filter(function (b) { return b.id === id; })[0] || null; }
+  function admById(id) { return ADMS.filter(function (a) { return a.id === id; })[0] || null; }
+  function admOfBed(bid) { for (var i = 0; i < ADMS.length; i++) if (ADMS[i].status === 'admitted' && ADMS[i].bedId === bid) return ADMS[i]; return null; }
+  function admOfPt(pid) { for (var i = 0; i < ADMS.length; i++) if (ADMS[i].status === 'admitted' && ADMS[i].pid === pid) return ADMS[i]; return null; }
+  function bedState(b) { if (admOfBed(b.id)) return 'occupied'; return !b.status || b.status === 'occupied' ? 'free' : b.status; }
+  function bedLabel(b) { var w = wardById(b.wardId); return (w ? w.name : 'Ward') + ' · Bed ' + b.no; }
+  function bedStats() {
+    var t = BEDS.length, occ = 0, free = 0, cl = 0, mt = 0; BEDS.forEach(function (b) { var s = bedState(b); if (s === 'occupied') occ++; else if (s === 'free') free++; else if (s === 'cleaning') cl++; else mt++; });
+    var usable = t - mt; return { total: t, occ: occ, free: free, cleaning: cl, maint: mt, pct: usable > 0 ? Math.round(occ / usable * 100) : 0 };
+  }
+  function admCharge(a, endStamp) {
+    var segs = (a.moves || []).map(function (m) { return { ward: m.ward, rate: +m.rate || 0, days: Math.max(0, dayDiff(dayOf(m.from), dayOf(m.to || endStamp))) }; });
+    var total = segs.reduce(function (s, x) { return s + x.days; }, 0);
+    if (!total && segs.length) { segs[segs.length - 1].days = 1; total = 1; }
+    var by = {}, lines = []; segs.forEach(function (x) { if (!x.days) return; var k = x.ward + '|' + x.rate; if (by[k]) { by[k].days += x.days; by[k].amount = by[k].days * by[k].rate; } else { by[k] = { ward: x.ward, rate: x.rate, days: x.days, amount: x.rate * x.days }; lines.push(by[k]); } });
+    return { days: total, amount: lines.reduce(function (s, x) { return s + x.amount; }, 0), lines: lines };
+  }
+  function admItems(a) { return ((a.charge && a.charge.lines) || []).map(function (l) { return { desc: 'Bed: ' + l.ward + ' (' + l.days + (l.days === 1 ? ' day' : ' days') + ')', qty: l.days, price: l.rate, src: 'bed', ref: a.id }; }); }
+  function savePtType(pid, type) { var p = patientById(pid); if (p && p.type !== type && canW('patients')) { p.type = type; persist('patients', p); } }
+  function saveBed(b, st) { b.status = st; persist('beds', b); }
+
+  var wdTab = 'board', wdWard = 'All', wdStat = 'All', wdQ = '', admStat = 'Admitted', admPage = 1, admQ = '', ADMP = 8, wdSort = null, wdDir = 1;
+  var BED_PILL = { free: ['free', 'Free'], occupied: ['occ', 'Occupied'], cleaning: ['cleaning', 'Cleaning'], maintenance: ['maint', 'Maintenance'] };
+  function renderWards() {
+    if (!canR('wards')) return;
+    var s = bedStats(), adm = ADMS.filter(function (a) { return a.status === 'admitted'; });
+    $('wdTabA').textContent = 'Admissions (' + adm.length + ')';
+    $('wdKpis').innerHTML = kpiHtml([['bed', 'Total Beds', s.total], ['pts', 'Occupied', s.occ], ['v', 'Free Beds', s.free], ['chart', 'Occupancy', s.pct + '%']]);
+    [['wdTabB', 'board'], ['wdTabA', 'adm'], ['wdTabW', 'wards']].forEach(function (t) { $(t[0]).classList.toggle('on', wdTab === t[1]); $(t[0]).setAttribute('aria-selected', String(wdTab === t[1])); });
+    $('wdPB').hidden = wdTab !== 'board'; $('wdPA').hidden = wdTab !== 'adm'; $('wdPW').hidden = wdTab !== 'wards';
+    var wr = canWrite('admissions');
+    $('wdAdmit').hidden = !wr; $('wdAdmit2').hidden = !wr; $('wdAddWard').hidden = !canWrite('wards'); $('wdAddBed').hidden = !canWrite('beds');
+    $('wdWard').innerHTML = '<option value="All">All wards</option>' + wardsSorted().map(function (w) { return '<option value="' + esc(w.id) + '"' + (w.id === wdWard ? ' selected' : '') + '>' + esc(w.name) + '</option>'; }).join('');
+    if (wdTab === 'board') renderBoard(); else if (wdTab === 'adm') renderAdmTable(); else renderWardTable();
+  }
+  function renderBoard() {
+    var q = wdQ.toLowerCase(), h = '';
+    wardsSorted().forEach(function (w) {
+      if (wdWard !== 'All' && wdWard !== w.id) return;
+      var beds = BEDS.filter(function (b) { return b.wardId === w.id; }).sort(bedNoSort), occN = beds.filter(function (b) { return bedState(b) === 'occupied'; }).length;
+      var items = beds.filter(function (b) { var st = bedState(b), a = admOfBed(b.id); return (wdStat === 'All' || st === wdStat) && (!q || (('bed ' + b.no) + ' ' + (a ? a.patient + ' ' + a.doctor + ' ' + a.reason : '')).toLowerCase().indexOf(q) > -1); });
+      if (!items.length && (wdStat !== 'All' || q)) return;
+      h += '<section class="hm-ward"><div class="hm-wh"><b>' + esc(w.name) + '</b><span class="pl mute">' + esc(w.type) + '</span><small>Floor ' + esc(w.floor || '-') + ' · ' + fmtNum(w.rate) + ' EGP per day</small><span class="hm-occ" title="' + occN + ' of ' + beds.length + ' beds occupied"><i style="width:' + (beds.length ? occN / beds.length * 100 : 0) + '%"></i></span><small class="hm-occn">' + occN + ' of ' + beds.length + ' occupied</small></div><div class="hm-grid">' +
+        (items.length ? items.map(function (b) {
+          var st = bedState(b), a = admOfBed(b.id), P = BED_PILL[st], days = a ? Math.max(1, dayDiff(dayOf(a.admitAt), TODAY) + 1) : 0, can = st === 'occupied' ? true : canWrite('beds') || canWrite('admissions');
+          return '<span class="kw hm-cell"><button class="hm-bed ' + P[0] + '" data-id="' + esc(b.id) + '" aria-haspopup="true"' + (can ? '' : ' disabled') + ' aria-label="Bed ' + esc(b.no) + ', ' + P[1] + (a ? ', ' + esc(a.patient) : '') + '"><span class="bt"><span class="bn">Bed ' + esc(b.no) + '</span><span class="st">' + P[1] + '</span></span>' +
+            (a ? '<span class="pn">' + esc(a.patient) + '</span><span class="ps">' + esc(a.doctor || '') + ' · Day ' + days + '</span><span class="pr">' + esc(a.reason || '') + '</span>' : '<span class="pn">' + (st === 'free' ? 'Available' : st === 'cleaning' ? 'Being cleaned' : 'Under maintenance') + '</span>') + '</button></span>';
+        }).join('') : '<div class="empty" style="grid-column:1/-1;padding:14px 0">No beds in this ward yet.</div>') + '</div></section>';
+    });
+    $('wdBoard').innerHTML = h || '<div class="empty">' + (WARDS.length ? 'No beds match your filters.' : 'No wards yet. ' + (canWrite('wards') ? 'Use <b>Wards</b> to add your first ward and its beds.' : 'A Super Admin, Doctor or Receptionist can set up wards.') + (WS && WS.sample && ROLE === 'Super Admin' ? '<br><button class="btn-soft hm-empty-act" id="wdLoadSample">Load sample wards, visits, queue and lab data</button>' : '')) + '</div>';
+    var ls = $('wdLoadSample'); if (ls) ls.addEventListener('click', loadSampleModules);
+  }
+  function admView() {
+    var q = admQ.toLowerCase();
+    return ADMS.filter(function (a) { return (admStat === 'All' || (admStat === 'Admitted' ? a.status === 'admitted' : a.status === 'discharged')) && (!q || (a.patient + ' ' + a.doctor + ' ' + a.ward + ' ' + a.reason + ' ' + a.code).toLowerCase().indexOf(q) > -1); }).sort(function (a, b) { return a.status !== b.status ? (a.status === 'admitted' ? -1 : 1) : (b.admitAt > a.admitAt ? 1 : -1); });
+  }
+  function renderAdmTable() {
+    var v = admView(), pages = Math.max(1, Math.ceil(v.length / ADMP)); if (admPage > pages) admPage = pages;
+    $('admRows').innerHTML = v.slice((admPage - 1) * ADMP, admPage * ADMP).map(function (a) {
+      var days = a.status === 'admitted' ? Math.max(1, dayDiff(dayOf(a.admitAt), TODAY) + 1) : (a.charge ? a.charge.days : 0);
+      return '<tr><td><div class="nm2"><b>' + (a.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + a.pid + '"><b>' + esc(a.patient) + '</b></button>' : esc(a.patient)) + '</b><small>' + esc(a.code) + '</small></div></td><td>' + esc(a.ward) + '<div class="hm-sub">Bed ' + esc(a.bed) + '</div></td><td>' + esc(a.doctor || '—') + '</td><td class="td2"><span>' + fmtDate(dayOf(a.admitAt)) + '</span><small>' + fmtTime(a.admitAt.slice(11, 16) || '00:00') + '</small></td><td>' + days + (days === 1 ? ' day' : ' days') + '</td><td>' + esc(a.reason || '—') + '</td>' +
+        '<td><span class="pl ' + (a.status === 'admitted' ? 'warn' : 'good') + '">' + (a.status === 'admitted' ? 'Admitted' : 'Discharged') + '</span></td><td><span class="kw"><button class="kebab" data-a="amenu" data-id="' + esc(a.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(a.patient) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
+    }).join('');
+    $('admEmpty').hidden = v.length > 0; $('admPager').innerHTML = v.length ? pagerHtml(admPage, pages) : '';
+  }
+  function renderWardTable() {
+    var l = wardsSorted();
+    $('wrRows').innerHTML = l.map(function (w) {
+      var beds = BEDS.filter(function (b) { return b.wardId === w.id; }), occ = beds.filter(function (b) { return bedState(b) === 'occupied'; }).length;
+      return '<tr><td><div class="nm2"><b>' + esc(w.name) + '</b></div></td><td><span class="pl mute">' + esc(w.type) + '</span></td><td>' + esc(w.floor || '—') + '</td><td>' + fmtNum(w.rate) + ' EGP</td><td>' + beds.length + '</td><td>' + occ + '</td>' +
+        '<td>' + (canWrite('wards') ? '<span class="kw"><button class="kebab" data-a="wmenu" data-id="' + esc(w.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(w.name) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span>' : '') + '</td></tr>';
+    }).join('');
+    $('wrEmpty').hidden = l.length > 0;
+  }
+  $('wdTabB').addEventListener('click', function () { wdTab = 'board'; renderWards(); });
+  $('wdTabA').addEventListener('click', function () { wdTab = 'adm'; renderWards(); });
+  $('wdTabW').addEventListener('click', function () { wdTab = 'wards'; renderWards(); });
+  $('wdQ').addEventListener('input', function (e) { wdQ = e.target.value.trim(); renderWards(); });
+  $('wdWard').addEventListener('change', function () { wdWard = this.value; renderWards(); });
+  $('wdStat').addEventListener('change', function () { wdStat = this.value; renderWards(); });
+  $('admQ').addEventListener('input', function (e) { admQ = e.target.value.trim(); admPage = 1; renderWards(); });
+  $('admStat').addEventListener('change', function () { admStat = this.value; admPage = 1; renderWards(); });
+  $('admPager').addEventListener('click', function (e) { var b = e.target.closest('.pg[data-p]'); if (!b || b.disabled) return; admPage = +b.dataset.p; renderWards(); });
+  $('wdAdmit').addEventListener('click', function () { openAdmit(null); }); $('wdAdmit2').addEventListener('click', function () { openAdmit(null); });
+  $('wdAddWard').addEventListener('click', function () { openWardForm(null); }); $('wdAddBed').addEventListener('click', function () { openBedForm(null); });
+  $('wdBoard').addEventListener('click', function (e) {
+    var b = e.target.closest('.hm-bed'); if (!b) return; e.stopPropagation(); var bed = bedById(b.dataset.id), st = bedState(bed), a = admOfBed(bed.id), items = [];
+    if (st === 'occupied') { items.push(['view', 'View admission']); if (canWrite('admissions')) items.push(['transfer', 'Transfer to another bed'], ['discharge', 'Discharge patient']); if (canR('patients')) items.push(['patient', 'Open patient profile']); if (canR('labs') && canWrite('labs')) items.push(['lab', 'Order lab or radiology test']); }
+    else { if (st === 'free' && canWrite('admissions')) items.push(['admit', 'Admit a patient here']); if (canWrite('beds')) { if (st !== 'free') items.push(['free', 'Mark as free']); if (st === 'free') items.push(['cleaning', 'Mark as cleaning']); if (st !== 'maintenance') items.push(['maint', 'Mark under maintenance']); items.push(['edit', 'Edit bed'], ['del', 'Delete bed']); } }
+    if (!items.length) return;
+    rowMenu(b, items, function (act) {
+      if (act === 'view') openAdmDetail(a.id); else if (act === 'transfer') openTransfer(a.id); else if (act === 'discharge') openDischarge(a.id); else if (act === 'patient') { curPid = a.pid; go('PatientProfile'); }
+      else if (act === 'lab') openLabOrder({ pid: a.pid, admId: a.id });
+      else if (act === 'admit') openAdmit(bed.id); else if (act === 'edit') openBedForm(bed);
+      else if (act === 'del') { BEDS = BEDS.filter(function (x) { return x !== bed; }); unpersist('beds', bed.id); renderWards(); toast('Deleted bed ' + bed.no); }
+      else { saveBed(bed, act === 'maint' ? 'maintenance' : act); renderWards(); toast('Bed ' + bed.no + ': ' + (act === 'maint' ? 'maintenance' : act)); }
+    });
+  });
+  $('admRows').addEventListener('click', function (e) {
+    var l = e.target.closest('[data-a="pt"]'); if (l) { curPid = +l.dataset.pid; go('PatientProfile'); return; }
+    var k = e.target.closest('[data-a="amenu"]'); if (!k) return; e.stopPropagation(); var a = admById(k.dataset.id), it = [['view', 'View admission']];
+    if (a.status === 'admitted' && canWrite('admissions')) it.push(['transfer', 'Transfer to another bed'], ['discharge', 'Discharge patient']);
+    if (a.status === 'discharged') it.push(['print', 'Print discharge summary']);
+    rowMenu(k, it, function (act) { if (act === 'view') openAdmDetail(a.id); else if (act === 'transfer') openTransfer(a.id); else if (act === 'discharge') openDischarge(a.id); else printDischarge(a); });
+  });
+  $('wrRows').addEventListener('click', function (e) {
+    var k = e.target.closest('[data-a="wmenu"]'); if (!k) return; e.stopPropagation(); var w = wardById(k.dataset.id);
+    rowMenu(k, [['edit', 'Edit ward'], ['bed', 'Add a bed to this ward'], ['del', 'Delete ward']], function (act) {
+      if (act === 'edit') openWardForm(w); else if (act === 'bed') openBedForm(null, w.id);
+      else { var bs = BEDS.filter(function (b) { return b.wardId === w.id; }); if (bs.some(function (b) { return bedState(b) === 'occupied'; })) { toast('This ward still has admitted patients. Discharge or transfer them first.'); return; } bs.forEach(function (b) { unpersist('beds', b.id); }); BEDS = BEDS.filter(function (b) { return b.wardId !== w.id; }); WARDS = WARDS.filter(function (x) { return x !== w; }); unpersist('wards', w.id); renderWards(); toast('Deleted ' + w.name); }
+    });
+  });
+  /* ward and bed forms */
+  var WARD_TYPES = ['General', 'Private', 'ICU', 'Emergency', 'Maternity', 'Pediatric', 'Surgical'];
+  function openWardForm(w) {
+    hdw('wardW', { title: w ? 'Edit Ward' : 'Add Ward', mid: false,
+      body: '<div class="fl"><label class="lb" for="wfN">Ward name</label><input class="in" id="wfN" placeholder="e.g. General Ward, Male" autocomplete="off" value="' + esc(w ? w.name : '') + '"></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="wfT">Type</label><select class="in sel" id="wfT">' + optList(WARD_TYPES.map(function (x) { return [x, x]; }), w ? w.type : 'General') + '</select></div><div class="fl"><label class="lb" for="wfF">Floor</label><input class="in" id="wfF" placeholder="e.g. 1" autocomplete="off" value="' + esc(w ? w.floor : '') + '"></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="wfR">Daily rate (EGP)</label><input class="in" id="wfR" type="number" min="0" placeholder="350" value="' + (w ? w.rate : '') + '"></div>' + (w ? '' : '<div class="fl"><label class="lb" for="wfB">Number of beds</label><input class="in" id="wfB" type="number" min="0" max="60" value="6"></div>') + '</div>' +
+        '<p class="hm-sub">The daily rate is multiplied by the bed days when a patient is discharged. Beds are numbered 1, 2, 3... and can be renamed later.</p>',
+      submit: function (D) {
+        var n = D.$('#wfN').value.trim(), r = D.$('#wfR').value; if (n.length < 2) return D.err('Enter the ward name.', '#wfN'); if (r === '' || +r < 0) return D.err('Enter the daily rate.', '#wfR');
+        if (WARDS.some(function (x) { return x !== w && x.name.toLowerCase() === n.toLowerCase(); })) return D.err('A ward with this name already exists.', '#wfN');
+        if (w) { var renamed = w.name !== n; w.name = n; w.type = D.$('#wfT').value; w.floor = D.$('#wfF').value.trim(); w.rate = +r; persist('wards', w); if (renamed) BEDS.filter(function (b) { return b.wardId === w.id; }).forEach(function (b) { b.name = bedLabel(b); persist('beds', b); }); toast('Saved: ' + n); }
+        else {
+          var nw = { id: newId('wd'), name: n, type: D.$('#wfT').value, floor: D.$('#wfF').value.trim(), rate: +r, ord: Date.now() }; WARDS.push(nw); persist('wards', nw);
+          var nb = Math.max(0, Math.min(60, +D.$('#wfB').value || 0)); for (var i = 1; i <= nb; i++) { var b = { id: newId('bd'), wardId: nw.id, no: String(i), status: 'free', ord: Date.now() + i }; b.name = bedLabel(b); BEDS.push(b); persist('beds', b); }
+          toast('Added ' + n + (nb ? ' with ' + nb + ' beds' : ''));
+        }
+        D.close(); wdWard = 'All'; renderWards(); renderDash();
+      } });
+  }
+  function openBedForm(b, wardId) {
+    if (!WARDS.length) { toast('Add a ward first.'); return; }
+    hdw('bedW', { title: b ? 'Edit Bed' : 'Add Bed', mid: false,
+      body: '<div class="fl"><label class="lb" for="bfW">Ward</label><select class="in sel" id="bfW"' + (b ? ' disabled' : '') + '>' + optList(wardsSorted().map(function (w) { return [w.id, w.name]; }), b ? b.wardId : wardId || '') + '</select></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="bfN">Bed number or name</label><input class="in" id="bfN" placeholder="e.g. 7 or A2" autocomplete="off" value="' + esc(b ? b.no : '') + '"></div><div class="fl"><label class="lb" for="bfS">Status</label><select class="in sel" id="bfS">' + optList([['free', 'Free'], ['cleaning', 'Cleaning'], ['maintenance', 'Maintenance']], b ? bedState(b) === 'occupied' ? 'free' : bedState(b) : 'free') + '</select></div></div>',
+      submit: function (D) {
+        var wid = D.$('#bfW').value, no = D.$('#bfN').value.trim(); if (!wid) return D.err('Choose the ward.', '#bfW'); if (!no) return D.err('Enter the bed number.', '#bfN');
+        if (BEDS.some(function (x) { return x !== b && x.wardId === wid && String(x.no).toLowerCase() === no.toLowerCase(); })) return D.err('That bed number exists in this ward.', '#bfN');
+        if (b) { b.no = no; if (!admOfBed(b.id)) b.status = D.$('#bfS').value; b.name = bedLabel(b); persist('beds', b); }
+        else { var nb = { id: newId('bd'), wardId: wid, no: no, status: D.$('#bfS').value, ord: Date.now() }; nb.name = bedLabel(nb); BEDS.push(nb); persist('beds', nb); }
+        D.close(); renderWards(); toast('Bed saved');
+      } });
+  }
+
+  /* admit */
+  function openAdmit(bedId, pid) {
+    if (!BEDS.length) { toast('Add a ward with beds first (Wards tab).'); return; }
+    var bed0 = bedId ? bedById(bedId) : null, w0 = bed0 ? bed0.wardId : '', p0 = pid ? patientById(pid) : null;
+    function bedOpts(wid, sel) { return optList(BEDS.filter(function (b) { return b.wardId === wid && bedState(b) === 'free'; }).sort(bedNoSort).map(function (b) { return [b.id, 'Bed ' + b.no]; }), sel, 'Select a free bed'); }
+    hdw('admW', { title: 'Admit Patient', save: 'Admit',
+      body: '<div class="fl"><label class="lb" for="amP">Patient</label>' + ptPickHtml('amP') + '</div>' +
+        '<div class="fl"><label class="lb" for="amD">Admitting doctor</label><select class="in sel" id="amD">' + docOptions('', 'Select doctor') + '</select></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="amW">Ward</label><select class="in sel" id="amW">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' EGP/day']; }), w0, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="amB">Bed</label><select class="in sel" id="amB">' + bedOpts(w0, bedId) + '</select></div></div>' +
+        '<div class="fl"><label class="lb" for="amR">Reason for admission / diagnosis</label><input class="in" id="amR" placeholder="e.g. Pneumonia, chest infection" autocomplete="off"></div>' +
+        '<div class="row2"><div class="fl"><span class="lb">Admission date</span><div id="amDP"></div></div><div class="fl"><label class="lb" for="amT">Time</label><input class="in" id="amT" type="time"></div></div>' +
+        '<div class="fl"><div class="lb"><label for="amN"><span>Notes <span class="opt">(Optional)</span></span></label></div><textarea class="in" id="amN" maxlength="400" placeholder="Allergies, special care, relatives to call..."></textarea></div>',
+      ready: function (D) {
+        var dp = mkdp('amDP', isoToday(), 1, 0); D.dp = dp; D.$('#amT').value = stampNow().slice(11); if (p0) D.$('#amP').value = p0.name;
+        D.$('#amW').addEventListener('change', function () { D.$('#amB').innerHTML = bedOpts(this.value, ''); });
+        var open = p0 ? admOfPt(p0.id) : null; if (open) D.err('This patient is already admitted (' + open.ward + ', bed ' + open.bed + ').');
+      },
+      submit: function (D) {
+        var p = ptFromInput('amP'); if (!p) return D.err('Choose a registered patient from the list.', '#amP');
+        if (admOfPt(p.id)) return D.err(p.name + ' is already admitted.', '#amP');
+        var did = +D.$('#amD').value; if (!did) return D.err('Select the admitting doctor.', '#amD');
+        var bed = bedById(D.$('#amB').value); if (!bed) return D.err('Select a free bed.', '#amB');
+        if (!D.$('#amR').value.trim()) return D.err('Enter the reason for admission.', '#amR');
+        if (!D.dp.val) return D.err('Choose the admission date.', D.dp.btn); if (!D.$('#amT').value) return D.err('Choose the admission time.', '#amT');
+        var w = wardById(bed.wardId), doc = staffById(did), at = D.dp.val + ' ' + D.$('#amT').value;
+        var a = { id: newId('adm'), code: nextCode('ADM-', ADMS), pid: p.id, patient: p.name, docId: did, doctor: doc ? doc.name : '', bedId: bed.id, wardId: w.id, ward: w.name, bed: bed.no, reason: D.$('#amR').value.trim(), note: D.$('#amN').value.trim(), admitAt: at, status: 'admitted', moves: [{ bedId: bed.id, wardId: w.id, ward: w.name, bed: bed.no, rate: w.rate, from: at, to: '' }], ord: Date.now(), by: ME.name || '' };
+        D.busy(true);
+        saveNow('admissions', a).then(function () {
+          ADMS.unshift(a); saveBed(bed, 'occupied'); savePtType(p.id, 'Inpatient'); D.close(); renderWards(); renderDash(); if (typeof renderPts === 'function') renderPts(); toast(p.name + ' admitted to ' + w.name + ', bed ' + bed.no);
+        }).catch(function (e) { D.busy(false); D.err(e.message || 'Could not admit. Try again.'); if (e.status === 409) { rehydrateAdmissions(); } });
+      } });
+  }
+  function rehydrateAdmissions() { api('GET', '/api/data').then(function (srv) { var C = srv.collections || {}; if (C.admissions) ADMS = C.admissions.slice().sort(byOrd); if (C.beds) BEDS = C.beds.slice().sort(byOrd); renderWards(); }).catch(function () { /* offline */ }); }
+
+  /* transfer */
+  function openTransfer(id) {
+    var a = admById(id); if (!a) return;
+    function bedOpts(wid) { return optList(BEDS.filter(function (b) { return b.wardId === wid && bedState(b) === 'free'; }).sort(bedNoSort).map(function (b) { return [b.id, 'Bed ' + b.no]; }), '', 'Select a free bed'); }
+    hdw('trW', { title: 'Transfer ' + a.patient, save: 'Transfer',
+      body: '<div class="rbox" style="margin-bottom:16px"><div><small>Now in</small><b>' + esc(a.ward) + ', bed ' + esc(a.bed) + '</b></div><div class="stsel"><small>Admission</small><b>' + esc(a.code) + '</b></div></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="trW2">Move to ward</label><select class="in sel" id="trW2">' + optList(wardsSorted().map(function (w) { return [w.id, w.name + ' · ' + fmtNum(w.rate) + ' EGP/day']; }), a.wardId, 'Select ward') + '</select></div><div class="fl"><label class="lb" for="trB">Bed</label><select class="in sel" id="trB">' + bedOpts(a.wardId) + '</select></div></div>' +
+        '<div class="fl"><label class="lb" for="trR"><span>Reason <span class="opt">(Optional)</span></span></label><input class="in" id="trR" placeholder="e.g. Moved to ICU for monitoring" autocomplete="off"></div>',
+      ready: function (D) { D.$('#trW2').addEventListener('change', function () { D.$('#trB').innerHTML = bedOpts(this.value); }); },
+      submit: function (D) {
+        var nb = bedById(D.$('#trB').value); if (!nb) return D.err('Select a free bed to move to.', '#trB');
+        var nw = wardById(nb.wardId), at = stampNow(), old = bedById(a.bedId), last = a.moves[a.moves.length - 1], keep = JSON.stringify(a);
+        last.to = at; a.moves.push({ bedId: nb.id, wardId: nw.id, ward: nw.name, bed: nb.no, rate: nw.rate, from: at, to: '', why: D.$('#trR').value.trim() }); a.bedId = nb.id; a.wardId = nw.id; a.ward = nw.name; a.bed = nb.no;
+        D.busy(true);
+        saveNow('admissions', a).then(function () { if (old) saveBed(old, 'cleaning'); saveBed(nb, 'occupied'); D.close(); renderWards(); toast(a.patient + ' moved to ' + nw.name + ', bed ' + nb.no); })
+          .catch(function (e) { var o = JSON.parse(keep); for (var k in o) a[k] = o[k]; D.busy(false); D.err(e.message || 'Could not transfer. Try again.'); if (e.status === 409) rehydrateAdmissions(); });
+      } });
+  }
+
+  /* discharge */
+  var CONDITIONS = ['Recovered', 'Improved', 'Stable', 'Referred to another facility', 'Left against medical advice', 'Deceased'];
+  function openDischarge(id) {
+    var a = admById(id); if (!a) return; var now = stampNow();
+    hdw('dcW', { title: 'Discharge ' + a.patient, wide: true, save: 'Discharge patient',
+      body: '<div class="rbox" style="margin-bottom:6px"><div><small>Patient</small><b>' + esc(a.patient) + '</b></div><div class="stsel"><small>' + esc(a.ward) + ', bed ' + esc(a.bed) + '</small><b>Admitted ' + fmtStamp(a.admitAt) + '</b></div></div>' +
+        '<div class="hm-row3" style="margin-top:14px"><div class="fl"><span class="lb">Discharge date</span><div id="dcDP"></div></div><div class="fl"><label class="lb" for="dcT">Time</label><input class="in" id="dcT" type="time"></div><div class="fl"><label class="lb" for="dcC">Condition at discharge</label><select class="in sel" id="dcC">' + optList(CONDITIONS.map(function (x) { return [x, x]; }), 'Improved') + '</select></div></div>' +
+        '<div class="fl"><label class="lb" for="dcS">Diagnosis and hospital course (summary)</label><textarea class="in" id="dcS" style="height:96px" maxlength="1500" placeholder="What was found, what was done, how the patient responded">' + esc(a.reason ? 'Admitted with ' + a.reason + '.' : '') + '</textarea></div>' +
+        '<div class="fl"><label class="lb" for="dcM">Medicines to continue at home</label><textarea class="in" id="dcM" style="height:80px" maxlength="1000" placeholder="e.g. Amoxicillin 500 mg three times a day for 5 days"></textarea></div>' +
+        '<div class="row2"><div class="fl"><label class="lb" for="dcA">Advice</label><textarea class="in" id="dcA" style="height:80px" maxlength="800" placeholder="Rest, diet, warning signs..."></textarea></div><div class="fl"><span class="lb">Follow-up date <span class="opt">(Optional)</span></span><div id="dcF"></div></div></div>' +
+        '<h4 class="hm-h">Bed charges <small id="dcDays"></small></h4><div id="dcCh"></div>' +
+        (canWrite('txs') ? '<label class="chk" style="margin-top:12px"><input type="checkbox" id="dcInv" checked> Create an invoice for the bed charges now</label>' : '<p class="hm-sub" style="margin-top:10px">The bed charges are saved with the admission. The accounts team can add them to an invoice.</p>'),
+      ready: function (D) {
+        D.dp = mkdp('dcDP', isoToday(), 1, 0); D.fu = mkdp('dcF', '', 0, 2); D.$('#dcT').value = now.slice(11);
+        function charge() { var at = (D.dp.val || isoToday()) + ' ' + (D.$('#dcT').value || '00:00'), c = admCharge(a, at); D.charge = c; D.$('#dcDays').textContent = c.days + (c.days === 1 ? ' day' : ' days') + ' · ' + fmtNum(c.amount) + ' EGP';
+          D.$('#dcCh').innerHTML = '<table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate (EGP)</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + c.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '</tbody></table>'; }
+        charge(); D.f.addEventListener('click', function () { setTimeout(charge, 0); }); D.$('#dcT').addEventListener('input', charge);
+      },
+      submit: function (D) {
+        if (!D.dp.val) return D.err('Choose the discharge date.', D.dp.btn); var at = D.dp.val + ' ' + (D.$('#dcT').value || '00:00');
+        if (at < a.admitAt) return D.err('The discharge time cannot be before the admission (' + fmtStamp(a.admitAt) + ').', D.dp.btn);
+        if (!D.$('#dcS').value.trim()) return D.err('Write a short summary for the discharge letter.', '#dcS');
+        var keep = JSON.stringify(a), c = admCharge(a, at); a.moves[a.moves.length - 1].to = at;
+        a.status = 'discharged'; a.dischargeAt = at; a.condition = D.$('#dcC').value; a.summary = D.$('#dcS').value.trim(); a.meds = D.$('#dcM').value.trim(); a.advice = D.$('#dcA').value.trim(); a.followUp = D.fu.val || ''; a.charge = c; a.dischargedBy = ME.name || '';
+        var inv = null; if (D.$('#dcInv') && D.$('#dcInv').checked && c.amount > 0) { inv = makeInvoice({ pid: a.pid, name: a.patient, items: admItems(a), dt: at }); a.txId = inv.id; }
+        D.busy(true);
+        saveNow('admissions', a).then(function () {
+          var bd = bedById(a.bedId); if (bd) saveBed(bd, 'cleaning'); savePtType(a.pid, 'Outpatient');
+          if (inv) { TXC.unshift(inv); persist('txs', inv); renderTx(); }
+          D.close(); renderWards(); renderDash(); if (typeof renderPts === 'function') renderPts(); toast(a.patient + ' discharged' + (inv ? '. Invoice ' + inv.id + ' created' : ''));
+          openAdmDetail(a.id);
+        }).catch(function (e) { var o = JSON.parse(keep); for (var k in o) a[k] = o[k]; D.busy(false); D.err(e.message || 'Could not discharge. Try again.'); });
+      } });
+  }
+
+  /* admission detail */
+  function openAdmDetail(id) {
+    var a = admById(id); if (!a) return; var ch = a.status === 'discharged' ? a.charge : admCharge(a, stampNow()), adm = a.status === 'admitted';
+    var moves = (a.moves || []).map(function (m) { return '<tr><td>' + esc(m.ward) + '</td><td>Bed ' + esc(m.bed) + '</td><td>' + fmtStamp(m.from) + '</td><td>' + (m.to ? fmtStamp(m.to) : '<span class="pl warn" style="height:22px">Current</span>') + '</td></tr>'; }).join('');
+    var labs = LABS.filter(function (l) { return l.admId === a.id; });
+    hdw('admD', { title: 'Admission ' + a.code, mid: true, foot: '<button type="button" class="lnk" data-act="cancel">Close</button>' + (a.status === 'discharged' ? '<button type="button" class="ghost" data-act="print">Print discharge summary</button>' : '') + (adm && canWrite('admissions') ? '<button type="button" class="ghost" data-act="transfer">Transfer</button><button type="button" class="pri" data-act="discharge">Discharge</button>' : ''),
+      body: '<div class="rbox"><div><small>Patient</small><b>' + (a.pid && canR('patients') ? '<button class="nmb" data-pid="' + a.pid + '" type="button">' + esc(a.patient) + '</button>' : esc(a.patient)) + '</b></div><div class="stsel"><small>Status</small><span class="pl ' + (adm ? 'warn' : 'good') + '">' + (adm ? 'Admitted' : 'Discharged') + '</span></div></div>' +
+        '<h4 class="rh4">General Info</h4><div class="gi"><div><span class="ib">' + svg('steth') + '</span><div><small>Doctor</small><b>' + esc(a.doctor || '—') + '</b></div></div><div><span class="ib">' + svg('bed') + '</span><div><small>Ward and bed</small><b>' + esc(a.ward) + ', bed ' + esc(a.bed) + '</b></div></div><div><span class="ib">' + svg('cal') + '</span><div><small>Admitted</small><b>' + fmtStamp(a.admitAt) + '</b></div></div><div><span class="ib">' + svg('clock') + '</span><div><small>' + (adm ? 'Stay so far' : 'Discharged') + '</small><b>' + (adm ? ch.days + (ch.days === 1 ? ' day' : ' days') : fmtStamp(a.dischargeAt)) + '</b></div></div></div>' +
+        '<h4 class="rh4">Reason for admission</h4><div class="hm-note">' + esc(a.reason || '—') + (a.note ? '\n' + esc(a.note) : '') + '</div>' +
+        (adm ? '' : '<h4 class="rh4">Discharge</h4><div class="hm-note"><b>' + esc(a.condition || '') + '</b>\n' + esc(a.summary || '') + (a.meds ? '\n\nMedicines: ' + esc(a.meds) : '') + (a.advice ? '\n\nAdvice: ' + esc(a.advice) : '') + (a.followUp ? '\n\nFollow-up: ' + fmtDate(a.followUp) : '') + '</div>') +
+        '<h4 class="rh4">Bed history</h4><table class="hm-mini"><thead><tr><th>Ward</th><th>Bed</th><th>From</th><th>To</th></tr></thead><tbody>' + moves + '</tbody></table>' +
+        '<h4 class="rh4">Bed charges ' + (adm ? '<small>(estimate until discharge)</small>' : '') + '</h4><table class="hm-mini"><thead><tr><th>Ward</th><th class="num">Days</th><th class="num">Rate</th><th class="num">Amount (EGP)</th></tr></thead><tbody>' + ch.lines.map(function (l) { return '<tr><td>' + esc(l.ward) + '</td><td class="num">' + l.days + '</td><td class="num">' + fmtNum(l.rate) + '</td><td class="num"><b>' + fmtNum(l.amount) + '</b></td></tr>'; }).join('') + '<tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + fmtNum(ch.amount) + ' EGP</b></td></tr></tbody></table>' + (a.txId ? '<p class="hm-sub" style="margin-top:8px">Invoice ' + esc(a.txId) + '</p>' : '') +
+        (labs.length ? '<h4 class="rh4">Lab and radiology</h4>' + labs.map(function (l) { return '<div class="hm-note" style="margin-bottom:6px"><b>' + esc(l.code) + '</b> · ' + l.items.map(function (i) { return esc(i.name); }).join(', ') + ' · ' + esc(LAB_ST[l.status] || l.status) + '</div>'; }).join('') : ''),
+      act: function (name, D) { D.close(); if (name === 'print') printDischarge(a); else if (name === 'transfer') openTransfer(a.id); else if (name === 'discharge') openDischarge(a.id); },
+      ready: function (D) { D.body.addEventListener('click', function (e) { var b = e.target.closest('.nmb'); if (b) { D.close(); curPid = +b.dataset.pid; go('PatientProfile'); } }); }, noFocus: true });
+  }
+  function printDischarge(a) {
+    var p = patientById(a.pid), c = a.charge || { days: 0 };
+    printDoc('Discharge summary ' + a.code,
+      letterhead('Discharge Summary', 'In-patient department') +
+      metaRows([['Patient', a.patient], ['Patient ID', p ? p.code : ''], ['Age / gender', p ? ageGender(p) : ''], ['Admission no.', a.code], ['Admitted', fmtStamp(a.admitAt)], ['Discharged', fmtStamp(a.dischargeAt)], ['Ward / bed', a.ward + ', bed ' + a.bed], ['Stay', c.days + (c.days === 1 ? ' day' : ' days')], ['Consultant', a.doctor], ['Condition', a.condition]]) +
+      '<h2>Reason for admission</h2><div class="box">' + esc(a.reason || '—') + '</div>' +
+      '<h2>Diagnosis and hospital course</h2><div class="box">' + esc(a.summary || '—') + '</div>' +
+      (a.meds ? '<h2>Medicines at discharge</h2><div class="box">' + esc(a.meds) + '</div>' : '') +
+      (a.advice ? '<h2>Advice</h2><div class="box">' + esc(a.advice) + '</div>' : '') +
+      (a.followUp ? '<h2>Follow-up</h2><div>Please come back on <b>' + esc(fmtDate(a.followUp)) + '</b>.</div>' : '') +
+      '<div class="sig"><div>' + esc(a.doctor || 'Treating doctor') + '<br>Doctor signature and stamp</div><div>Patient or guardian signature</div></div>');
+  }
+
+  var LAB_ST = { ordered: 'Ordered', collected: 'Sample collected', resulted: 'Resulted' };
+
+  /* ---------- sample data for the hospital modules ---------- */
+  var SEED_NEW = { pts: [], txs: [] };
+  function lcg(seed) { var s = seed; return function (n) { s = (s * 1664525 + 1013904223) >>> 0; return (s >>> 8) % n; }; }
+  function seedIPD(r) {
+    var defs = [['General Ward, Male', 'General', '1', 350, 6], ['General Ward, Female', 'General', '1', 350, 6], ['Private Rooms', 'Private', '2', 900, 6], ['Intensive Care Unit', 'ICU', '3', 2500, 4]];
+    defs.forEach(function (d, i) {
+      var w = { id: 'wd' + (i + 1), name: d[0], type: d[1], floor: d[2], rate: d[3], ord: i + 1 }; WARDS.push(w);
+      for (var k = 1; k <= d[4]; k++) { var b = { id: 'bd' + (i + 1) + '_' + k, wardId: w.id, no: String(k), status: 'free', ord: 100 - k }; b.name = bedLabel(b); BEDS.push(b); }
+    });
+    var roster = docStaff.slice(0, 12), used = {}, REASONS = ['Pneumonia, on IV antibiotics', 'Post-operative care after appendectomy', 'Diabetic ketoacidosis, glucose monitoring', 'Chest pain, cardiac monitoring', 'Dengue fever with low platelets', 'Fractured femur, orthopedic care', 'Acute pancreatitis', 'Stroke, observation and physiotherapy', 'Severe asthma attack', 'Dehydration and gastroenteritis', 'Kidney stones, pain control'];
+    function pick() { for (var t = 0; t < 400; t++) { var p = patients[(t * 13 + 5 + r(patients.length)) % patients.length]; if (!used[p.id]) { used[p.id] = 1; return p; } } return patients[0]; }
+    function mk(bed, off, reasonIdx, extra) {
+      var p = pick(), doc = roster[r(roster.length)], w = wardById(bed.wardId), min = off === 0 ? Math.max(0, NOWMIN - 150 - r(60)) : 420 + r(300), at = addDays(TODAY, -off) + ' ' + hhmm(min);
+      var a = { id: 'adm' + (ADMS.length + 1), code: 'ADM-' + (1001 + ADMS.length), pid: p.id, patient: p.name, docId: doc.id, doctor: doc.name, bedId: bed.id, wardId: w.id, ward: w.name, bed: bed.no, reason: REASONS[reasonIdx % REASONS.length], note: '', admitAt: at, status: 'admitted', moves: [{ bedId: bed.id, wardId: w.id, ward: w.name, bed: bed.no, rate: w.rate, from: at, to: '' }], ord: 1000 - ADMS.length, by: 'Reception' };
+      for (var k in (extra || {})) a[k] = extra[k]; ADMS.push(a); bed.status = 'occupied'; return a;
+    }
+    function B(wi, no) { return BEDS.filter(function (b) { return b.wardId === 'wd' + wi && b.no === String(no); })[0]; }
+    mk(B(1, 1), 3, 0); mk(B(1, 2), 1, 2); var tr = mk(B(1, 4), 5, 6);
+    tr.moves = [{ bedId: B(4, 3).id, wardId: 'wd4', ward: 'Intensive Care Unit', bed: '3', rate: 2500, from: tr.admitAt, to: addDays(TODAY, -2) + ' 10:30', why: 'Required ICU monitoring' }, { bedId: tr.bedId, wardId: 'wd1', ward: 'General Ward, Male', bed: '4', rate: 350, from: addDays(TODAY, -2) + ' 10:30', to: '' }];
+    mk(B(2, 1), 2, 1); mk(B(2, 3), 0, 9); mk(B(3, 1), 4, 3); mk(B(3, 2), 1, 10); mk(B(4, 1), 2, 3); mk(B(4, 2), 0, 4);
+    B(2, 6).status = 'cleaning'; B(3, 6).status = 'maintenance';
+    /* discharged stays (history, with charges) */
+    [[1, 5, 16, 11, 'Improved', 'Admitted with community-acquired pneumonia. Treated with IV antibiotics and oxygen, fever settled on day 3. Chest clear on discharge.'], [3, 5, 14, 8, 'Recovered', 'Laparoscopic appendectomy without complications. Wound clean, tolerating diet.'], [2, 2, 12, 7, 'Improved', 'Dengue fever. Platelets recovered above 100,000. Advised rest and fluids.'], [1, 3, 9, 5, 'Stable', 'Kidney stone managed conservatively with pain control and hydration.']].forEach(function (d, i) {
+      var bed = B(d[0], d[1]), a = mk(bed, d[2], d[3] + i, {}); bed.status = 'free';
+      var at = addDays(TODAY, -(d[2] - 4 - i)) + ' 11:15'; a.status = 'discharged'; a.dischargeAt = at; a.moves[0].to = at; a.condition = d[4]; a.summary = d[5]; a.meds = i % 2 ? 'Paracetamol 500 mg when needed for 3 days' : 'Amoxicillin 500 mg three times daily for 5 days'; a.advice = 'Rest, plenty of fluids, return if fever or pain comes back.'; a.followUp = addDays(TODAY, 3 + i); a.charge = admCharge(a, at); a.ord = 500 - i; a.dischargedBy = 'Dr. ' + a.doctor.replace(/^Dr[./ ]*/, '');
+    });
+    ADMS.forEach(function (a) { if (a.status === 'admitted') used[a.pid] = 1; });
+    patients.forEach(function (p) { var want = ADMS.some(function (a) { return a.pid === p.id && a.status === 'admitted'; }) ? 'Inpatient' : 'Outpatient'; if (p.type !== want) { p.type = want; SEED_NEW.pts.push(p); } });
+    /* two of the discharged stays are already on invoices: one paid, one part-paid. The others wait for the accounts team. */
+    var dis = ADMS.filter(function (a) { return a.status === 'discharged'; });
+    [[dis[0], 'full'], [dis[1], 'part']].forEach(function (d) { var a = d[0], inv = makeInvoice({ pid: a.pid, name: a.patient, items: admItems(a), dt: a.dischargeAt, payments: d[1] === 'full' ? [{ at: a.dischargeAt, amt: a.charge.amount, method: 'Cash' }] : [{ at: a.dischargeAt, amt: Math.round(a.charge.amount * 0.4), method: 'Visa Card' }] }); a.txId = inv.id; TXC.unshift(inv); SEED_NEW.txs.push(inv); });
+  }
+  function seedHospital() {
+    WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; SEED_NEW = { pts: [], txs: [] };
+    var r = lcg(4242); seedIPD(r);
+  }
+  function hospitalSeedBody() { return { wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }; }
+  function loadSampleModules() {
+    var btn = $('wdLoadSample'); if (btn) btn.disabled = true;
+    seedHospital();
+    api('POST', '/api/seed-modules', hospitalSeedBody()).then(function () {
+      SEED_NEW.pts.forEach(function (p) { persist('patients', p); }); SEED_NEW.txs.forEach(function (t) { t.kind = 'customers'; persist('txs', t); });
+      rerenderAll(); toast('Sample data loaded');
+    }).catch(function (e) { if (e.status === 409) { toast('These modules already have data.'); } else toast(e.message || 'Could not load sample data'); TXC = TXC.filter(function (t) { return SEED_NEW.txs.indexOf(t) < 0; }); WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; rerenderAll(); });
+  }
+  /* ---------- dashboard: hospital cards ---------- */
+  function statCard(ic, title, sub, val, extra) { return '<article class="card stat"><div class="stat-top"><span class="badge">' + svg(ic) + '</span><div class="t"><b>' + title + '</b><small>' + sub + '</small></div></div><div class="stat-val"><strong>' + val + '</strong></div>' + (extra || '') + '</article>'; }
+  function renderStats2() {
+    var c = [];
+    if (canR('beds') && BEDS.length) { var s = bedStats(); c.push(statCard('bed', 'Bed Occupancy', s.occ + ' of ' + (s.total - s.maint) + ' usable beds', s.pct + '%', '<div class="bar2' + (s.pct >= 90 ? ' bad' : s.pct >= 75 ? ' warn' : '') + '"><i style="width:' + s.pct + '%"></i></div>')); }
+    $('stats2').hidden = !c.length; $('stats2').innerHTML = c.join('');
+  }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
-  function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403) toast(e.message); else saveFail(); }); }
+  function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403 || e.status === 409) toast(e.message); else saveFail(); }); }
   function unpersist(col, id) { api('DELETE', '/api/records/' + col + '/' + encodeURIComponent(id)).catch(function (e) { if (e.message !== 'signed out') saveFail(); }); }
   function persistKV(id, v) { persist('kv', { id: id, v: v }); }
   function saveAppt(r, list) { r.list = list; if (!r.ord) r.ord = Date.now(); persist('appts', r); }
@@ -3514,21 +3962,21 @@ window.bootApp = function () {
   function maxId(arr) { return arr.reduce(function (m, o) { return Math.max(m, +o.id || 0); }, 0); }
   function seedServer() {
     var num = function (arr) { arr.forEach(function (o, i) { o.ord = arr.length - i; }); return arr; };
-    seedPatients(); seedAppts();
+    seedPatients(); seedAppts(); seedHospital();
     approved.forEach(function (r) { r.list = 'approved'; }); requests.forEach(function (r) { r.list = 'requests'; }); num(approved); num(requests);
     docStaff.forEach(function (x) { x.kind = 'doctor'; }); genStaffL.forEach(function (x) { x.kind = 'general'; }); num(docStaff); num(genStaffL);
     var stocks = []; SUPS.forEach(function (sp) { var l = stocksOf(sp); l.forEach(function (x, i) { x.supId = sp.id; x.ord = l.length - i; stocks.push(x); }); });
     TXC.forEach(function (x) { x.kind = 'customers'; }); TXS.forEach(function (x) { x.kind = 'suppliers'; });
-    api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS) }).catch(function (e) { if (e.status !== 409) saveFail(); });
+    api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS), wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }).catch(function (e) { if (e.status !== 409) saveFail(); });
   }
   function rerenderAll() {
-    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts();
+    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards();
   }
   function hydrate(srv) {
     if (!srv) { seedServer(); rerenderAll(); return; }
     if (srv.empty && srv.seed) { seedServer(); rerenderAll(); return; }
     if (srv.empty) {
-      docStaff = []; genStaffL = []; SUPS = []; STK = {}; TXC = []; TXS = []; DEVS = []; patients = []; approved = []; requests = []; uid = 0; sUid = 0; supUid = 0; ptUid = 0; stkUid = 0; devUid = 0; curPid = 0; supCur = null;
+      docStaff = []; genStaffL = []; SUPS = []; STK = {}; TXC = []; TXS = []; DEVS = []; patients = []; approved = []; requests = []; WARDS = []; BEDS = []; ADMS = []; VISITS = []; OPDQ = []; LABT = []; LABS = []; uid = 0; sUid = 0; supUid = 0; ptUid = 0; stkUid = 0; devUid = 0; curPid = 0; supCur = null;
       rerenderAll(); return;
     }
     var C = srv.collections || {}, kv = {};
@@ -3541,6 +3989,7 @@ window.bootApp = function () {
     (C.stocks || []).slice().sort(byOrd).forEach(function (x) { (STK[x.supId] || (STK[x.supId] = [])).push(x); });
     var tx = C.txs || []; TXC = tx.filter(function (x) { return x.kind === 'customers'; }); TXS = tx.filter(function (x) { return x.kind === 'suppliers'; });
     DEVS = (C.devices || []).slice().sort(byOrd);
+    WARDS = (C.wards || []).slice().sort(byOrd); BEDS = (C.beds || []).slice().sort(byOrd); ADMS = (C.admissions || []).slice().sort(byOrd); VISITS = (C.visits || []).slice().sort(byOrd); OPDQ = (C.opdq || []).slice().sort(byOrd); LABT = (C.labtests || []).slice().sort(byOrd); LABS = (C.labs || []).slice().sort(byOrd);
     if (kv.planDone) planDone = kv.planDone; if (kv.medTaken) medTaken = kv.medTaken;
     uid = Math.max(uid, maxId(approved.concat(requests))); sUid = Math.max(sUid, maxId(docStaff.concat(genStaffL))); supUid = Math.max(supUid, maxId(SUPS)); ptUid = Math.max(ptUid, maxId(patients));
     stkUid = Math.max(stkUid, maxId(C.stocks || [])); devUid = Math.max(devUid, maxId(DEVS)); supCur = null; curPid = patients.length ? patients[patients.length - 1].id : 0;
@@ -3572,7 +4021,7 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
