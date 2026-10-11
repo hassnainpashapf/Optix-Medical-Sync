@@ -954,11 +954,12 @@
 </style>
 <link rel="stylesheet" href="/assets/optix-app.css">
 <link rel="stylesheet" href="/assets/optix-hospital.css">
+<link rel="stylesheet" href="/assets/optix-mobile.css">
 </head>
 <body class="locked">
 <div class="frame">
-  <aside class="side">
-    <div class="brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><span class="bt"><b>Optix</b><span class="brand-s">Medical Sync</span></span></div>
+  <aside class="side" id="side">
+    <div class="brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><span class="bt"><b>Optix</b><span class="brand-s">Medical Sync</span></span><button type="button" class="sq side-x" id="sideX" aria-label="Close menu"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <label class="search">
       <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Search" aria-label="Search patients, doctors, appointments and suppliers" autocomplete="off">
@@ -1002,14 +1003,17 @@
       <a href="#audit" data-ic="shield">Audit Log</a>
     </nav>
   </aside>
+  <div class="side-ov" id="sideOv" aria-hidden="true"></div>
 
   <div class="right">
     <header class="top">
+      <button class="sq menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-controls="side" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <button class="sq" id="back" aria-label="Back" data-ic="left"></button>
       <button class="sq" id="fwd" aria-label="Forward" data-ic="right"></button>
       <div class="crumb" id="crumb"></div>
       <div class="grow"></div>
-      <button class="iconbtn" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="4"/><path d="M8 10h8M8 14h5"/></svg><span class="dot"></span></button>
+      <button class="iconbtn srch-btn" id="srchBtn" type="button" aria-label="Search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <button class="iconbtn msg-btn" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="4"/><path d="M8 10h8M8 14h5"/></svg><span class="dot"></span></button>
       <span class="kw" id="bellKw"><button class="iconbtn" id="bellBtn" aria-label="Notifications" aria-haspopup="true"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15z"/><path d="M10 21h4"/></svg><span class="dot" id="bellDot" hidden></span></button><div class="notif" id="notif" hidden></div></span>
       <span class="vsep"></span>
       <span class="kw" id="userKw"><button class="user" id="userBtn" aria-label="Account menu" aria-haspopup="true">
@@ -2035,7 +2039,7 @@ window.bootApp = function () {
     if (vid === 'view-visits') renderVisits();
     if (vid === 'view-lab') renderLab();
     if (vid === 'view-opd') { renderQueue(); syncQueue().then(renderQueue); }
-    renderCrumb(key);
+    renderCrumb(key); if (window.__closeNav) window.__closeNav();
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
     if (pv) { placeTip(); setTimeout(function () { document.getElementById('meter').style.width = '79%'; }, 50); }
@@ -3032,7 +3036,7 @@ window.bootApp = function () {
       var p = calDate.split('-'), m = '<div class="mgrid">'; ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function (x) { m += '<div class="mh">' + x + '</div>'; });
       calCells(+p[0], +p[1] - 1).forEach(function (c) {
         var iso = isoOf(c.y, c.m, c.d), t = c.cur ? apptsFor([iso]).length : 0;
-        m += '<button data-date="' + iso + '" class="' + (c.cur ? '' : 'out') + (iso === TODAY ? ' today' : '') + '"><b>' + c.d + '</b>' + (c.cur && t ? '<span class="cnt">' + t + ' appointment' + (t > 1 ? 's' : '') + '</span>' : '') + '</button>';
+        m += '<button data-date="' + iso + '" class="' + (c.cur ? '' : 'out') + (iso === TODAY ? ' today' : '') + '"><b>' + c.d + '</b>' + (c.cur && t ? '<span class="cnt">' + t + '<span class="cw"> appointment' + (t > 1 ? 's' : '') + '</span></span>' : '') + '</button>';
       });
       body.innerHTML = m + '</div>';
     }
@@ -3476,7 +3480,7 @@ window.bootApp = function () {
   function printHtml(title, body) {
     var f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(f);
     var d = f.contentWindow.document; d.open();
-    d.write('<!doctype html><html><head><meta charset="utf-8"><title>' + title + '</title><style>body{font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#151a24;padding:32px;max-width:640px;margin:0 auto}h1{font-size:20px;margin:0}.sub{color:#5b6474;margin:2px 0 22px}table{width:100%;border-collapse:collapse}td{padding:9px 0;border-bottom:1px solid #e5e8ef}td:first-child{color:#5b6474;width:42%}.tot{font-size:18px;font-weight:600}.foot{margin-top:28px;color:#8b94a5;font-size:12px}</style></head><body>' + body + '</body></html>'); d.close();
+    var html = ('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>body{font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#111;background:#fff;padding:32px;max-width:640px;margin:0 auto}h1{font-size:20px;margin:0}.sub{color:#444;margin:2px 0 22px}table{width:100%;border-collapse:collapse}td{padding:9px 0;border-bottom:1px solid #ccc}td:first-child{color:#444;width:42%}.tot{font-size:18px;font-weight:600}.foot{margin-top:28px;color:#555;font-size:12px}</style></head><body>' + body + '</body></html>'); window.__lastPrint = { title: title, html: html }; d.write(html); d.close();
     setTimeout(function () { f.contentWindow.focus(); f.contentWindow.print(); setTimeout(function () { f.remove(); }, 1500); }, 250);
   }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -3697,7 +3701,7 @@ window.bootApp = function () {
   function ptPickHtml(id, ph) { return '<input class="in" id="' + id + '" list="' + id + 'L" placeholder="' + (ph || 'Type the patient name') + '" autocomplete="off"><datalist id="' + id + 'L">' + patients.slice(0, 700).map(function (p) { return '<option value="' + esc(p.name) + '">' + esc(p.code) + '</option>'; }).join('') + '</datalist>'; }
   function ptFromInput(id) { var v = $(id).value.trim().toLowerCase(); return v ? (patients.filter(function (p) { return p.name.toLowerCase() === v; })[0] || null) : null; }
   function selText(sel) { var o = sel.options[sel.selectedIndex]; return o ? o.textContent : ''; }
-  function wsName() { return (WS && WS.name) || 'Hospital'; }
+  function wsName() { return (WS && WS.name) || 'Optix Medical Sync'; }
 
   /* ---------- dynamic drawers (same look as the existing ones) ---------- */
   function hdw(id, o) {
@@ -4916,6 +4920,20 @@ window.bootApp = function () {
       if ($('pwNew').value !== $('pwNew2').value) { er.textContent = 'The two new passwords do not match.'; return; }
       api('POST', '/api/password', { current: $('pwCur').value, next: $('pwNew').value }).then(function () { $('pwW').hidden = true; if (window.__USER) { window.__USER.passwordSet = true; window.__USER.googleNotice = false; } gn.hidden = true; toast('Password saved'); }).catch(function (x) { er.textContent = x.message; });
     });
+  })();
+
+  /* phones and tablets: the sidebar is an off-canvas drawer (CSS only shows it below 900px) */
+  (function () {
+    var btn = $('menuBtn'), narrow = window.matchMedia('(max-width: 900px)');
+    function setNav(on) { document.body.classList.toggle('nav-open', !!on); btn.setAttribute('aria-expanded', on ? 'true' : 'false'); if (on) { var a = document.querySelector('.side .nav a.on:not([hidden])'); if (a && a.scrollIntoView) a.scrollIntoView({ block: 'nearest' }); } }
+    window.__closeNav = function () { if (document.body.classList.contains('nav-open')) setNav(false); };
+    btn.addEventListener('click', function () { setNav(!document.body.classList.contains('nav-open')); });
+    $('sideX').addEventListener('click', function () { setNav(false); btn.focus(); });
+    $('sideOv').addEventListener('click', function () { setNav(false); });
+    $('srchBtn').addEventListener('click', function () { setNav(true); setTimeout(function () { $('q').focus(); }, 280); });
+    $('side').addEventListener('click', function (e) { if (e.target.closest('.nav a') || e.target.closest('.gs button')) setNav(false); }, true);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) { setNav(false); btn.focus(); } });
+    (narrow.addEventListener ? narrow.addEventListener.bind(narrow, 'change') : narrow.addListener.bind(narrow))(function () { setNav(false); });
   })();
 
   /* nav */

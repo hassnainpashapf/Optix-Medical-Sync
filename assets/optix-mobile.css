@@ -1,0 +1,256 @@
+/* Optix Medical Sync: phone and tablet layout of the signed-in app (loaded last). LIGHT ONLY.
+   Everything is inside max-width queries, so desktop (above 900px) is untouched.
+   - 900px and below: the sidebar becomes an off-canvas drawer opened from the hamburger in the top bar.
+   - 760px and below: compact page chrome, one-column forms, full-width sheets for drawers and modals.
+   Printouts (own print window) and the waiting-room screen (.opd-tv) are not touched. */
+
+.menu-btn, .srch-btn, .side-x, .side-ov { display: none; }
+
+@media (max-width: 900px) {
+  html, body { overscroll-behavior: none; }
+  body { height: 100vh; height: 100dvh; padding: 0; }
+  .frame { grid-template-columns: minmax(0, 1fr); }
+
+  /* ---------- sidebar = drawer ---------- */
+  .side {
+    display: flex; position: fixed; z-index: 70; top: 0; bottom: 0; left: 0; width: min(304px, 86vw); height: 100vh; height: 100dvh;
+    padding: 0 14px calc(18px + env(safe-area-inset-bottom)); background: #fff; border-right: 1px solid var(--line);
+    transform: translateX(-104%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
+    -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  }
+  body.nav-open .side { transform: none; visibility: visible; transition-delay: 0s; box-shadow: 24px 0 60px -24px rgba(27, 42, 74, .35); }
+  .side-ov { display: block; position: fixed; inset: 0; z-index: 65; background: rgba(27, 42, 74, .46); opacity: 0; visibility: hidden; transition: opacity .26s, visibility 0s linear .26s; }
+  body.nav-open .side-ov { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .brand { height: 68px; margin-bottom: 12px; }
+  .brand .side-x { display: grid; margin-left: auto; flex: none; }
+  .search { margin-top: 2px; }
+  .search input { height: 44px; font-size: 14px; }
+  .search svg { top: 14px; }
+  .gs { position: static; margin-top: 6px; min-width: 0; max-height: 46vh; box-shadow: var(--sh-card); }
+  .gs button { padding: 11px 10px; }
+  .nav a { height: 44px; font-size: 14.5px; }
+  .nav a svg { width: 18px; height: 18px; }
+  .group { margin-top: 18px; }
+
+  /* ---------- top bar ---------- */
+  .top { height: 60px; padding: 0 12px; gap: 6px; }
+  .top .sq, .menu-btn { width: 40px; height: 40px; }
+  .menu-btn { display: grid; flex: none; color: var(--ink); }
+  .menu-btn svg { width: 20px; height: 20px; }
+  .crumb { flex: 1 1 auto; min-width: 0; margin-left: 4px; overflow: hidden; white-space: nowrap; }
+  .crumb > * { flex: none; }
+  .crumb > :last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .grow { flex: 0 0 0; }
+  .iconbtn { width: 40px; height: 40px; padding: 0; display: grid; place-items: center; flex: none; }
+  .srch-btn { display: grid; }
+  .vsep, .user .ic { display: none; }
+  .user div { display: none; }
+  .user .av { width: 40px; height: 40px; }
+  .iconbtn .dot { top: 7px; right: 8px; }
+  .notif { position: fixed; left: 10px; right: 10px; top: 66px; width: auto; max-height: calc(100dvh - 84px); overflow-y: auto; z-index: 80; }
+  .tbanner { padding: 9px 16px; }
+
+  /* ---------- sheets: drawers keep their side-panel width on tablets, full screen on phones ---------- */
+  .dw-wrap { position: fixed; inset: 0; height: 100vh; height: 100dvh; padding: 0; }
+  .drawer { width: min(480px, 100%); height: 100%; border-radius: 18px 0 0 18px; }
+  .drawer.mid { width: min(580px, 100%); }
+  .drawer.wide { width: min(760px, 100%); }
+  .dr-head { padding: 14px 16px 12px; }
+  .dr-x { width: 40px; height: 40px; }
+  .dr-body { padding: 14px 18px 8px; -webkit-overflow-scrolling: touch; }
+  .dr-foot { padding: 12px 18px calc(14px + env(safe-area-inset-bottom)); flex-wrap: wrap; }
+  .dr-foot button { height: 46px; }
+  .menu, .dd-menu { max-width: calc(100vw - 24px); }
+}
+
+@media (max-width: 560px) {
+  .drawer, .drawer.wide, .drawer.mid { width: 100%; max-width: none; border-radius: 0; animation: mobsheet .24s ease; }
+  @keyframes mobsheet { from { transform: translateY(24px); opacity: 0; } }
+  .dr-body { padding: 14px 16px 8px; }
+  .dr-foot { padding-left: 16px; padding-right: 16px; }
+}
+
+@media (max-width: 760px) {
+  .main { padding: 14px 14px 28px; gap: 16px; }
+  .head { flex-wrap: wrap; gap: 10px; }
+  .head h1 { font-size: 22px; }
+  .head p { font-size: 13px; }
+  .ap-card, .card.ap-card { padding-left: 14px; padding-right: 14px; }
+  .card { border-radius: 18px; }
+}
+
+/* ===================== tablet and phone content ===================== */
+@media (max-width: 900px) {
+  /* touch targets */
+  .fbtn, .addbtn { height: 44px; }
+  .btn-soft { height: 44px; }
+  .kebab { width: 40px; height: 40px; }
+  .seg button, .hm-seg button { min-height: 38px; }
+  .tab { padding-top: 16px; padding-bottom: 12px; min-height: 44px; }
+  .dchips button { width: 40px; height: 40px; }
+  .menu button { padding: 12px 12px; }
+  .dd-btn { height: 46px; }
+  .ddo { padding: 11px 10px; }
+  .hm-mini-btn { height: 40px; padding: 0 16px; }
+  .hm-addrow { height: 44px; }
+  .tl-i { padding: 12px 8px; }
+
+  /* toolbars wrap: search takes a full row, buttons share the next one */
+  .tools { gap: 10px; }
+  .sbox input { height: 46px; font-size: 16px; }
+  .sbox svg { top: 15px; }
+  .tools .fwrap { flex: none; }
+  .tools .addbtn { justify-content: center; }
+  .tools select.in, .tools .in.sel { flex: 1 1 150px; width: auto !important; height: 46px !important; font-size: 16px; }
+  .tools .btn-soft { margin-left: 0 !important; justify-content: center; }
+  .in, .in.sel { height: 46px; font-size: 16px; }
+  textarea.in { height: auto; font-size: 16px; }
+  select.in { font-size: 16px; }
+
+  /* tables scroll inside their card and keep readable column widths */
+  .tbl-wrap { -webkit-overflow-scrolling: touch; margin-left: -2px; margin-right: -2px; }
+  .tbl-wrap > table { min-width: 680px; }
+  .tbl-wrap > table:has(th:nth-child(6)) { min-width: 800px; }
+  .tbl-wrap > table:has(th:nth-child(8)) { min-width: 960px; }
+  #view-tx .tbl-wrap > table { min-width: 1000px; }
+  #view-lab .tbl-wrap > table, #view-visits .tbl-wrap > table { min-width: 940px; }
+  #view-wards .tbl-wrap > table { min-width: 860px; }
+  .tbl-wrap > table th, .tbl-wrap > table td { white-space: nowrap; }
+  .tbl-wrap > table td .td2, .tbl-wrap > table td .hm-stack { white-space: normal; }
+  #view-tx tbody td:nth-child(3) { max-width: 200px; }
+  .pager { flex-wrap: wrap; gap: 6px; }
+  .pg { min-width: 40px; height: 40px; border-radius: 10px; font-size: 13px; }
+}
+
+@media (max-width: 760px) {
+  /* stat cards: two per row, compact */
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .stat { padding: 14px 12px 14px 14px; gap: 10px; }
+  .stat-top { flex-wrap: wrap; gap: 6px; }
+  .stat-top .badge { order: 1; width: 34px; height: 34px; border-radius: 11px; }
+  .stat-top .dots { order: 2; margin-left: auto; }
+  .stat-top .t { order: 3; flex: 1 1 100%; }
+  .stat-top .t b { font-size: 13.5px; }
+  .stat-top .t small { font-size: 11px; }
+  .stat-val strong { font-size: 24px; }
+  .stat-val { flex-wrap: wrap; gap: 6px; }
+  .stat .sx { margin-top: -4px; font-size: 11px; }
+
+  /* kpi strips */
+  .kpis { padding: 4px 0 14px; row-gap: 14px; }
+  .kpi { padding: 0 6px 0 10px; gap: 8px; }
+  .kpi .kb { width: 36px; height: 36px; border-radius: 11px; }
+  .kpi .kb svg { width: 17px; height: 17px; }
+  .kpi small { font-size: 10.5px; }
+  .kpi b { font-size: 16px; white-space: normal; overflow-wrap: anywhere; }
+  .kpi:nth-child(odd) { padding-left: 2px; }
+
+  /* tabs scroll sideways instead of wrapping */
+  .tabs { gap: 6px; padding: 0 2px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { white-space: nowrap; flex: none; padding-left: 8px; padding-right: 8px; }
+
+  /* forms: one column */
+  .row2, .row2.g, .hm-grid2, .hm-row3, .hm-row4, .hm-row5, .pl-grid, .ws-box, .pv-row, .rep-grid, .chips { grid-template-columns: minmax(0, 1fr); }
+  .chips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cal-pop { width: min(300px, calc(100vw - 32px)); }
+
+  .ap-head { flex-wrap: wrap; gap: 10px; }
+  .rcard, .mid2 .rcard { padding: 16px 14px 14px; }
+  .toast { bottom: calc(24px + env(safe-area-inset-bottom)); max-width: calc(100vw - 32px); text-align: center; }
+}
+
+@media (max-width: 560px) {
+  .top #fwd, .top .msg-btn, .crumb > svg:first-child { display: none; }
+  .crumb { margin-left: 2px; }
+}
+
+@media (max-width: 760px) {
+  .sbox input::placeholder, .search input::placeholder, .in::placeholder { font-size: 14px; text-overflow: ellipsis; }
+  .sbox input { text-overflow: ellipsis; }
+
+  /* calendar: month cells show just the count, the week table and day grid scroll sideways inside the card */
+  .mgrid button { min-height: 64px; padding: 6px 4px; align-items: center; gap: 4px; }
+  .mgrid .cnt { padding: 2px 6px; font-size: 11.5px; font-weight: 700; align-self: center; }
+  .mgrid .cnt .cw { display: none; }
+  .mgrid .mh { font-size: 11px; padding: 8px 0; }
+  .cscroll { max-height: 70vh; max-height: 70dvh; -webkit-overflow-scrolling: touch; }
+  .ch { gap: 12px; padding: 12px 14px; }
+  .ch .tot { min-width: 0; flex: 1 1 100%; }
+  .dnav2 { margin: 0; flex: 1 1 100%; justify-content: center; gap: 18px; }
+  .dnav2 button { padding: 10px; }
+  .ch select.in { flex: 1 1 150px; width: auto !important; height: 46px !important; font-size: 16px !important; }
+  .ch .seg { margin: 0 auto; }
+
+  /* OPD queue board */
+  .oq-board { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .oq-t { flex-wrap: wrap; padding: 8px; }
+  .oq-p { flex: 1 1 120px; }
+  .oq-a { flex: 1 1 100%; justify-content: flex-end; }
+  .oq-call { flex-wrap: wrap; }
+  .oq-call .addbtn, .oq-call .ghost { flex: 1 1 130px; }
+  .oq-h .nm2 b { white-space: normal; }
+  .hm-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .hm-bed { min-height: 112px; }
+  .hm-cell .menu { right: 0; left: 0; min-width: 0; bottom: 6px; }
+  .hm-wh { gap: 8px; }
+  .hm-occ { margin-left: 0; }
+
+  /* invoice lines and prescription lines become small cards */
+  #ivT, #ivT tbody, #vsRx, #vsRx tbody { display: block; }
+  #ivT thead, #vsRx thead { display: none; }
+  #ivT tr, #vsRx tr { display: grid; gap: 8px 8px; padding: 12px 0; border-bottom: 1px solid #edf1f6; align-items: end; }
+  #ivT tr:last-child, #vsRx tr:last-child { border-bottom: 0; }
+  #ivT td, #vsRx td { display: block; padding: 0 !important; border: 0; min-width: 0; height: auto; }
+  #ivT td::before, #vsRx td:not(:last-child)::before { display: block; font-size: 11px; font-weight: 700; color: var(--ink-3); margin-bottom: 4px; }
+  #ivT tr { grid-template-columns: 84px minmax(0, 1fr) auto 40px; }
+  #ivT td:nth-child(1) { grid-column: 1 / -1; }
+  #ivT td:nth-child(1)::before { content: "Description"; }
+  #ivT td:nth-child(2)::before { content: "Qty"; }
+  #ivT td:nth-child(3)::before { content: "Unit price"; }
+  #ivT td:nth-child(4)::before { content: "Amount"; text-align: right; }
+  #ivT td:nth-child(2) .in { width: 100% !important; }
+  #ivT td.num { text-align: right; align-self: center; padding-top: 18px !important; }
+  #ivT td.num::before { position: absolute; }
+  #ivT td:nth-child(4) { position: relative; }
+  #ivT td:nth-child(4)::before { position: absolute; top: 0; right: 0; }
+  #ivT td:nth-child(5) { align-self: end; }
+  #vsRx tr { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) 76px; align-items: start; }
+  .hm-mini .in { height: 46px; font-size: 16px; border-radius: 14px; padding: 0 12px; }
+  .hm-mini select.in { padding-right: 30px; }
+  #vsRx td:nth-child(1) { grid-column: 1 / 3; grid-row: 1; }
+  #vsRx td:nth-child(6) { grid-column: 3; grid-row: 1; justify-self: end; }
+  #vsRx td:nth-child(2) { grid-column: 1; grid-row: 2; }
+  #vsRx td:nth-child(3) { grid-column: 2; grid-row: 2; }
+  #vsRx td:nth-child(4) { grid-column: 3; grid-row: 2; }
+  #vsRx td:nth-child(5) { grid-column: 1 / -1; grid-row: 3; }
+  #vsRx td:nth-child(1)::before { content: "Medicine"; }
+  #vsRx td:nth-child(2)::before { content: "Dose"; }
+  #vsRx td:nth-child(3)::before { content: "Frequency"; }
+  #vsRx td:nth-child(4)::before { content: "Days"; }
+  #vsRx td:nth-child(5)::before { content: "Instructions"; }
+  #vsRx td .in, #vsRx td select.in { width: 100% !important; }
+  #ivT .hm-x, #vsRx .hm-x { width: 40px; height: 40px; }
+  .iv-tot { padding: 14px; }
+  .iv-add .hm-addrow { flex: 1 1 auto; justify-content: center; }
+  .lp-list { max-height: 260px !important; }
+  .lp-i { padding: 11px 10px; }
+  .lp-p { min-width: 0; }
+
+  /* patient care timeline, profile blocks */
+  .tl { max-height: none; overflow: visible; }
+  .tl-t b, .tl-t small { white-space: normal; }
+  .pf, .pv { gap: 14px; }
+
+  /* dashboard charts */
+  .mid2 { gap: 14px; }
+  .don { width: 160px; height: 160px; }
+  .don-l > div { grid-template-columns: 12px minmax(0, 1fr) auto 34px; gap: 8px; }
+}
+
+@media (max-width: 560px) {
+  .sbox { flex: 1 1 100%; max-width: none; }
+  .tools .addbtn { flex: 1 1 auto; margin-left: 0; }
+  .tools .exw { margin-left: 0; flex: none; }
+  .pg[aria-label="First page"], .pg[aria-label="Last page"] { display: none; }
+}
