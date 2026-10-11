@@ -1192,6 +1192,11 @@
         </div>
       </section>
 
+      <section class="mid2" id="mid2" hidden>
+        <section class="card rcard" id="flowCard"><h3>Patient flow</h3><div class="sub">Visits, admissions and discharges over the last 7 days</div><div class="legend" id="flowLeg"></div><div id="flowChart"></div><details class="dt"><summary>Show data table</summary><div class="tbl-wrap" id="flowT"></div></details></section>
+        <section class="card rcard" id="srcCard"><h3>Revenue by source</h3><div class="sub">Cash received in the last 30 days, split into consultations, bed days, lab and radiology</div><div id="srcChart"></div></section>
+      </section>
+
       <section class="card appts">
         <div class="ap-head">
           <div><h2>Appointments</h2><p>Latest Appointments awaiting approval.</p></div>
@@ -3474,7 +3479,7 @@ window.bootApp = function () {
       if (due) a.push({ key: 'due' + due, ic: 'clock', cls: 'warn', t: due + ' device' + (due > 1 ? 's are' : ' is') + ' due for service in 14 days', s: 'Open peripherals', run: function () { go('Peripherals'); } });
     }
     if (canR('txs')) { var pend = TXC.filter(function (x) { return x.status === 'Pending'; }).length, fail = TXC.filter(function (x) { return x.status === 'Failed'; }).length; if (fail) a.push({ key: 'fail' + fail, ic: 'tx', cls: 'bad', t: fail + ' failed payment' + (fail > 1 ? 's' : ''), s: 'Open transactions', run: function () { txStat = 'Failed'; txPage = 1; go('Transactions'); } }); if (pend) a.push({ key: 'pend' + pend, ic: 'tx', cls: 'warn', t: pend + ' pending payment' + (pend > 1 ? 's' : ''), s: 'Open transactions', run: function () { txStat = 'Pending'; txPage = 1; go('Transactions'); } }); }
-    return a;
+    return alertsHospital(a);
   }
   function seenKey() { return 'nx_seen_' + (ME.username || ''); }
   function sigOf(a) { return a.map(function (x) { return x.key; }).join('|'); }
@@ -4035,11 +4040,6 @@ window.bootApp = function () {
   }
   /* ---------- dashboard: hospital cards ---------- */
   function statCard(ic, title, sub, val, extra) { return '<article class="card stat"><div class="stat-top"><span class="badge">' + svg(ic) + '</span><div class="t"><b>' + title + '</b><small>' + sub + '</small></div></div><div class="stat-val"><strong>' + val + '</strong></div>' + (extra || '') + '</article>'; }
-  function renderStats2() {
-    var c = [];
-    if (canR('beds') && BEDS.length) { var s = bedStats(); c.push(statCard('bed', 'Bed Occupancy', s.occ + ' of ' + (s.total - s.maint) + ' usable beds', s.pct + '%', '<div class="bar2' + (s.pct >= 90 ? ' bad' : s.pct >= 75 ? ' warn' : '') + '"><i style="width:' + s.pct + '%"></i></div>')); }
-    $('stats2').hidden = !c.length; $('stats2').innerHTML = c.join('');
-  }
   /* ===== consultations ===== */
 
   /* ---------- consultations and prescriptions ---------- */
@@ -4702,6 +4702,56 @@ window.bootApp = function () {
       var inv = makeInvoice({ pid: v.pid, name: v.patient, items: [{ desc: 'Consultation, ' + (v.diagnosis || 'visit') + ' (' + fmtDate(v.date) + ')', qty: 1, price: 500 + i * 100, src: 'cons' }, { desc: 'Dressing and minor procedure', qty: 1, price: 150, src: 'oth' }], dt: v.date + ' ' + (v.time || '10:00'), payments: i % 2 ? [{ at: v.date + ' ' + (v.time || '10:00'), amt: 300, method: 'Cash' }] : [{ at: v.date + ' ' + (v.time || '10:00'), amt: 650 + i * 100, method: 'Wallet' }] });
       TXC.unshift(inv); SEED_NEW.txs.push(inv);
     });
+  }
+
+  /* ---------- dashboard: hospital cards and charts ---------- */
+  function revenueOn(day) {
+    var t = 0; TXC.forEach(function (x) { if (x.payments) x.payments.forEach(function (p) { if (dayOf(p.at) === day) t += p.amt; }); else if (x.status === 'Paid' && dayOf(x.dt) === day) t += x.amt; }); return t;
+  }
+  function duesTotal() { var t = 0; TXC.forEach(function (x) { t += txDue(x); }); return t; }
+  function renderStats2() {
+    var c = [];
+    if (canR('beds') && BEDS.length) { var s = bedStats(); c.push(statCard('bed', 'Bed Occupancy', s.occ + ' of ' + (s.total - s.maint) + ' usable beds', s.pct + '%', '<div class="bar2' + (s.pct >= 90 ? ' bad' : s.pct >= 75 ? ' warn' : '') + '"><i style="width:' + s.pct + '%"></i></div>')); }
+    if (canR('opdq')) { var tk = todayToks(), w = tk.filter(function (t) { return t.status === 'waiting'; }).length, inn = tk.filter(function (t) { return t.status === 'in'; }).length; c.push(statCard('ticket', 'OPD Today', 'Tokens issued today', tk.length, '<div class="sx"><b>' + w + '</b> in the queue · <b>' + inn + '</b> in consultation</div>')); }
+    if (canR('labs')) { var o = LABS.filter(function (l) { return l.status === 'ordered'; }).length, co = LABS.filter(function (l) { return l.status === 'collected'; }).length; c.push(statCard('flask', 'Pending Lab Orders', 'Waiting for sample or result', o + co, '<div class="sx"><b>' + o + '</b> awaiting sample · <b>' + co + '</b> awaiting result</div>')); }
+    if (canR('txs')) { var due = duesTotal(); c.push(statCard('cash', 'Revenue Today', 'Cash received today', fmtNum(revenueOn(TODAY)) + ' <small style="font-size:13px;font-weight:700;color:var(--ink-3)">EGP</small>', '<div class="sx">Outstanding dues <b style="color:' + (due > 0 ? 'var(--bad)' : 'inherit') + '">' + fmtNum(due) + ' EGP</b></div>')); }
+    $('stats2').hidden = !c.length; $('stats2').innerHTML = c.join('');
+    renderDashCharts();
+  }
+  var DASH_COL = { opd: '#2f6df0', adm: '#38a89d', dis: '#d9731a', cons: '#2f6df0', bed: '#38a89d', lab: '#8b5cf6', oth: '#f59e0b' };
+  function flowDays() { var out = []; for (var i = 6; i >= 0; i--) out.push(addDays(TODAY, -i)); return out; }
+  function renderDashCharts() {
+    var showFlow = canR('appts') || canR('admissions'), showSrc = canR('txs'); $('mid2').hidden = !(showFlow || showSrc); $('flowCard').hidden = !showFlow; $('srcCard').hidden = !showSrc;
+    if (showFlow) {
+      var days = flowDays(), ser = [];
+      if (canR('appts')) ser.push(['opd', 'OPD visits', days.map(function (d) { return approved.filter(function (a) { return a.date === d && a.status !== 'can'; }).length + OPDQ.filter(function (t) { return t.date === d && !t.apptId && t.status !== 'noshow'; }).length; })]);
+      if (canR('admissions')) { ser.push(['adm', 'Admitted', days.map(function (d) { return ADMS.filter(function (a) { return dayOf(a.admitAt) === d; }).length; })]); ser.push(['dis', 'Discharged', days.map(function (d) { return ADMS.filter(function (a) { return a.status === 'discharged' && dayOf(a.dischargeAt) === d; }).length; })]); }
+      var W = 640, H = 236, L = 36, Bt = 30, Tp = 12, mx = niceMax(Math.max.apply(null, [1].concat.apply([], ser.map(function (s) { return s[2]; })))), ph = H - Bt - Tp, gw = (W - L - 6) / days.length, bw = Math.min(16, gw / (ser.length + 1.2)), sv = '<svg class="rsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Patients per day for the last 7 days">';
+      for (var t = 0; t <= 4; t++) { var yv = Tp + ph - ph * t / 4; sv += '<line x1="' + L + '" x2="' + (W - 4) + '" y1="' + yv + '" y2="' + yv + '" stroke="' + (t ? '#e6eaf2' : '#c9d0de') + '" stroke-dasharray="' + (t ? '3 4' : '') + '"/><text x="' + (L - 8) + '" y="' + (yv + 4) + '" text-anchor="end">' + fmtK(mx / 4 * t) + '</text>'; }
+      days.forEach(function (d, i) {
+        var cx = L + gw * i + gw / 2, tip = '<b>' + shortLong(d).slice(0, -5) + '</b>' + ser.map(function (s) { return '<br>' + s[1] + ': ' + s[2][i]; }).join(''), x0 = cx - ser.length * bw / 2 - (ser.length - 1) * 1.5;
+        sv += '<g class="grp" data-tip="' + esc(tip) + '"><rect x="' + (cx - gw / 2) + '" y="' + Tp + '" width="' + gw + '" height="' + ph + '" fill="transparent"/>';
+        ser.forEach(function (s, k) { var hh = ph * s[2][i] / mx, x = x0 + k * (bw + 3); sv += '<path class="bar" d="M' + x + ' ' + (Tp + ph) + 'v' + (-Math.max(hh - 4, 0)) + 'a4 4 0 0 1 4 -4h' + (bw - 8) + 'a4 4 0 0 1 4 4v' + Math.max(hh - 4, 0) + 'z" fill="' + DASH_COL[s[0]] + '"/>'; });
+        sv += '<text x="' + cx + '" y="' + (H - 9) + '" text-anchor="middle"' + (d === TODAY ? ' style="font-weight:800;fill:#1b2a4a"' : '') + '>' + WD[(dayIdx(d) + 6) % 7] + ' ' + +d.slice(8) + '</text></g>';
+      });
+      $('flowChart').innerHTML = sv + '</svg>'; $('flowLeg').innerHTML = ser.map(function (s) { return '<span><i style="background:' + DASH_COL[s[0]] + '"></i>' + s[1] + '</span>'; }).join('');
+      $('flowT').innerHTML = '<table><thead><tr><th>Day</th>' + ser.map(function (s) { return '<th>' + s[1] + '</th>'; }).join('') + '</tr></thead><tbody>' + days.map(function (d, i) { return '<tr><td>' + fmtDate(d) + '</td>' + ser.map(function (s) { return '<td>' + s[2][i] + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+    }
+    if (showSrc) {
+      var from = addDays(TODAY, -29), by = { cons: 0, bed: 0, lab: 0, oth: 0 }, tot = 0;
+      TXC.forEach(function (x) { if (x.status !== 'Paid' && x.status !== 'Partial') return; var d = dayOf(x.dt); if (d < from || d > TODAY) return; revParts(x).forEach(function (q) { by[q[2]] += q[1]; tot += q[1]; }); });
+      var keys = ['cons', 'bed', 'lab', 'oth'], R = 62, C = 2 * Math.PI * R, off = 0, dn = '<svg viewBox="0 0 160 160" class="don" role="img" aria-label="Revenue by source, last 30 days"><circle cx="80" cy="80" r="' + R + '" fill="none" stroke="#eef2f8" stroke-width="22"/>';
+      if (tot > 0) keys.forEach(function (k) { var len = by[k] / tot * C; if (len > 0.5) { dn += '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="' + DASH_COL[k] + '" stroke-width="22" stroke-dasharray="' + (len - 1.5).toFixed(2) + ' ' + (C - len + 1.5).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 80 80)"><title>' + SRC_LBL[k] + ': ' + fmtNum(by[k]) + ' EGP</title></circle>'; } off += len; });
+      dn += '<text x="80" y="76" text-anchor="middle" style="font-size:11px;fill:#8b94a7;font-weight:600">Last 30 days</text><text x="80" y="96" text-anchor="middle" style="font-size:17px;font-weight:800;fill:#1b2a4a">' + fmtK(tot) + '</text></svg>';
+      $('srcChart').innerHTML = tot > 0 ? '<div class="don-w">' + dn + '<div class="don-l">' + keys.map(function (k) { return '<div><i style="background:' + DASH_COL[k] + '"></i><span>' + SRC_LBL[k] + '</span><b>' + fmtNum(by[k]) + ' EGP</b><em>' + Math.round(by[k] / tot * 100) + '%</em></div>'; }).join('') + '</div></div>' : '<div class="empty" style="padding:30px 0">No paid transactions in the last 30 days.</div>';
+    }
+  }
+  function alertsHospital(a) {
+    if (canR('opdq')) { var w = todayToks().filter(function (t) { return t.status === 'waiting'; }).length; if (w) a.push({ key: 'oq' + w, ic: 'ticket', cls: '', t: w + ' patient' + (w > 1 ? 's' : '') + ' waiting in the OPD queue', s: 'Open the queue', run: function () { go('OPD Queue'); } }); }
+    if (canR('labs')) { var p = LABS.filter(function (l) { return l.status !== 'resulted'; }).length; if (p) a.push({ key: 'lb' + p, ic: 'flask', cls: '', t: p + ' lab or radiology order' + (p > 1 ? 's' : '') + ' waiting for a result', s: 'Open lab and radiology', run: function () { lbSt = 'All'; go('Lab & Radiology'); } }); }
+    if (canR('beds') && BEDS.length) { var s = bedStats(); if (s.pct >= 90) a.push({ key: 'bd' + s.pct, ic: 'bed', cls: 'warn', t: 'Beds are almost full (' + s.pct + '%)', s: 'Open the bed board', run: function () { go('Wards & Beds'); } }); }
+    if (canR('txs')) { var n = TXC.filter(function (x) { return txDue(x) > 0; }).length; if (n) a.push({ key: 'du' + n, ic: 'cash', cls: 'warn', t: n + ' bill' + (n > 1 ? 's' : '') + ' with an unpaid balance (' + fmtNum(duesTotal()) + ' EGP)', s: 'Open transactions filtered by dues', run: function () { txStat = 'Dues'; txPage = 1; txSetTab('customers'); go('Transactions'); } }); }
+    return a;
   }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
