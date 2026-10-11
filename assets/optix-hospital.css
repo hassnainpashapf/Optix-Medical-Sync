@@ -217,3 +217,4 @@ fieldset:disabled .hm-x, fieldset:disabled .hm-addrow { display: none; }
 .don-l b { color: var(--ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .don-l em { font-style: normal; color: var(--ink-3); text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .mid2 { grid-template-columns: minmax(0, 1fr); } }
+.dr-foot .pri:disabled { opacity: .45; cursor: default; box-shadow: none; }

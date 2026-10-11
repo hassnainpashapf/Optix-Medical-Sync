@@ -2274,7 +2274,7 @@ window.bootApp = function () {
       e.stopPropagation(); var open = document.getElementById('kmenu'); closeKebab(); fMenu.hidden = true;
       if (open && open.dataset.id === b.dataset.id) return;
       var m = document.createElement('div'); m.className = 'menu'; m.id = 'kmenu'; m.dataset.id = r.id;
-      m.innerHTML = '<button data-k="view">View details</button>' + (canWrite('visits') && r.status !== 'can' ? '<button data-k="start">' + (apptVisit(r.id) ? 'Open consultation' : 'Start consultation') + '</button>' : '') + '<button data-k="edit">Edit appointment</button>' + (r.status === 'can' ? '' : '<button data-k="cancel">Cancel appointment</button>');
+      m.innerHTML = '<button data-k="view">View details</button>' + (canWrite('appts') && r.status !== 'can' && r.date >= TODAY ? '<button data-k="remind">' + (r.reminded && r.reminded.length ? 'Send reminder again' : 'Send reminder') + '</button>' : '') + (canWrite('visits') && r.status !== 'can' ? '<button data-k="start">' + (apptVisit(r.id) ? 'Open consultation' : 'Start consultation') + '</button>' : '') + '<button data-k="edit">Edit appointment</button>' + (r.status === 'can' ? '' : '<button data-k="cancel">Cancel appointment</button>');
       b.parentNode.appendChild(m); return;
     }
     if (a === 'approve') { if (!approveRequest(r)) return; toast('Approved: ' + r.patient); }
@@ -2287,6 +2287,7 @@ window.bootApp = function () {
     if (b.dataset.k === 'view') openRes(r.id);
     else if (b.dataset.k === 'edit') openEditAppt(r);
     else if (b.dataset.k === 'start') startConsult(r);
+    else if (b.dataset.k === 'remind') openReminder(r);
     else { r.status = 'can'; saveAppt(r, 'approved'); toast('Cancelled: ' + r.patient); renderAppts(); renderDash(); }
   });
   document.addEventListener('click', function () { closeKebab(); fMenu.hidden = true; });
@@ -4753,6 +4754,63 @@ window.bootApp = function () {
     if (canR('txs')) { var n = TXC.filter(function (x) { return txDue(x) > 0; }).length; if (n) a.push({ key: 'du' + n, ic: 'cash', cls: 'warn', t: n + ' bill' + (n > 1 ? 's' : '') + ' with an unpaid balance (' + fmtNum(duesTotal()) + ' EGP)', s: 'Open transactions filtered by dues', run: function () { txStat = 'Dues'; txPage = 1; txSetTab('customers'); go('Transactions'); } }); }
     return a;
   }
+  /* ===== reminders ===== */
+
+  /* ---------- appointment reminders through the Optix hub (WhatsApp, SMS, email). Never sent by itself: a person presses Send. ---------- */
+  var REM_TPL = [
+    ['appt', 'Appointment reminder', 'Dear {name}, this is a reminder of your appointment with {doctor} on {date} at {time} at {hospital}. Please arrive 10 minutes early. Reply to this message if you need to change it.'],
+    ['docs', 'Bring documents', 'Dear {name}, your appointment with {doctor} is on {date} at {time} at {hospital}. Please bring your ID, insurance card and any earlier reports.'],
+    ['move', 'Reschedule request', 'Dear {name}, we need to move your appointment with {doctor} ({date}, {time}) at {hospital}. Please call us to choose a new time. We are sorry for the trouble.']
+  ];
+  function hubSess() { try { return JSON.parse(localStorage.getItem('optix_hospital_hub') || 'null'); } catch (e) { return null; } }
+  var remMsgP = null;
+  function loadMessaging() {
+    if (!remMsgP) remMsgP = api('GET', '/api/hub/config').then(function (cfg) {
+      if (!cfg.enabled) throw new Error('Messaging through the Optix hub is switched off on this server.');
+      return import('/assets/optix-suite-sdk.js').then(function (m) { return m.createMessaging(m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: 'optix_hospital_hub' })); });
+    }).catch(function (e) { remMsgP = null; throw e; });
+    return remMsgP;
+  }
+  function intlPhone(ph) {
+    var raw = String(ph || '').trim(), digits = raw.replace(/\D/g, ''); if (!digits) return '';
+    var cc = COUNTRIES.map(function (c) { return c[2].slice(1); }).filter(function (c) { return digits.indexOf(c) === 0; }).sort(function (x, y) { return y.length - x.length; })[0];
+    if (raw.charAt(0) === '+' && cc) return '+' + cc + digits.slice(cc.length).replace(/^0+/, '');
+    return '+' + digits.replace(/^0+/, '');
+  }
+  function remText(tpl, r) {
+    var d = dirOf(r), st = toMin(r.time);
+    return tpl.replace(/\{name\}/g, r.patient).replace(/\{doctor\}/g, d[0]).replace(/\{date\}/g, fmtLong(r.date)).replace(/\{time\}/g, longTime(st)).replace(/\{hospital\}/g, wsName());
+  }
+  function openReminder(r) {
+    var pt = r.pid ? patientById(r.pid) : null, sess = hubSess(), has = !!(sess && sess.token), last = r.reminded && r.reminded[r.reminded.length - 1], d = dirOf(r);
+    hdw('remW', { title: 'Send Reminder', mid: true, save: 'Send now',
+      foot: '<button type="button" class="lnk" data-act="cancel">Cancel</button><span class="grow"></span><button type="button" class="ghost" data-act="copy">Copy message</button><button type="submit" class="pri" id="remSend"' + (has ? '' : ' disabled') + '>Send now</button>',
+      body: '<div class="rbox" style="margin-bottom:14px"><div><small>Patient</small><b>' + esc(r.patient) + '</b></div><div class="stsel"><small>' + esc(d[0]) + '</small><b>' + fmtShort(r.date) + ', ' + fmtTime(r.time) + '</b></div></div>' +
+        (has ? '<div class="hm-note" id="remSt">Checking your messaging channels…</div>' : '<div class="hm-note warn">You are not signed in with your Optix account, so the message cannot be sent from here. Sign out and use <b>Sign in with your Optix account</b>, or copy the message and send it yourself.</div>') +
+        (last ? '<p class="hm-sub" style="margin:10px 0 0">Last reminder: ' + esc(last.ch) + ', ' + fmtStamp(last.at) + (last.by ? ' by ' + esc(last.by) : '') + '</p>' : '') +
+        '<div class="row2" style="margin-top:16px"><div class="fl"><label class="lb" for="rmC">Send by</label><select class="in sel" id="rmC">' + optList([['whatsapp', 'WhatsApp'], ['sms', 'SMS'], ['email', 'Email']], 'whatsapp') + '</select></div><div class="fl"><label class="lb" for="rmTo" id="rmToL">Phone number</label><input class="in" id="rmTo" autocomplete="off"></div></div>' +
+        '<div class="fl"><label class="lb" for="rmT">Message template</label><select class="in sel" id="rmT">' + optList(REM_TPL.map(function (t) { return [t[0], t[1]]; }), 'appt') + '</select></div>' +
+        '<div class="fl"><div class="lb"><label for="rmM">Message</label><span class="cnt" id="rmCnt">0</span></div><textarea class="in" id="rmM" style="height:128px" maxlength="900"></textarea></div>',
+      ready: function (D) {
+        function setTo() { var ch = D.$('#rmC').value; D.$('#rmToL').textContent = ch === 'email' ? 'Email address' : 'Phone number (with country code)'; D.$('#rmTo').value = ch === 'email' ? (pt && pt.email || '') : intlPhone(pt && pt.phone); D.$('#rmTo').placeholder = ch === 'email' ? 'name@example.com' : '+20 1xx xxx xxxx'; }
+        function setMsg() { D.$('#rmM').value = remText(REM_TPL.filter(function (t) { return t[0] === D.$('#rmT').value; })[0][2], r); cnt(); }
+        function cnt() { D.$('#rmCnt').textContent = D.$('#rmM').value.length + ' characters'; }
+        D.$('#rmC').addEventListener('change', setTo); D.$('#rmT').addEventListener('change', setMsg); D.$('#rmM').addEventListener('input', cnt); setTo(); setMsg();
+        if (has) loadMessaging().then(function (m) { return m.status(); }).then(function (s) { D.st = s; var el = D.$('#remSt'); if (el) { el.textContent = 'WhatsApp: ' + (s.whatsapp ? 'ready' : s.whatsappNote || 'not available') + '\nSMS: ' + (s.sms ? 'ready' : s.smsNote || 'not available') + '\nEmail: ready'; } }).catch(function (e) { var el = D.$('#remSt'); if (el) { el.className = 'hm-note warn'; el.textContent = e.message || 'Could not check the messaging channels.'; } });
+      },
+      act: function (name, D) { if (name === 'copy') copyText(D.$('#rmM').value, 'Message'); },
+      submit: function (D) {
+        var ch = D.$('#rmC').value, to = D.$('#rmTo').value.trim(), text = D.$('#rmM').value.trim();
+        if (!has) return D.err('Sign in with your Optix account to send messages.'); if (!to) return D.err(ch === 'email' ? 'Enter the email address.' : 'Enter the phone number.', '#rmTo');
+        if (ch === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return D.err('Enter a valid email address.', '#rmTo'); if (ch !== 'email' && !/^\+\d{8,15}$/.test(to.replace(/[\s-]/g, ''))) return D.err('Use the international format, for example +201012345678.', '#rmTo');
+        if (text.length < 10) return D.err('Write the message.', '#rmM');
+        to = ch === 'email' ? to : intlPhone(to); D.busy(true); D.err('');
+        loadMessaging().then(function (m) { return ch === 'whatsapp' ? m.sendWhatsApp(to, text) : ch === 'sms' ? m.sendSms(to, text, { toName: r.patient }) : m.sendEmail(to, 'Appointment reminder, ' + wsName(), text); })
+          .then(function () { (r.reminded = r.reminded || []).push({ at: stampNow(), ch: ch === 'whatsapp' ? 'WhatsApp' : ch === 'sms' ? 'SMS' : 'Email', by: ME.name || '' }); saveAppt(r, r.list || 'approved'); D.close(); toast('Reminder sent to ' + r.patient + ' by ' + r.reminded[r.reminded.length - 1].ch); })
+          .catch(function (e) { D.busy(false); D.err(e.message || 'The message could not be sent.'); });
+      } });
+  }
+  function fmtShort(iso) { return shortLong(iso).slice(0, -5); }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
   function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403 || e.status === 409) toast(e.message); else saveFail(); }); }
