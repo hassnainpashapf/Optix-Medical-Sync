@@ -76,6 +76,7 @@ Website, sign-up, platform panel and the hospital app follow the **Pharmacy POS 
 | `assets/optix-tokens.css` | the same tokens for the app, sign-up and platform pages |
 | `assets/optix-app.css` | the Pharmacy look on top of the app's own styles (loaded last in `index.html`) |
 | `assets/optix-hospital.css` | styles of the hospital modules (bed board, queue and waiting-room screen, invoices, dashboard charts, timeline) |
+| `assets/optix-mobile.css` | phone and tablet layout of the signed-in app (off-canvas sidebar drawer below 900px, compact top bar, full-screen sheets, stacked forms); all inside max-width queries so desktop is unchanged |
 | `site/img/app-*.jpg` | real screens of the app (sample data, 1280x900 shrunk to 1100x774) used on the home page; retake them when the app UI changes |
 
 Print windows (bills, receipts, reports) are separate documents and stay white paper with black text.
