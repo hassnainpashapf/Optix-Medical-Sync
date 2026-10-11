@@ -9,7 +9,7 @@ import zlib from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mailConfig, sendSmtp } from './lib/mail.mjs';
-import { HUB, HubError, localRoleOf, resolveHubIdentity } from './lib/hub.mjs';
+import { HUB, HubError, localRoleOf, resolveHubIdentity, verifyGoogle } from './lib/hub.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -98,7 +98,7 @@ function initTenantDb(db) {
     CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, user TEXT NOT NULL, action TEXT NOT NULL, area TEXT NOT NULL, ref TEXT, summary TEXT);
     CREATE INDEX IF NOT EXISTS audit_ts ON audit (ts);
   `);
-  for (const sql of ['ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1', 'ALTER TABLE users ADD COLUMN created INTEGER NOT NULL DEFAULT 0', "ALTER TABLE users ADD COLUMN email TEXT NOT NULL DEFAULT ''", 'ALTER TABLE users ADD COLUMN hub_user TEXT']) { try { db.exec(sql); } catch { /* column exists */ } }
+  for (const sql of ['ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1', 'ALTER TABLE users ADD COLUMN created INTEGER NOT NULL DEFAULT 0', "ALTER TABLE users ADD COLUMN email TEXT NOT NULL DEFAULT ''", 'ALTER TABLE users ADD COLUMN hub_user TEXT', "ALTER TABLE users ADD COLUMN google_email TEXT NOT NULL DEFAULT ''", 'ALTER TABLE users ADD COLUMN password_set INTEGER NOT NULL DEFAULT 1', 'ALTER TABLE users ADD COLUMN google_notice INTEGER NOT NULL DEFAULT 0']) { try { db.exec(sql); } catch { /* column exists */ } }
 }
 function tenantCtx(slug) {
   if (!validSlug(slug) && slug !== 'demo') return null;
@@ -217,13 +217,15 @@ function newSession(tenantId, userId) {
   pdb.prepare('DELETE FROM sessions WHERE expires < ?').run(Date.now());
   pdb.prepare('INSERT INTO sessions (token, tenant_id, user_id, expires) VALUES (?, ?, ?, ?)').run(sha(token), tenantId, userId, Date.now() + SESSION_MS); return token;
 }
-const publicUser = (u) => ({ username: u.username, name: u.name, role: u.role, email: u.email || '', perms: PERMS[u.role] || {} });
+/* a Google-linked account whose password nobody knows yet (it signed up with Google): it may set its first password without the current one, once */
+const needsFirstPassword = (u) => !!u.google_email && !u.password_set;
+const publicUser = (u) => ({ username: u.username, name: u.name, role: u.role, email: u.email || '', perms: PERMS[u.role] || {}, google: !!u.google_email, passwordSet: !needsFirstPassword(u), googleNotice: !!u.google_notice && needsFirstPassword(u) });
 function tenantAuth(req) {
   const tok = cookies(req).sid; if (!tok) return null;
   const s = pdb.prepare('SELECT * FROM sessions WHERE token = ? AND expires > ?').get(sha(tok), Date.now()); if (!s) return null;
   const t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(s.tenant_id); if (!t || t.status === 'cancelled') return null;
   const ctx = tenantCtx(t.id); if (!ctx) return null;
-  const user = ctx.db.prepare('SELECT id, username, name, role, email FROM users WHERE id = ? AND active = 1').get(s.user_id); if (!user) return null;
+  const user = ctx.db.prepare('SELECT id, username, name, role, email, google_email, password_set, google_notice FROM users WHERE id = ? AND active = 1').get(s.user_id); if (!user) return null;
   return { t, ctx, user, token: sha(tok) };
 }
 function ownerAuth(req) {
@@ -278,6 +280,19 @@ const okUser = (u) => /^[a-z0-9._-]{3,30}$/.test(u);
 const okName = (n) => typeof n === 'string' && n.trim().length >= 2 && n.length <= 80;
 function slugify(s) { return String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30).replace(/-+$/g, ''); }
 
+/* One workspace + its first Super Admin. Used by /api/signup (password) and /api/signup/google (Google email, a password nobody knows).
+   The caller has already validated everything and checked that the code is free. */
+function createWorkspace(req, { slug, hospital, sample, name, username, email, pw, google = false }) {
+  createTenantFiles(slug);
+  pdb.prepare('INSERT INTO tenants (id, name, plan, status, trial_ends, created, sample, owner_email, last_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(slug, hospital, 'clinic', 'trial', Date.now() + TRIAL_DAYS * 86400000, Date.now(), sample ? 1 : 0, email, Date.now());
+  const ctx = tenantCtx(slug), salt = crypto.randomBytes(16).toString('hex');
+  const r = ctx.db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created, email, google_email, password_set, google_notice) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)').run(username, name, 'Super Admin', salt, hashPw(google ? randPw() + randPw() + randPw() : pw, salt), Date.now(), email, google ? email : '', google ? 0 : 1, google ? 1 : 0);
+  tenantAudit(ctx, username, google ? 'Created the workspace (Google)' : 'Created the workspace', 'System', slug, hospital); paudit('system', google ? 'New workspace (Google)' : 'New workspace', slug, `${hospital} (${email})`);
+  const t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(slug), user = { id: Number(r.lastInsertRowid), username, name, role: 'Super Admin', email, google_email: google ? email : '', password_set: google ? 0 : 1, google_notice: google ? 1 : 0 };
+  queueMail(slug, email, 'Welcome to Optix Medical Sync', `Hello ${name},\n\nYour workspace "${t.name}" is ready. Your ${TRIAL_DAYS}-day free trial has started.\n\nSign in at: ${appUrl(req)}/app\nWorkspace code: ${slug}\n${google ? `Sign in with Google (${email}), or set a password in your profile menu. Your username is ${username}.\n` : `Username: ${username}\n`}\nKeep the workspace code, you need it to sign in.\n`);
+  return { t, user };
+}
+
 async function publicApi(req, res, p, m, url) {
   if (p === '/api/plans' && m === 'GET') return sendJson(res, 200, { plans: pdb.prepare('SELECT id, name, price, currency, max_users, max_patients, max_storage_mb, blurb FROM plans ORDER BY sort').all(), trialDays: TRIAL_DAYS, supportEmail: process.env.SUPPORT_EMAIL || '' });
   if (p === '/api/signup/check' && m === 'GET') { const s = String(url.searchParams.get('slug') || '').toLowerCase(); return sendJson(res, 200, { valid: validSlug(s), available: validSlug(s) && !pdb.prepare('SELECT 1 FROM tenants WHERE id = ?').get(s) }); }
@@ -292,13 +307,7 @@ async function publicApi(req, res, p, m, url) {
     if (pw.length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' });
     if (pdb.prepare('SELECT 1 FROM tenants WHERE id = ?').get(slug)) return sendJson(res, 409, { error: 'That workspace code is taken. Try another.' });
     hit('signup', ip);
-    createTenantFiles(slug);
-    pdb.prepare('INSERT INTO tenants (id, name, plan, status, trial_ends, created, sample, owner_email, last_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(slug, b.hospital.trim(), 'clinic', 'trial', Date.now() + TRIAL_DAYS * 86400000, Date.now(), b.sample === false ? 0 : 1, b.email.trim(), Date.now());
-    const ctx = tenantCtx(slug), salt = crypto.randomBytes(16).toString('hex');
-    const r = ctx.db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created, email) VALUES (?, ?, ?, ?, ?, 1, ?, ?)').run(username, b.name.trim(), 'Super Admin', salt, hashPw(pw, salt), Date.now(), b.email.trim());
-    tenantAudit(ctx, username, 'Created the workspace', 'System', slug, b.hospital.trim()); paudit('system', 'New workspace', slug, `${b.hospital.trim()} (${b.email.trim()})`);
-    const t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(slug), user = { id: r.lastInsertRowid, username, name: b.name.trim(), role: 'Super Admin', email: b.email.trim() };
-    queueMail(slug, user.email, 'Welcome to Optix Medical Sync', `Hello ${user.name},\n\nYour workspace "${t.name}" is ready. Your ${TRIAL_DAYS}-day free trial has started.\n\nSign in at: ${appUrl(req)}/app\nWorkspace code: ${slug}\nUsername: ${username}\n\nKeep the workspace code, you need it to sign in.\n`);
+    const { t, user } = createWorkspace(req, { slug, hospital: b.hospital.trim(), sample: b.sample !== false, name: b.name.trim(), username, email: b.email.trim(), pw });
     return startTenantSession(req, res, t, user);
   }
   if (p === '/api/login' && m === 'POST') {
@@ -309,6 +318,53 @@ async function publicApi(req, res, p, m, url) {
     if (t.status === 'suspended') return sendJson(res, 403, { error: 'This workspace is suspended. Contact the platform owner.' });
     tenantAudit(ctx, u.username, 'Signed in', 'Account', null, null);
     return startTenantSession(req, res, t, u);
+  }
+  /* ---------- Google: sign up / sign in. The browser sends only Google's credential; the hub (which holds the Optix OAuth client) verifies it. ---------- */
+  if (p === '/api/signup/google' && m === 'POST') {
+    const ip = clientIp(req); if (limited('signup', ip, 5, 3600000)) return sendJson(res, 429, { error: 'Too many sign-ups from this address. Try again later.' });
+    if (limited('google', ip, 20, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
+    hit('google', ip);
+    const b = await readJson(req, 8000); let g;
+    try { g = await verifyGoogle(b.credential); } catch (e) { if (e instanceof HubError) return sendJson(res, e.status, { error: e.message }); throw e; }
+    const local = g.email.split('@')[0], person = okName(g.name) ? g.name : local.replace(/[^a-z0-9]+/gi, ' ').trim().slice(0, 80);
+    const hospital = String(b.hospital || '').trim() || `${(person.length >= 2 ? person : 'My').slice(0, 60)}'s Clinic`;
+    if (!okName(hospital)) return sendJson(res, 400, { error: 'Enter the hospital or clinic name.' });
+    const wanted = String(b.workspace || '').trim().toLowerCase();
+    let slug = wanted || slugify(hospital);
+    if (wanted) {
+      if (!validSlug(slug)) return sendJson(res, 400, { error: 'Workspace code: 3 to 30 lowercase letters, numbers or dashes (not a reserved word).' });
+      if (pdb.prepare('SELECT 1 FROM tenants WHERE id = ?').get(slug)) return sendJson(res, 409, { error: 'That workspace code is taken. Try another.' });
+    } else { /* no code typed: derive one from the name and make it unique */
+      const base = validSlug(slug) ? slug : 'hospital'; slug = base;
+      while (pdb.prepare('SELECT 1 FROM tenants WHERE id = ?').get(slug) || !validSlug(slug)) slug = (base.slice(0, 24) + '-' + crypto.randomBytes(2).toString('hex')).replace(/^-+/, '');
+    }
+    let username = local.toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 24); if (username.length < 3) username = (username + 'admin').slice(0, 24);
+    hit('signup', ip);
+    const { t, user } = createWorkspace(req, { slug, hospital, sample: b.sample !== false, name: person.length >= 2 ? person : username, username, email: g.email, google: true });
+    return startTenantSession(req, res, t, user);
+  }
+  if (p === '/api/login/google' && m === 'POST') {
+    const ip = clientIp(req); if (limited('login', ip, 8, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
+    const b = await readJson(req, 8000), ws = String(b.workspace || '').trim().toLowerCase(); let g;
+    try { g = await verifyGoogle(b.credential); } catch (e) { if (e instanceof HubError) { if (e.status === 401) hit('login', ip); return sendJson(res, e.status, { error: e.message }); } throw e; }
+    const noMatch = () => { hit('login', ip); return sendJson(res, 401, { error: 'No account in this workspace uses this Google email. Ask your Super Admin to add your Gmail in Users.' }); };
+    const find = (t) => { const ctx = t.status !== 'cancelled' ? tenantCtx(t.id) : null; return ctx ? ctx.db.prepare("SELECT * FROM users WHERE active = 1 AND lower(email) = ? ORDER BY id").all(g.email).map((u) => ({ t, ctx, u })) : []; };
+    let hits_;
+    if (ws) {
+      const t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(ws); hits_ = t ? find(t) : [];
+      if (!hits_.length) { if (t) { const c = t.status !== 'cancelled' ? tenantCtx(t.id) : null; if (c) tenantAudit(c, g.email.slice(0, 40), 'Failed sign-in (Google)', 'Account', null, 'No user with this email'); } return noMatch(); }
+      if (hits_.length > 1) return sendJson(res, 409, { error: 'More than one account in this workspace uses this email. Ask your Super Admin to fix it.' });
+    } else { /* no code typed: fine only if this Google email belongs to exactly one workspace */
+      hits_ = []; for (const t of pdb.prepare("SELECT * FROM tenants WHERE status != 'cancelled'").all()) hits_.push(...find(t));
+      if (!hits_.length) { hit('login', ip); return sendJson(res, 401, { error: 'No account uses this Google email. Enter your workspace code, or ask your Super Admin to add your Gmail in Users.' }); }
+      if (new Set(hits_.map((h) => h.t.id)).size > 1) return sendJson(res, 409, { error: 'This Google email is in more than one workspace. Enter the workspace code.', code: 'workspace' });
+      if (hits_.length > 1) return sendJson(res, 409, { error: 'More than one account in this workspace uses this email. Ask your Super Admin to fix it.' });
+    }
+    const { t, ctx, u } = hits_[0];
+    if (t.status === 'suspended') return sendJson(res, 403, { error: 'This workspace is suspended. Contact the platform owner.' });
+    if (u.google_email !== g.email) ctx.db.prepare('UPDATE users SET google_email = ? WHERE id = ?').run(g.email, u.id);
+    tenantAudit(ctx, u.username, 'Signed in with Google', 'Account', null, null);
+    return startTenantSession(req, res, t, { ...u, google_email: g.email });
   }
   /* ---------- Optix account (one login for the whole suite) ---------- */
   if (p === '/api/hub/config' && m === 'GET') return sendJson(res, 200, { enabled: HUB.enabled, api: HUB.api, appId: HUB.appId });
@@ -342,7 +398,7 @@ async function publicApi(req, res, p, m, url) {
     if (pw.length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' });
     const t = pdb.prepare('SELECT * FROM tenants WHERE id = ?').get(row.tenant_id), ctx = t && tenantCtx(t.id), u = ctx && ctx.db.prepare('SELECT * FROM users WHERE id = ?').get(row.user_id);
     if (!u) return sendJson(res, 404, { error: 'This link is invalid or has expired.' });
-    const salt = crypto.randomBytes(16).toString('hex'); ctx.db.prepare('UPDATE users SET salt = ?, hash = ?, active = 1 WHERE id = ?').run(salt, hashPw(pw, salt), u.id);
+    const salt = crypto.randomBytes(16).toString('hex'); ctx.db.prepare('UPDATE users SET salt = ?, hash = ?, active = 1, password_set = 1, google_notice = 0 WHERE id = ?').run(salt, hashPw(pw, salt), u.id);
     pdb.prepare('DELETE FROM tokens WHERE tenant_id = ? AND user_id = ?').run(t.id, u.id); pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, u.id);
     tenantAudit(ctx, u.username, row.kind === 'invite' ? 'Accepted the invite' : 'Reset own password', 'Account', u.id, null);
     if (t.status === 'suspended') return sendJson(res, 403, { error: 'This workspace is suspended. Contact the platform owner.' });
@@ -356,7 +412,7 @@ async function tenantApi(req, res, p, m, auth, url) {
   const { t, ctx, user } = auth, db = ctx.db;
   if (p === '/api/session' && m === 'GET') return sendJson(res, 200, { user: publicUser(user), workspace: wsInfo(t, ctx) });
   if (p === '/api/logout' && m === 'POST') { tenantAudit(ctx, user.username, 'Signed out', 'Account', null, null); pdb.prepare('DELETE FROM sessions WHERE token = ?').run(auth.token); return sendJson(res, 200, { ok: true }, setCookie(req, 'sid', '', 0)); }
-  const blocked = m !== 'GET' && p !== '/api/password' ? writeBlock(t) : '';
+  const blocked = m !== 'GET' && p !== '/api/password' && p !== '/api/google-notice' ? writeBlock(t) : '';
   if (blocked) return sendJson(res, 423, { error: blocked, code: 'locked' });
   const plan = planOf(t.plan), over = (cur, max) => max >= 0 && cur >= max;
 
@@ -393,12 +449,14 @@ async function tenantApi(req, res, p, m, auth, url) {
     const date = String(url.searchParams.get('date') || '').slice(0, 10), rows = db.prepare("SELECT data FROM records WHERE col = 'opdq'" + (/^\d{4}-\d{2}-\d{2}$/.test(date) ? " AND json_extract(data, '$.date') = ?" : '')).all(...(/^\d{4}-\d{2}-\d{2}$/.test(date) ? [date] : []));
     return sendJson(res, 200, { tokens: rows.map((r) => JSON.parse(r.data)), now: Date.now() });
   }
+  if (p === '/api/google-notice' && m === 'POST') { db.prepare('UPDATE users SET google_notice = 0 WHERE id = ?').run(user.id); return sendJson(res, 200, { ok: true }); }
   if (p === '/api/password' && m === 'POST') {
     const b = await readJson(req), u = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
-    if (!checkPw(b.current, u)) return sendJson(res, 400, { error: 'Current password is wrong.' });
+    const first = needsFirstPassword(u); /* signed up with Google and never chose a password: nobody knows the current one, so it is not asked, this once */
+    if (!first && !checkPw(b.current, u)) return sendJson(res, 400, { error: 'Current password is wrong.' });
     const next = String(b.next || ''); if (next.length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters.' });
-    const salt = crypto.randomBytes(16).toString('hex'); db.prepare('UPDATE users SET salt = ?, hash = ? WHERE id = ?').run(salt, hashPw(next, salt), u.id);
-    pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, u.id); tenantAudit(ctx, user.username, 'Changed own password', 'Account', null, null);
+    const salt = crypto.randomBytes(16).toString('hex'); db.prepare('UPDATE users SET salt = ?, hash = ?, password_set = 1, google_notice = 0 WHERE id = ?').run(salt, hashPw(next, salt), u.id);
+    pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, u.id); tenantAudit(ctx, user.username, first ? 'Set a first password (Google account)' : 'Changed own password', 'Account', null, null);
     return sendJson(res, 200, { ok: true }, setCookie(req, 'sid', newSession(t.id, u.id), SESSION_MS / 1000));
   }
   if (p === '/api/files' && m === 'POST') {
@@ -434,7 +492,7 @@ async function tenantApi(req, res, p, m, auth, url) {
       if (!invite && pw.length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' });
       if (db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) return sendJson(res, 409, { error: 'That username is taken.' });
       if (over(usageOf(ctx).users, plan.max_users)) return sendJson(res, 402, { error: `Your ${plan.name} plan allows ${plan.max_users} users. Upgrade to add more.`, code: 'limit' });
-      const salt = crypto.randomBytes(16).toString('hex'), r = db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created, email) VALUES (?, ?, ?, ?, ?, 1, ?, ?)').run(username, b.name.trim(), b.role, salt, hashPw(invite ? randPw() : pw, salt), Date.now(), email);
+      const salt = crypto.randomBytes(16).toString('hex'), r = db.prepare('INSERT INTO users (username, name, role, salt, hash, active, created, email, password_set) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)').run(username, b.name.trim(), b.role, salt, hashPw(invite ? randPw() : pw, salt), Date.now(), email, invite ? 0 : 1);
       tenantAudit(ctx, user.username, invite ? 'Invited user' : 'Created user', 'Users', r.lastInsertRowid, `${username} (${b.role})`);
       if (invite) sendInvite(req, t, { id: Number(r.lastInsertRowid), name: b.name.trim(), role: b.role, email, username }, user.name);
       return sendJson(res, 200, { ok: true, invited: invite });
@@ -455,7 +513,7 @@ async function tenantApi(req, res, p, m, auth, url) {
       if (active && !tu.active && over(usageOf(ctx).users, plan.max_users)) return sendJson(res, 402, { error: `Your ${plan.name} plan allows ${plan.max_users} users. Upgrade to unlock more.`, code: 'limit' });
       db.prepare('UPDATE users SET name = ?, role = ?, active = ?, email = ? WHERE id = ?').run(name.trim(), role, active, email, tu.id);
       if (!active || role !== tu.role) pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, tu.id);
-      if (b.password !== undefined && b.password !== '') { if (String(b.password).length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' }); const salt = crypto.randomBytes(16).toString('hex'); db.prepare('UPDATE users SET salt = ?, hash = ? WHERE id = ?').run(salt, hashPw(String(b.password), salt), tu.id); pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, tu.id); tenantAudit(ctx, user.username, 'Reset password', 'Users', tu.id, tu.username); }
+      if (b.password !== undefined && b.password !== '') { if (String(b.password).length < 8) return sendJson(res, 400, { error: 'Use at least 8 characters for the password.' }); const salt = crypto.randomBytes(16).toString('hex'); db.prepare('UPDATE users SET salt = ?, hash = ?, password_set = 1 WHERE id = ?').run(salt, hashPw(String(b.password), salt), tu.id); pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, tu.id); tenantAudit(ctx, user.username, 'Reset password', 'Users', tu.id, tu.username); }
       tenantAudit(ctx, user.username, 'Updated user', 'Users', tu.id, `${tu.username}: ${role}${active ? '' : ', locked'}`); return sendJson(res, 200, { ok: true });
     }
   }
@@ -518,7 +576,7 @@ async function platformApi(req, res, p, m) {
     if (tm[2] && m === 'POST') {
       const ctx = tenantCtx(t.id); if (!ctx) return sendJson(res, 404, { error: 'Workspace data not found' });
       let u = ctx.db.prepare("SELECT * FROM users WHERE role = 'Super Admin' ORDER BY active DESC, id LIMIT 1").get(), pw = randPw(), salt = crypto.randomBytes(16).toString('hex');
-      if (u) ctx.db.prepare('UPDATE users SET salt = ?, hash = ?, active = 1 WHERE id = ?').run(salt, hashPw(pw, salt), u.id);
+      if (u) ctx.db.prepare('UPDATE users SET salt = ?, hash = ?, active = 1, password_set = 1 WHERE id = ?').run(salt, hashPw(pw, salt), u.id);
       else { const r = ctx.db.prepare("INSERT INTO users (username, name, role, salt, hash, active, created, email) VALUES ('admin', 'Administrator', 'Super Admin', ?, ?, 1, ?, ?)").run(salt, hashPw(pw, salt), Date.now(), t.owner_email); u = { id: r.lastInsertRowid, username: 'admin' }; }
       pdb.prepare('DELETE FROM sessions WHERE tenant_id = ? AND user_id = ?').run(t.id, u.id); paudit(owner.username, 'Reset the workspace Super Admin', t.id, u.username); tenantAudit(ctx, 'platform', 'Super Admin password reset by the platform owner', 'Users', u.id, u.username);
       return sendJson(res, 200, { username: u.username, password: pw });

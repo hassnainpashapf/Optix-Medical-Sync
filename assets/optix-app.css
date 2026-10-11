@@ -179,3 +179,4 @@ tbody tr:hover td { background: #fafbfe; }
 /* "or" divider and the Google button on the Optix-account sign-in */
 .lg-or{display:flex;align-items:center;gap:12px;margin:14px 0 2px;color:var(--muted,#8b94a7);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.lg-or::before,.lg-or::after{content:"";flex:1;height:1px;background:var(--line,#e2e8f1)}
 #lgGoogle{display:flex;justify-content:center;margin-top:12px;min-height:44px}#lgGoogle[hidden]{display:none}
+#lgGoogleWs{display:flex;justify-content:center;margin-top:12px;min-height:44px}#lgGoogleWs[hidden]{display:none}

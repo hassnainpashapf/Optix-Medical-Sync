@@ -789,6 +789,14 @@
   .lg-foot a { color: var(--blue-t); text-decoration: none; }
   .lg-foot a:hover { text-decoration: underline; }
   .lg-foot + .lg-foot { margin-top: 8px; }
+  .lg-gwrap:has(> div[hidden]) { display: none; }
+  .gnote { position: fixed; right: 20px; bottom: 20px; width: min(340px, calc(100vw - 32px)); background: #fff; border: 1px solid var(--line, #e2e8f1); border-radius: 18px; box-shadow: 0 24px 60px -20px rgba(27,42,74,.35); padding: 16px 18px; z-index: 60; }
+  .gnote[hidden] { display: none; }
+  .gnote b { font-size: 14px; font-weight: 800; color: var(--ink); }
+  .gnote p { margin: 4px 0 12px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .gnote-b { display: flex; align-items: center; gap: 14px; }
+  .gnote-b .pri { height: 36px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--blue); color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  .gnote-b .lnk { border: 0; background: none; color: var(--ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .lg-err { color: var(--bad); font-size: 12px; min-height: 18px; margin: 0 0 6px; }
   @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-side { display: none; } .lg-main .lg-brand { display: flex; } }
   #userKw { position: relative; display: inline-block; }
@@ -1749,7 +1757,8 @@
       <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
       <div class="lg-err" id="lgErr" role="alert"></div>
       <button class="pri" id="lgBtn" type="submit">Sign in</button>
-      <div id="lgGoogleWrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogle" hidden></div></div>
+      <div id="lgGoogleWsWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogleWs" hidden></div></div>
+      <div id="lgGoogleWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogle" hidden></div></div>
       <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
       <p class="lg-foot" id="lgHubRow"><a href="#" id="lgHub">Sign in with your Optix account</a> <span style="color:var(--muted)">(one login for all your apps)</span></p>
       <div class="lg-links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
@@ -1760,6 +1769,11 @@
 </div>
 </div>
 <div class="hubch" id="hubCh" hidden></div>
+<div class="gnote" id="gNote" role="status" hidden>
+  <b>You signed up with Google.</b>
+  <p>You can keep using Google, or set a password in your profile.</p>
+  <div class="gnote-b"><button type="button" class="pri" id="gNoteSet">Set a password</button><button type="button" class="lnk" id="gNoteX">Dismiss</button></div>
+</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -1768,7 +1782,7 @@ function api(method, url, body) {
   if (method !== 'GET') { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body === undefined ? {} : body); }
   return fetch(url, opt).then(function (r) {
     return r.json().catch(function () { return {}; }).then(function (j) {
-      if (r.status === 401 && url !== '/api/login' && url !== '/api/session' && url !== '/api/hub/session') { location.reload(); throw new Error('signed out'); }
+      if (r.status === 401 && url !== '/api/login' && url !== '/api/login/google' && url !== '/api/session' && url !== '/api/hub/session') { location.reload(); throw new Error('signed out'); }
       if (!r.ok) { var e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; }
       return j;
     });
@@ -4879,17 +4893,28 @@ window.bootApp = function () {
       e.stopPropagation();
       var hubSess = null; try { hubSess = JSON.parse(localStorage.getItem('optix_hospital_hub') || 'null'); } catch (e) {}
       var others = hubSess ? (hubSess.catalog || []).filter(function (c) { return c.id !== 'hospital' && (hubSess.apps || []).indexOf(c.id) >= 0; }) : [];
-      rowMenu(this, [['pw', 'Change password']].concat(others.map(function (c) { return ['app:' + c.id, 'Switch to ' + c.name]; }), [['out', 'Sign out']]), function (a) {
+      rowMenu(this, [['pw', window.__USER && window.__USER.passwordSet === false ? 'Set a password' : 'Change password']].concat(others.map(function (c) { return ['app:' + c.id, 'Switch to ' + c.name]; }), [['out', 'Sign out']]), function (a) {
         if (a.indexOf('app:') === 0) { import('/assets/optix-suite-sdk.js').then(function (m) { return api('GET', '/api/hub/config').then(function (cfg) { return m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: 'optix_hospital_hub' }).openApp(a.slice(4)); }); }).catch(function (e) { toast(e.message); }); }
-        else if (a === 'out') api('POST', '/api/logout').then(function () { try { localStorage.removeItem('optix_hospital_hub'); } catch (e) {} location.reload(); }); else { $('pwForm').reset(); $('pwErr').textContent = ''; $('pwW').hidden = false; $('pwCur').focus(); }
+        else if (a === 'out') api('POST', '/api/logout').then(function () { try { localStorage.removeItem('optix_hospital_hub'); } catch (e) {} location.reload(); }); else { openPw(); }
       });
     });
+    /* an account that signed up with Google has no password yet: it sets its first one without a current password (the server allows this once) */
+    function openPw() {
+      var first = !!window.__USER && window.__USER.passwordSet === false;
+      $('pwForm').reset(); $('pwErr').textContent = ''; $('pwT').textContent = first ? 'Set a password' : 'Change password'; $('pwCur').closest('.fl').style.display = first ? 'none' : '';
+      $('pwW').hidden = false; (first ? $('pwNew') : $('pwCur')).focus();
+    }
+    var gn = $('gNote');
+    if (window.__USER && window.__USER.googleNotice) gn.hidden = false;
+    function gnClose() { gn.hidden = true; if (window.__USER) window.__USER.googleNotice = false; api('POST', '/api/google-notice', {}).catch(function () {}); }
+    $('gNoteX').addEventListener('click', gnClose);
+    $('gNoteSet').addEventListener('click', function () { gnClose(); openPw(); });
     $('pwW').addEventListener('mousedown', function (e) { if (e.target === this) this.hidden = true; });
     $('pwForm').addEventListener('submit', function (e) {
       e.preventDefault(); var er = $('pwErr'); er.textContent = '';
       if ($('pwNew').value.length < 8) { er.textContent = 'Use at least 8 characters for the new password.'; return; }
       if ($('pwNew').value !== $('pwNew2').value) { er.textContent = 'The two new passwords do not match.'; return; }
-      api('POST', '/api/password', { current: $('pwCur').value, next: $('pwNew').value }).then(function () { $('pwW').hidden = true; toast('Password changed'); }).catch(function (x) { er.textContent = x.message; });
+      api('POST', '/api/password', { current: $('pwCur').value, next: $('pwNew').value }).then(function () { $('pwW').hidden = true; if (window.__USER) { window.__USER.passwordSet = true; window.__USER.googleNotice = false; } gn.hidden = true; toast('Password saved'); }).catch(function (x) { er.textContent = x.message; });
     });
   })();
 
@@ -4927,11 +4952,25 @@ window.bootApp = function () {
     Promise.all([hubLoad(), import('/assets/optix-suite-sdk.js')]).then(function (r) {
       var h = r[0], m = r[1], box = $('lgGoogle');
       m.mountGoogleButton(box, {
-        hub: h, business: function () { return $('lgWs').value.trim().toLowerCase(); },
+        hub: h, text: 'continue_with', business: function () { return $('lgWs').value.trim().toLowerCase(); },
         onResult: function (result) { $('lgErr').textContent = ''; hubSignedIn(result).catch(function (err) { $('lgErr').textContent = err.message; }); },
         onError: function (err) { $('lgErr').textContent = err.message; },
       });
     }).catch(function () { GOOGLE_MOUNTED = false; });
+  }
+  /* "Continue with Google" for a workspace sign-in: the page only passes Google's credential to OUR server, which has the hub verify it and finds the
+     user of the workspace with that Gmail. mountGoogleButton is given a tiny stand-in for the hub that returns the raw credential. */
+  var GOOGLE_WS = false;
+  function googleWsOnce() {
+    if (GOOGLE_WS) return; GOOGLE_WS = true;
+    Promise.all([hubLoad(), import('/assets/optix-suite-sdk.js')]).then(function (r) {
+      var h = r[0], m = r[1];
+      m.mountGoogleButton($('lgGoogleWs'), {
+        hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (credential) { return Promise.resolve(credential); } }, text: 'continue_with',
+        onResult: function (credential) { $('lgErr').textContent = ''; api('POST', '/api/login/google', { workspace: $('lgWs').value.trim().toLowerCase(), credential: credential }).then(function (res) { start(res); }).catch(function (err) { $('lgErr').textContent = err.message; }); },
+        onError: function (err) { $('lgErr').textContent = err.message; },
+      });
+    }).catch(function () { GOOGLE_WS = false; });
   }
   function hubSessionFor(body) { return api('POST', '/api/hub/session', body).then(function (r) { hubSaved(r); return r; }); }
   function chooser(result) {
@@ -4968,6 +5007,7 @@ window.bootApp = function () {
     mode = m; var login = m === 'login' || m === 'hub', forgot = m === 'forgot', tok = m === 'token', hubm = m === 'hub';
     $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login || hubm; $('lgBack').hidden = login;
     $('lgGoogleWrap').hidden = !hubm; if (hubm) googleOnce();
+    $('lgGoogleWsWrap').hidden = m !== 'login'; if (m === 'login') googleWsOnce();
     $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (leave empty if you have one business)' : 'Workspace code';
     $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
     $('lgSub').textContent = hubm ? 'The same username and password you use in your other Optix apps.' : login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
