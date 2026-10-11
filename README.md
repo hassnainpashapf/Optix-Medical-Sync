@@ -14,11 +14,33 @@ Multi-tenant hospital management SaaS. One Node process (Node 24+, **no npm pack
 
 - **Tenants:** every hospital (workspace) has its **own SQLite file and uploads folder** in `data/tenants/<code>/`. A user session is bound to one workspace, so data cannot mix.
 - **Platform database:** `data/platform.db` holds workspaces, plans, sessions, invite and reset tokens, the email outbox and the platform owner.
-- **Roles inside a workspace:** Super Admin, Doctor, Receptionist, Accountant, Pharmacist. Enforced on the server (a restricted role never receives data it may not read).
+- **Roles inside a workspace:** Super Admin, Doctor, Receptionist, Accountant, Pharmacist. Enforced on the server (a restricted role never receives data it may not read). The Pharmacist reads consultations (the prescription), wards and admissions; the Accountant reads wards, admissions and lab orders so they can be billed.
 - **Plans and limits:** Starter, Clinic, Hospital (edit prices and limits in the platform panel; the website reads them). Limits on users, patients and file storage are enforced on the server. After the trial a workspace is read-only until a plan is set. The owner can suspend, extend trials or change plans. **There is no payment gateway yet**, plans are changed by the owner.
 - **Email:** invites, password reset and welcome mails. Set the SMTP variables below; without them mails are only recorded in the outbox (the owner can open one and copy its link).
 - **Backups:** every workspace and the platform database are copied to `backups/` folders on start and every 24 hours (last 7 kept).
 - **Audit logs:** per workspace (Super Admin) and for the platform (owner).
+
+## Hospital modules
+
+The app is more than appointments and billing. Everything below lives in the same SQLite file as the rest of the workspace, follows the same role rules and is written to the audit log.
+
+| Module (sidebar) | What it does | Who can change it | Who can only read it |
+|---|---|---|---|
+| **Wards & Beds** | Wards with a daily rate and beds; a bed board grouped by ward (free, occupied, cleaning, maintenance); admit, transfer and discharge; bed days times the ward rate become the charge (and, if you may bill, an invoice); printable **discharge summary** | Super Admin, Doctor, Receptionist | Accountant, Pharmacist |
+| **Consultations** | A visit per patient: complaint, vitals, diagnosis, **prescription lines**, advice, follow-up date. "Start consultation" from an approved appointment or a queue token; printable **prescription**; a care timeline in the patient profile | Super Admin, Doctor | Receptionist, Pharmacist (to dispense) |
+| **OPD Queue** | Tokens per doctor per day (from an appointment, a registered patient or a new walk-in), call next, no-show, a board per doctor and a full-screen **waiting-room display** that refreshes itself (token numbers only, first names optional) | Super Admin, Doctor, Receptionist | nobody else |
+| **Lab & Radiology** | A test catalog (27 standard tests on one click) with prices and reference ranges; orders from the lab page, a consultation or an admission; sample collection; result entry with automatic High/Low flags; printable **result sheet** | Super Admin, Doctor, Receptionist | Accountant |
+| **Transactions** | The old page plus **invoices**: itemised lines (bed days, lab tests and consultation fees can be pulled in), discount, part payments, balance due, a **Dues** filter and KPI, printable invoice and receipt | Super Admin, Accountant | Receptionist and Doctor cannot open it |
+| **Dashboard** | Bed occupancy, OPD today and queue length, pending lab orders, revenue today and dues; patient flow (7 days) and revenue by source; more bell alerts | | |
+| **Reminders** | On an approved appointment: send a reminder by WhatsApp, SMS or email through the Optix hub. Only when a person presses Send and is signed in with the Optix account; never automatic | Super Admin, Doctor, Receptionist | |
+
+Printouts (prescription, discharge summary, invoice, receipt, result sheet) open in their own white-paper print window with the **workspace name** as letterhead.
+
+### Data model (all in the generic `records(col, id, data)` table, so no migration is needed)
+
+New collections: `wards`, `beds`, `admissions`, `visits`, `opdq` (the OPD tokens, not the sign-in tokens), `labtests`, `labs`. `txs` gains optional fields (`pid`, `items`, `subtotal`, `discount`, `payments`, `inv`, `note`) and the status `Partial`; older transactions keep working and show their balance from the old `status`.
+
+Server rules on top of the role matrix (`RULES` in `server.mjs`): a bed cannot hold two admitted patients and a patient cannot be admitted twice (409), and a queue token number is unique per doctor and day (409, the page then takes the next number). `GET /api/opdq?date=` is the small list the waiting-room screen polls. `POST /api/seed-modules` (Super Admin, sample workspaces only) loads sample wards, visits, queue and lab into a workspace that already had data. Backups are a copy of the whole database file, so they include all of the above.
 
 ## Run
 
@@ -41,7 +63,7 @@ This product keeps its own website, backend and data. People can sign in with th
 - Register the product once in the hub: Superadmin → Plans & Settings → Products → add `hospital` with the web address of this site's `/app` (for example `https://hospital.example.pk/app`) and the five roles above; then tick it for each business and for each person.
 - Workspace code + password sign-in keeps working. `HUB_API` (default the production hub), `HUB_APP_ID` (`hospital`), `HUB_DISABLED=1` switch it off.
 - `assets/optix-suite-sdk.js` is generated from the shared SDK: `node scripts/sync-sdk.mjs` (needs the `optix-suite-sdk` repo next to this one).
-- Tests: `npm test`. Docker: `Dockerfile`, `deploy/docker-compose.yml`.
+- Tests: `npm test` (`test/hub.test.mjs` sign-in with the hub; `test/modules.test.mjs` roles, isolation, backup, seed and server rules for the hospital modules; `test/logic.test.mjs` bed-day, invoice and lab-flag arithmetic cut out of the page). Docker: `Dockerfile`, `deploy/docker-compose.yml`.
 
 ## Look and feel (the Optix family: the Pharmacy design, light only)
 
@@ -53,7 +75,8 @@ Website, sign-up, platform panel and the hospital app follow the **Pharmacy POS 
 | `site/css/home.css`, `anim-hero.css`, `anim-scroll.css`, `site/js/home.js`, `anim-*.js` | the home page (adapted from the Pharmacy landing) |
 | `assets/optix-tokens.css` | the same tokens for the app, sign-up and platform pages |
 | `assets/optix-app.css` | the Pharmacy look on top of the app's own styles (loaded last in `index.html`) |
-| `site/img/app-*.jpg` | real screens of the app (sample data) used on the home page; retake them when the app UI changes |
+| `assets/optix-hospital.css` | styles of the hospital modules (bed board, queue and waiting-room screen, invoices, dashboard charts, timeline) |
+| `site/img/app-*.jpg` | real screens of the app (sample data, 1280x900 shrunk to 1100x774) used on the home page; retake them when the app UI changes |
 
 Print windows (bills, receipts, reports) are separate documents and stay white paper with black text.
 
@@ -88,4 +111,4 @@ With both empty nothing from Google is loaded and `/ads.txt` returns 404. Ads lo
 - Set up SMTP so invites and password resets are delivered.
 - Check the placeholder prices in the platform panel.
 - Keep `data/` backed up off the server.
-- Planned, not built: payment gateway, SMS reminders, per-tenant custom domains.
+- Planned, not built: payment gateway, automatic (scheduled) reminders, per-tenant custom domains.

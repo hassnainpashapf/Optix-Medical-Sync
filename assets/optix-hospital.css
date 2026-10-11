@@ -218,3 +218,14 @@ fieldset:disabled .hm-x, fieldset:disabled .hm-addrow { display: none; }
 .don-l em { font-style: normal; color: var(--ink-3); text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .mid2 { grid-template-columns: minmax(0, 1fr); } }
 .dr-foot .pri:disabled { opacity: .45; cursor: default; box-shadow: none; }
+
+/* ---------- tables of the hospital modules: a little tighter so the important columns fit at 1280px ---------- */
+#view-lab table, #view-visits table, #view-wards table { min-width: 0; }
+#view-tx table { min-width: 0; }
+#view-lab th, #view-lab td, #view-visits th, #view-visits td, #view-wards th, #view-wards td, #view-tx th, #view-tx td { padding-left: 10px; padding-right: 10px; }
+#view-lab th:first-child, #view-lab td:first-child, #view-visits th:first-child, #view-visits td:first-child, #view-wards th:first-child, #view-wards td:first-child, #view-tx th:first-child, #view-tx td:first-child { padding-left: 16px; }
+#view-tx tbody td:nth-child(3) { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#view-lab tbody td { height: 64px; }
+.hm-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+#view-tx thead th { white-space: normal; line-height: 1.2; }
+#view-tx thead th button { text-align: left; }

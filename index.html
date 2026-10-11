@@ -1034,7 +1034,7 @@
               <select class="in sel" id="admStat" aria-label="Admission status" style="width:160px;height:40px"><option>Admitted</option><option>Discharged</option><option>All</option></select>
               <button class="addbtn" id="wdAdmit2">Admit Patient <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
-            <div class="tbl-wrap"><table><thead><tr><th>Patient</th><th>Ward / Bed</th><th>Doctor</th><th>Admitted</th><th>Stay</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admRows"></tbody></table></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Patient</th><th>Ward / Bed</th><th>Doctor</th><th>Admitted</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admRows"></tbody></table></div>
             <div class="empty" id="admEmpty" hidden>No admissions match.</div>
             <nav class="pager" id="admPager" aria-label="Pages"></nav>
           </div>
@@ -1087,7 +1087,7 @@
               <select class="in sel" id="lbDp" aria-label="Department" style="width:160px;height:40px"><option value="All">Lab and radiology</option><option value="Lab">Lab only</option><option value="Radiology">Radiology only</option></select>
               <button class="addbtn" id="lbAdd">New Order <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
-            <div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Patient</th><th>Tests</th><th>Ordered By</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lbRows"></tbody></table></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Patient</th><th>Tests</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lbRows"></tbody></table></div>
             <div class="empty" id="lbEmpty" hidden>No lab or radiology orders match.</div>
             <nav class="pager" id="lbPager" aria-label="Pages"></nav>
           </div>
@@ -3243,7 +3243,7 @@ window.bootApp = function () {
     var v = txView(), pages = Math.max(1, Math.ceil(v.length / TXP)); if (txPage > pages) txPage = pages;
     $('txRows').innerHTML = v.slice((txPage - 1) * TXP, txPage * TXP).map(function (x) {
       var p = x.dt.split(' '), due = cust ? txDue(x) : 0;
-      return '<tr><td>' + x.id + '</td><td>' + esc(x.name) + '</td><td>' + esc(x.svc) + '</td><td>' + fmtNum(x.amt) + ' EGP</td>' + (cust ? '<td>' + (due > 0 ? '<b style="color:var(--bad);font-weight:700">' + fmtNum(due) + ' EGP</b>' : '<span class="hm-sub">—</span>') + '</td>' : '') + '<td>' + esc(x.pay) + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
+      return '<tr><td>' + x.id + '</td><td>' + esc(x.name) + '</td><td title="' + esc(x.svc) + '">' + esc(x.svc) + '</td><td>' + fmtNum(x.amt) + ' EGP</td>' + (cust ? '<td>' + (due > 0 ? '<b style="color:var(--bad);font-weight:700">' + fmtNum(due) + ' EGP</b>' : '<span class="hm-sub">—</span>') + '</td>' : '') + '<td>' + esc(x.pay) + '</td><td class="td2"><span>' + fmtDate(p[0]) + '</span><small>' + fmtTime(p[1]) + '</small></td>' +
         '<td><span class="pl ' + (TXPILL[x.status] || 'mute') + '">' + x.status + '</span></td><td><span class="kw"><button class="kebab" data-id="' + x.id + '" aria-haspopup="true" aria-label="Actions for ' + x.id + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('txEmpty').hidden = v.length > 0; $('txPager').innerHTML = v.length ? pagerHtml(txPage, pages) : '';
@@ -3789,7 +3789,7 @@ window.bootApp = function () {
     var v = admView(), pages = Math.max(1, Math.ceil(v.length / ADMP)); if (admPage > pages) admPage = pages;
     $('admRows').innerHTML = v.slice((admPage - 1) * ADMP, admPage * ADMP).map(function (a) {
       var days = a.status === 'admitted' ? Math.max(1, dayDiff(dayOf(a.admitAt), TODAY) + 1) : (a.charge ? a.charge.days : 0);
-      return '<tr><td><div class="nm2"><b>' + (a.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + a.pid + '"><b>' + esc(a.patient) + '</b></button>' : esc(a.patient)) + '</b><small>' + esc(a.code) + '</small></div></td><td>' + esc(a.ward) + '<div class="hm-sub">Bed ' + esc(a.bed) + '</div></td><td>' + esc(a.doctor || '—') + '</td><td class="td2"><span>' + fmtDate(dayOf(a.admitAt)) + '</span><small>' + fmtTime(a.admitAt.slice(11, 16) || '00:00') + '</small></td><td>' + days + (days === 1 ? ' day' : ' days') + '</td><td>' + esc(a.reason || '—') + '</td>' +
+      return '<tr><td><div class="nm2"><b>' + (a.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + a.pid + '"><b>' + esc(a.patient) + '</b></button>' : esc(a.patient)) + '</b><small>' + esc(a.code) + '</small></div></td><td>' + esc(a.ward) + '<div class="hm-sub">Bed ' + esc(a.bed) + '</div></td><td>' + esc(a.doctor || '—') + '</td><td class="td2"><span>' + fmtDate(dayOf(a.admitAt)) + '</span><small>' + fmtTime(a.admitAt.slice(11, 16) || '00:00') + ' · ' + days + (days === 1 ? ' day' : ' days') + '</small></td><td style="white-space:normal;min-width:150px;max-width:210px">' + esc(a.reason || '—') + '</td>' +
         '<td><span class="pl ' + (a.status === 'admitted' ? 'warn' : 'good') + '">' + (a.status === 'admitted' ? 'Admitted' : 'Discharged') + '</span></td><td><span class="kw"><button class="kebab" data-a="amenu" data-id="' + esc(a.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(a.patient) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('admEmpty').hidden = v.length > 0; $('admPager').innerHTML = v.length ? pagerHtml(admPage, pages) : '';
@@ -4066,7 +4066,7 @@ window.bootApp = function () {
     var v = vsView(), pages = Math.max(1, Math.ceil(v.length / VSP)); if (vsPage > pages) vsPage = pages;
     $('vsRows').innerHTML = v.slice((vsPage - 1) * VSP, vsPage * VSP).map(function (x) {
       var rx = (x.rx || []);
-      return '<tr><td class="td2"><span>' + fmtDate(x.date) + '</span><small>' + (x.time ? fmtTime(x.time) : '') + '</small></td><td><div class="nm2"><b>' + (x.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + x.pid + '"><b>' + esc(x.patient) + '</b></button>' : esc(x.patient)) + '</b><small>' + esc(x.code) + '</small></div></td><td>' + esc(x.doctor || '—') + '</td><td style="white-space:normal;min-width:190px;max-width:280px">' + esc(x.diagnosis || x.complaint || '—') + '</td>' +
+      return '<tr><td class="td2"><span>' + fmtDate(x.date) + '</span><small>' + (x.time ? fmtTime(x.time) : '') + '</small></td><td><div class="nm2"><b>' + (x.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + x.pid + '"><b>' + esc(x.patient) + '</b></button>' : esc(x.patient)) + '</b><small>' + esc(x.code) + '</small></div></td><td>' + esc(x.doctor || '—') + '</td><td style="white-space:normal;min-width:160px;max-width:220px">' + esc(x.diagnosis || x.complaint || '—') + '</td>' +
         '<td>' + (rx.length ? '<span class="hm-tag cons">' + rx.length + (rx.length === 1 ? ' medicine' : ' medicines') + '</span>' : '<span class="hm-sub">None</span>') + '</td><td>' + (x.followUp ? fmtDate(x.followUp) : '—') + '</td><td><span class="pl ' + (x.status === 'final' ? 'good' : 'warn') + '">' + (x.status === 'final' ? 'Completed' : 'Draft') + '</span></td>' +
         '<td><span class="kw"><button class="kebab" data-a="vmenu" data-id="' + esc(x.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(x.patient) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
@@ -4407,8 +4407,8 @@ window.bootApp = function () {
     var v = lbView(), pages = Math.max(1, Math.ceil(v.length / LBP)); if (lbPage > pages) lbPage = pages;
     $('lbRows').innerHTML = v.slice((lbPage - 1) * LBP, lbPage * LBP).map(function (l) {
       var abn = l.items.filter(function (i) { return i.flag === 'high' || i.flag === 'low'; }).length;
-      return '<tr><td><div class="nm2"><b>' + esc(l.code) + '</b><small>' + (l.visitId ? 'From consultation' : l.admId ? 'From admission' : 'Direct order') + '</small></div></td><td>' + (l.pid && canR('patients') ? '<button class="lk" data-a="pt" data-pid="' + l.pid + '"><b>' + esc(l.patient) + '</b></button>' : esc(l.patient)) + '</td><td style="white-space:normal;min-width:200px;max-width:300px">' + l.items.map(function (i) { return '<span class="hm-tag ' + (i.dept === 'Radiology' ? 'cons' : 'lab') + '" style="margin:2px 4px 2px 0">' + esc(i.name) + '</span>'; }).join('') + '</td><td>' + esc(l.by || '—') + '</td><td class="td2"><span>' + fmtDate(dayOf(l.createdAt)) + '</span><small>' + fmtTime(l.createdAt.slice(11, 16) || '00:00') + '</small></td><td>' + fmtNum(labTotal(l)) + ' EGP</td>' +
-        '<td><span class="pl ' + (l.status === 'resulted' ? 'good' : l.status === 'collected' ? 'warn' : 'mute') + '">' + esc(LAB_ST[l.status]) + '</span>' + (abn ? ' <span class="hm-tag" style="background:#fdecec;color:#c2373a">' + abn + ' abnormal</span>' : '') + '</td>' +
+      return '<tr><td><div class="nm2"><b>' + esc(l.code) + '</b><small>' + (l.visitId ? 'From consultation' : l.admId ? 'From admission' : 'Direct order') + '</small></div></td><td>' + (l.pid && canR('patients') ? '<button class="lk nm2" data-a="pt" data-pid="' + l.pid + '"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></button>' : '<div class="nm2"><b>' + esc(l.patient) + '</b><small>by ' + esc(l.by || '—') + '</small></div>') + '</td><td style="white-space:normal;min-width:200px;max-width:300px">' + l.items.map(function (i) { return '<span class="hm-tag ' + (i.dept === 'Radiology' ? 'cons' : 'lab') + '" style="margin:2px 4px 2px 0">' + esc(i.name) + '</span>'; }).join('') + '</td><td class="td2"><span>' + fmtDate(dayOf(l.createdAt)) + '</span><small>' + fmtTime(l.createdAt.slice(11, 16) || '00:00') + '</small></td><td>' + fmtNum(labTotal(l)) + ' EGP</td>' +
+        '<td><div class="hm-stack"><span class="pl ' + (l.status === 'resulted' ? 'good' : l.status === 'collected' ? 'warn' : 'mute') + '">' + esc(LAB_ST[l.status]) + '</span>' + (abn ? '<span class="hm-tag" style="background:#fdecec;color:#c2373a">' + abn + ' abnormal</span>' : '') + '</div></td>' +
         '<td><span class="kw"><button class="kebab" data-a="lmenu" data-id="' + esc(l.id) + '" aria-haspopup="true" aria-label="Actions for ' + esc(l.code) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></span></td></tr>';
     }).join('');
     $('lbEmpty').hidden = v.length > 0; $('lbPager').innerHTML = v.length ? pagerHtml(lbPage, pages) : '';

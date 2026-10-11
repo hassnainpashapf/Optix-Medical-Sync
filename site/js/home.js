@@ -203,12 +203,12 @@
     var layer = $('#rxChipLayer'), svg = $('#rxNetSvg'); if (!layer || !svg) return;
     var ns = 'http://www.w3.org/2000/svg';
     var chips = [
-      { x: 12, y: 14, g: '📅', t: 'Appointments' }, { x: 30, y: 14, g: '🗓️', t: 'Calendar' },
-      { x: 70, y: 14, g: '🧑‍⚕️', t: 'Patients' }, { x: 88, y: 14, g: '🧪', t: 'Lab reports' },
-      { x: 9, y: 50, g: '💳', t: 'Billing' }, { x: 28, y: 50, g: '🧾', t: 'Receipts' },
-      { x: 72, y: 50, g: '🚚', t: 'Suppliers' }, { x: 90, y: 50, g: '📦', t: 'Stock' },
-      { x: 12, y: 86, g: '🩺', t: 'Equipment' }, { x: 30, y: 86, g: '📊', t: 'Reports' },
-      { x: 70, y: 86, g: '🛡️', t: 'Audit log' }
+      { x: 12, y: 14, g: '📅', t: 'Appointments' }, { x: 30, y: 14, g: '🩺', t: 'Consultations' }, { x: 50, y: 7, g: '🗓️', t: 'Calendar' },
+      { x: 70, y: 14, g: '🧑‍⚕️', t: 'Patients' }, { x: 88, y: 14, g: '🧪', t: 'Lab & radiology' },
+      { x: 9, y: 50, g: '🛏️', t: 'Wards & beds' }, { x: 28, y: 50, g: '🎟️', t: 'OPD queue' },
+      { x: 72, y: 50, g: '💳', t: 'Invoices & dues' }, { x: 90, y: 50, g: '🧾', t: 'Receipts' },
+      { x: 12, y: 86, g: '🚚', t: 'Suppliers' }, { x: 30, y: 86, g: '📦', t: 'Stock' }, { x: 50, y: 93, g: '🖥️', t: 'Equipment' },
+      { x: 70, y: 86, g: '📊', t: 'Reports' }, { x: 88, y: 86, g: '🛡️', t: 'Audit log' }
     ];
     chips.forEach(function (c, i) {
       var line = document.createElementNS(ns, 'line');
