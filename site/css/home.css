@@ -625,3 +625,11 @@
 @media(max-width:1020px){.rx-demo-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:640px){.rx-sim{padding:18px;border-radius:24px}.sim-days{flex-wrap:nowrap;gap:5px}.sim-days button{min-width:0;padding:0;font-size:12px}.sim-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.sim-row{grid-template-columns:minmax(0,1fr)}}
 .hx-h1{max-width:570px}
+
+/* ---- 3D hero: a deep navy scene with a glowing helix; the photo stays only as a faint texture ---- */
+.hx-photo-wrap{background:radial-gradient(900px 520px at 78% 40%,#2a56c4 0%,transparent 62%),radial-gradient(600px 400px at 90% 85%,#1c9d92 0%,transparent 60%),linear-gradient(135deg,#0c1738 0%,#14275c 55%,#1b3a86 100%)}
+.hx-photo{opacity:.08;mix-blend-mode:luminosity}
+.hx-tint{background:linear-gradient(90deg,rgba(10,20,50,.55) 0%,rgba(10,20,50,.15) 55%,rgba(10,20,50,0) 100%)!important}
+.hx-3d{position:absolute;right:0;top:0;width:56%;height:100%;z-index:1;opacity:0;transition:opacity 1.1s ease;pointer-events:none}.hx-3d.on{opacity:1}
+@media(max-width:900px){.hx-3d{width:100%;height:100%;top:0;right:0}.hx-3d.on{opacity:.28}.hx-photo-wrap{height:660px}}
+@media(prefers-reduced-motion:reduce){.hx-3d{transition:none}}
