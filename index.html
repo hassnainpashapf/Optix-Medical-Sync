@@ -1991,7 +1991,7 @@ window.bootApp = function () {
     Vitals: [['user', 'Patients', 'Patients'], [null, 'Patients Profile', 'PatientProfile'], [null, 'Vitals Overview']],
     Appointments: [['appt', 'Appointments']],
     'Staff List': [['steth', 'Staff List']],
-    Calander: [['cal', 'Calendar']],
+    Calendar: [['cal', 'Calendar']],
     Suppliers: [['store', 'Suppliers']],
     SupplierProfile: [['store', 'Suppliers', 'Suppliers'], [null, 'Supplier Profile']],
     Transactions: [['tx', 'Transactions']],
@@ -2016,7 +2016,7 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calander: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calendar: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
     ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
@@ -3464,7 +3464,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS && !!PERMS[c]; } function canW(c) { return !!PERMS && PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calander: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calendar: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3491,7 +3491,7 @@ window.bootApp = function () {
     var a = [];
     if (canR('appts')) {
       if (requests.length) a.push({ key: 'req' + requests.length, ic: 'apt', cls: '', t: requests.length + ' appointment request' + (requests.length > 1 ? 's' : '') + ' waiting', s: 'Approve or reject them', run: function () { setTab('requests'); go('Appointments'); } });
-      var td = approved.filter(function (r) { return r.date === TODAY && r.status !== 'can'; }).length; if (td) a.push({ key: 'td' + td, ic: 'cal', cls: '', t: td + ' appointment' + (td > 1 ? 's' : '') + ' today', s: 'Open today in the calendar', run: function () { calDate = TODAY; calView = 'day'; go('Calander'); } });
+      var td = approved.filter(function (r) { return r.date === TODAY && r.status !== 'can'; }).length; if (td) a.push({ key: 'td' + td, ic: 'cal', cls: '', t: td + ' appointment' + (td > 1 ? 's' : '') + ' today', s: 'Open today in the calendar', run: function () { calDate = TODAY; calView = 'day'; go('Calendar'); } });
       var unp = approved.filter(function (r) { return r.status === 'fin' && !billOf(r).paid; }).length; if (unp) a.push({ key: 'unp' + unp, ic: 'cash', cls: 'warn', t: unp + ' finished visit' + (unp > 1 ? 's' : '') + ' with unpaid bills', s: 'Check billing in the appointments', run: function () { go('Appointments'); } });
     }
     if (canR('stocks')) { var low = 0; SUPS.forEach(function (sp) { (STK[sp.id] || []).forEach(function (x) { if (x.status === 'Low') low++; }); }); if (low) a.push({ key: 'low' + low, ic: 'box', cls: 'warn', t: low + ' stock item' + (low > 1 ? 's are' : ' is') + ' running low', s: 'Open stocks filtered by Low', run: function () { skStat = 'Low'; skPage = 1; go('Stocks'); } }); }
@@ -4922,7 +4922,7 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calander', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calendar', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
