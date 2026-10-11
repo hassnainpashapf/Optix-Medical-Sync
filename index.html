@@ -1749,6 +1749,7 @@
       <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
       <div class="lg-err" id="lgErr" role="alert"></div>
       <button class="pri" id="lgBtn" type="submit">Sign in</button>
+      <div id="lgGoogleWrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogle" hidden></div></div>
       <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
       <p class="lg-foot" id="lgHubRow"><a href="#" id="lgHub">Sign in with your Optix account</a> <span style="color:var(--muted)">(one login for all your apps)</span></p>
       <div class="lg-links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
@@ -4919,6 +4920,19 @@ window.bootApp = function () {
   function hubSaved(r) { /* what /api/hub/session returned -> the hub session the page keeps for switching apps */
     if (r && r.hub) try { localStorage.setItem(HUBKEY, JSON.stringify({ token: r.hub.token, apps: r.hub.apps, catalog: r.hub.catalog, user: { name: r.user && r.user.name, role: r.user && r.user.role }, lab: { name: r.hub.business }, at: Date.now() })); } catch (e) {}
   }
+  /* "Continue with Google" on the Optix-account form: the hub checks the Google sign-in; the button only appears when the hub has a Google Client ID */
+  var GOOGLE_MOUNTED = false;
+  function googleOnce() {
+    if (GOOGLE_MOUNTED) return; GOOGLE_MOUNTED = true;
+    Promise.all([hubLoad(), import('/assets/optix-suite-sdk.js')]).then(function (r) {
+      var h = r[0], m = r[1], box = $('lgGoogle');
+      m.mountGoogleButton(box, {
+        hub: h, business: function () { return $('lgWs').value.trim().toLowerCase(); },
+        onResult: function (result) { $('lgErr').textContent = ''; hubSignedIn(result).catch(function (err) { $('lgErr').textContent = err.message; }); },
+        onError: function (err) { $('lgErr').textContent = err.message; },
+      });
+    }).catch(function () { GOOGLE_MOUNTED = false; });
+  }
   function hubSessionFor(body) { return api('POST', '/api/hub/session', body).then(function (r) { hubSaved(r); return r; }); }
   function chooser(result) {
     var box = $('hubCh'), cat = (result.catalog || []).filter(function (c) { return (result.apps || []).indexOf(c.id) >= 0; });
@@ -4953,6 +4967,7 @@ window.bootApp = function () {
   function setMode(m) {
     mode = m; var login = m === 'login' || m === 'hub', forgot = m === 'forgot', tok = m === 'token', hubm = m === 'hub';
     $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login || hubm; $('lgBack').hidden = login;
+    $('lgGoogleWrap').hidden = !hubm; if (hubm) googleOnce();
     $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (leave empty if you have one business)' : 'Workspace code';
     $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
     $('lgSub').textContent = hubm ? 'The same username and password you use in your other Optix apps.' : login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
