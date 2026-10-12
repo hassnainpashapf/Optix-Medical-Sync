@@ -156,6 +156,14 @@
   });
   function enter(owner) { $('gate').hidden = true; $('app').hidden = false; $('who').textContent = owner.name; load(); }
   $('out').addEventListener('click', function () { api('POST', '/api/platform/logout').then(function () { location.reload(); }); });
+  /* opened from the Optix superadmin console: #sso=<one-time ticket> signs the owner in (the server confirms the ticket with the hub) */
+  var ssoM = /^#sso=([A-Za-z0-9_-]{20,200})$/.exec(location.hash || '');
+  if (ssoM) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+    api('POST', '/api/platform/sso', { ticket: ssoM[1] }).then(function (r) { enter(r.owner); }).catch(function (x) {
+      api('GET', '/api/platform/state').then(function (s) { gate(s.needsSetup); $('gErr').textContent = x.message || 'This sign-in is not valid or has expired. Sign in below.'; }).catch(function () { gate(false); $('gErr').textContent = 'Cannot reach the server.'; });
+    });
+  } else
   api('GET', '/api/platform/state').then(function (s) { if (s.owner) enter(s.owner); else gate(s.needsSetup); }).catch(function () { gate(false); $('gErr').textContent = 'Cannot reach the server.'; });
 
   /* ---- nav ---- */

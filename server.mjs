@@ -9,7 +9,7 @@ import zlib from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mailConfig, sendSmtp } from './lib/mail.mjs';
-import { HUB, HubError, localRoleOf, resolveHubIdentity, verifyGoogle } from './lib/hub.mjs';
+import { HUB, HubError, localRoleOf, resolveHubIdentity, verifyGoogle, verifySuperTicket } from './lib/hub.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -560,6 +560,15 @@ async function platformApi(req, res, p, m) {
     const b = await readJson(req), o = pdb.prepare('SELECT * FROM owners WHERE username = ?').get(String(b.username || '').trim().toLowerCase());
     if (!o || !o.active || !checkPw(b.password, o)) { hit('plogin', ip); paudit(String(b.username || '?').slice(0, 40), 'Failed owner sign-in', null, null); return sendJson(res, 401, { error: 'Wrong username or password.' }); }
     const tok = crypto.randomBytes(32).toString('hex'); pdb.prepare('INSERT INTO owner_sessions (token, owner_id, expires) VALUES (?, ?, ?)').run(sha(tok), o.id, Date.now() + SESSION_MS); paudit(o.username, 'Owner signed in', null, null);
+    return sendJson(res, 200, { owner: { username: o.username, name: o.name } }, setCookie(req, 'psid', tok, SESSION_MS / 1000));
+  }
+  if (q === '/sso' && m === 'POST') { /* the Optix superadmin console opened this panel: confirm the one-time ticket with the hub, then start the owner session */
+    const ip = clientIp(req); if (limited('psso', ip, 10, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
+    hit('psso', ip);
+    const b = await readJson(req);
+    try { await verifySuperTicket(b.ticket); } catch (e) { paudit('hub', 'Failed sign-in from the Optix console', null, null); return sendJson(res, e instanceof HubError ? e.status : 400, { error: e instanceof HubError ? e.message : 'This sign-in is not valid or has expired.' }); }
+    const o = pdb.prepare('SELECT * FROM owners WHERE active = 1 ORDER BY id LIMIT 1').get(); if (!o) return sendJson(res, 409, { error: 'There is no platform owner here yet. Open this panel once and create it.' });
+    const tok = crypto.randomBytes(32).toString('hex'); pdb.prepare('INSERT INTO owner_sessions (token, owner_id, expires) VALUES (?, ?, ?)').run(sha(tok), o.id, Date.now() + SESSION_MS); paudit(o.username, 'Owner signed in from the Optix console', null, null);
     return sendJson(res, 200, { owner: { username: o.username, name: o.name } }, setCookie(req, 'psid', tok, SESSION_MS / 1000));
   }
   const owner = ownerAuth(req); if (!owner) return sendJson(res, 401, { error: 'Not signed in' });
