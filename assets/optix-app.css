@@ -119,11 +119,11 @@ tbody tr:hover td { background: #fafbfe; }
 .plan-c .tag2 { background: var(--blue); }
 
 /* ---------- sign-in: the Pharmacy card ---------- */
-.login { background: #f2f5f9; display: grid; grid-template-columns: minmax(0, 1fr); position: fixed; overflow: auto; }
+.login { position: fixed; }
 .login::before, .login::after { content: ""; position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; }
 .login::before { top: 0; left: 25%; width: 500px; height: 500px; background: linear-gradient(135deg, rgba(47,109,246,.10), transparent); }
 .login::after { bottom: 0; right: 25%; width: 450px; height: 450px; background: linear-gradient(315deg, rgba(56,168,157,.10), transparent); }
-.lg-side { display: none; }
+/* .lg-side shown by the compact split login in index.html */
 .lg-main { background: transparent; padding: 48px 16px; }
 .lg-card {
   position: relative; z-index: 1; width: min(448px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 28px;
@@ -180,3 +180,11 @@ tbody tr:hover td { background: #fafbfe; }
 .lg-or{display:flex;align-items:center;gap:12px;margin:14px 0 2px;color:var(--muted,#8b94a7);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.lg-or::before,.lg-or::after{content:"";flex:1;height:1px;background:var(--line,#e2e8f1)}
 #lgGoogle{display:flex;justify-content:center;margin-top:12px;min-height:44px}#lgGoogle[hidden]{display:none}
 #lgGoogleWs{display:flex;justify-content:center;margin-top:12px;min-height:44px}#lgGoogleWs[hidden]{display:none}
+
+/* login-split-final: same look as the Optix Suite sign-in */
+.login .lg-card { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; }
+.login .lg-side::before { inset: -20% !important; z-index: -1 !important; animation: none !important; filter: blur(26px) saturate(1.25) !important; transform: scale(1.08) !important; background: radial-gradient(circle at 62% 52%, #ff3b00 0%, #e0351b 24%, transparent 54%), radial-gradient(circle at 42% 35%, #ff9e2c 0%, transparent 42%), radial-gradient(circle at 48% 25%, #38bdf8 0%, transparent 32%), radial-gradient(circle at 38% 78%, #ec4899 0%, transparent 40%), linear-gradient(145deg, #071314 0%, #0f292a 50%, #091617 100%) !important; }
+.login .lg-side { background: #0b1718 !important; }
+.login .lg-foot, .login .lg-foot a, .login .lg-links a { font-weight: 400 !important; color: #5f6f6d !important; }
+.login .lg-foot a:hover, .login .lg-links a:hover { color: #21524e !important; }
+.login .lg-card h2 { font-weight: 700 !important; }

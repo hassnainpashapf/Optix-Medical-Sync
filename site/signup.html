@@ -18,15 +18,15 @@
   body::before, body::after { content: ""; position: fixed; border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: -1; }
   body::before { top: 0; left: 25%; width: 500px; height: 500px; background: linear-gradient(135deg, rgba(47,109,246,.10), transparent); }
   body::after { bottom: 0; right: 25%; width: 450px; height: 450px; background: linear-gradient(315deg, rgba(56,168,157,.10), transparent); }
-  .wrapc { width: 100%; max-width: 480px; }
+  .wrapc { width: 100%; max-width: 410px; }
   .brandc { display: flex; justify-content: center; margin-bottom: 18px; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 30px 80px -25px rgba(27,42,74,.18); padding: 36px 40px 30px; }
-  h1 { margin: 0; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
-  .sub { margin: 8px 0 22px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 500; line-height: 1.5; }
-  .fl { margin-bottom: 14px; }
-  label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 22px 54px -16px rgba(16,26,61,.16); padding: 24px 26px 22px; }
+  h1 { margin: 0; text-align: center; font-size: 21px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
+  .sub { margin: 4px 0 14px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.45; }
+  .fl { margin-bottom: 10px; }
+  label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
   label small { color: var(--muted); font-weight: 500; }
-  input[type=text], input[type=email], input[type=password] { width: 100%; height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; font: inherit; font-size: 14px; color: var(--navy); background: #f8fafc; box-shadow: 0 1px 2px rgba(27,42,74,.04); transition: border-color .2s, box-shadow .2s, background .2s; }
+  input[type=text], input[type=email], input[type=password] { width: 100%; height: 37px; border: 1.5px solid var(--line); border-radius: 10px; padding: 0 12px; font: inherit; font-size: 12.5px; color: var(--navy); background: #f8fafc; box-shadow: 0 1px 2px rgba(27,42,74,.04); transition: border-color .2s, box-shadow .2s, background .2s; }
   input::placeholder { color: var(--muted); }
   input:focus { outline: 0; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(47,109,246,.15); background: #fff; }
   .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
@@ -36,7 +36,7 @@
   .chk small { display: block; color: var(--muted); margin-top: 2px; font-weight: 500; }
   .err { color: #be123c; font-size: 13px; font-weight: 600; min-height: 20px; margin-bottom: 8px; }
   .err:not(:empty) { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 12px 14px; }
-  button.go { width: 100%; height: 52px; border: 0; border-radius: 16px; background: var(--blue); color: #fff; font: inherit; font-weight: 800; font-size: 14.5px; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(47,109,246,.5); transition: background .2s, transform .1s, box-shadow .2s; }
+  button.go { width: 100%; height: 38px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(47,109,246,.5); transition: background .2s, transform .1s, box-shadow .2s; }
   button.go:hover:not(:disabled) { background: var(--blue-d); box-shadow: 0 18px 36px -10px rgba(47,109,246,.6); }
   button.go:active:not(:disabled) { transform: scale(.98); }
   button.go:disabled { opacity: .6; cursor: default; }
@@ -55,14 +55,47 @@
   .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
   .card.busy { opacity: .7; pointer-events: none; }
   @media (max-width: 520px) { .card { padding: 28px 22px 24px; border-radius: 24px; } .row { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+  body { background: linear-gradient(90deg, #f3f7f6 50%, #21524e 50%) !important; padding: 24px 16px !important; }
+  .wrapc { max-width: 860px !important; }
+  .brandc { display: none !important; }
+  .auth-split-shell { display: grid; grid-template-columns: 1fr 1fr; background: #f9fbfb; border-radius: 26px; box-shadow: 0 32px 72px -18px rgba(8,28,26,.34), 0 8px 24px -8px rgba(8,28,26,.14); overflow: hidden; min-height: 520px; }
+  .card { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #f9fbfb !important; padding: 32px 34px !important; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .card > * { width: 100%; max-width: 320px; }
+  h1 { font-size: 26px !important; font-weight: 800 !important; color: #111827 !important; margin-bottom: 10px !important; }
+  .sub { font-size: 12px !important; color: #7c8b89 !important; margin: 0 auto 12px !important; }
+  .fl label { display: none !important; }
+  .fl { margin-bottom: 9px !important; }
+  input[type=text], input[type=email], input[type=password] { height: 40px !important; border-radius: 999px !important; background: #edf3f2 !important; border: 1px solid #d8e3e1 !important; padding: 0 18px !important; font-size: 12.5px !important; }
+  input:focus { background: #fff !important; border-color: #21524e !important; box-shadow: 0 0 0 3px rgba(33,82,78,.14) !important; }
+  button.go { width: 160px !important; height: 41px !important; border-radius: 999px !important; background: #21524e !important; font-size: 12.5px !important; font-weight: 600 !important; margin: 8px auto 0 !important; display: block; box-shadow: 0 10px 22px -6px rgba(33,82,78,.48) !important; }
+  .pts, .foot, .legal { display: none !important; }
+  .su-side { position: relative; isolation: isolate; background: #0b1718; color: #fff; padding: 38px 34px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+  .su-side::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: radial-gradient(circle at 62% 52%, #ff3b00 0%, #e0351b 24%, transparent 54%), radial-gradient(circle at 42% 35%, #ff9e2c 0%, transparent 42%), radial-gradient(circle at 48% 25%, #38bdf8 0%, transparent 32%), radial-gradient(circle at 38% 78%, #ec4899 0%, transparent 40%), linear-gradient(145deg, #071314 0%, #0f292a 50%, #091617 100%); filter: blur(26px) saturate(1.25); transform: scale(1.08); }
+  .su-side h2 { font-size: 30px; font-weight: 700; margin: 0 0 12px; color: #fff; }
+  .su-side p { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.9); max-width: 250px; margin: 0 0 22px; }
+  .su-ghost { display: inline-flex; align-items: center; justify-content: center; width: 150px; height: 41px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.85); background: rgba(255,255,255,.1); backdrop-filter: blur(8px); color: #fff; font-size: 12.5px; font-weight: 600; text-decoration: none; }
+  @media (max-width: 760px) { body { background: #f3f7f6 !important; } .auth-split-shell { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; } .su-side { padding: 28px 22px; } }
+
+
+.soc-btn, .lg-soc { position: relative !important; overflow: hidden !important; cursor: pointer !important; }
+.soc-g-hit { position: absolute !important; inset: -3px !important; opacity: 0.015 !important; z-index: 20 !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; cursor: pointer !important; }
+.soc-g-hit iframe { cursor: pointer !important; transform: scale(1.35) !important; }
+
+  #gWrap { display: none !important; }
 </style>
 </head>
 <body>
 <div class="wrapc">
   <a class="brandc fx-logo" href="/" aria-label="Optix Medical Sync home"><svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#2f6df6"/><path d="M20 8a12 12 0 1 0 12 12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M20 14a6 6 0 1 1-6 6" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>Optix Medical Sync</a>
-  <form class="card" id="f" novalidate>
-    <h1>Start your free trial</h1>
-    <p class="sub">Tell us about your hospital and create your Super Admin account. No card needed.</p>
+  <div class="auth-split-shell"><form class="card" id="f" novalidate>
+    <h1>Sign Up</h1><div class="auth-socials lg-socials" aria-label="Social sign in">
+        <div class="soc-btn lg-soc" title="Continue with Facebook"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="#1877F2"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with Google"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/><path fill="#4285F4" d="M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.3h6c-.3 1.4-1.1 2.6-2.3 3.4l3.6 2.8c2.1-2 3.3-4.9 3.3-8.3z"/><path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-3.1 0-5.8-2.1-6.7-5l-3.7 2.9C3.5 20.4 7.4 23 12 23z"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with Instagram"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#E1306C" stroke="none"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with LinkedIn"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="#0A66C2"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z"/></svg></div>
+      </div>
+    <p class="sub">Or register your hospital workspace</p>
     <div class="fl"><label for="hospital">Hospital or clinic name</label><input type="text" id="hospital" autocomplete="organization" placeholder="e.g. City Care Hospital"></div>
     <div class="fl"><label for="ws">Workspace code <small>(you will use it to sign in)</small></label>
       <input type="text" id="ws" autocapitalize="none" spellcheck="false" autocomplete="off" placeholder="e.g. city-care"><div class="hint" id="wsHint"></div></div>
@@ -72,20 +105,20 @@
       <p class="gnote2">Google is used only to confirm your Gmail address and name. No password is needed.</p>
       <div class="or"><span>or create it with your email</span></div>
     </div>
-    <div class="row"><div class="fl"><label for="name">Your full name</label><input type="text" id="name" autocomplete="name"></div>
-      <div class="fl"><label for="user">Username</label><input type="text" id="user" autocapitalize="none" spellcheck="false" autocomplete="username"></div></div>
-    <div class="fl"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
-    <div class="fl"><label for="pw">Password <small>(at least 8 characters)</small></label><input type="password" id="pw" autocomplete="new-password"></div>
+    <div class="row"><div class="fl"><label for="name">Your full name</label><input type="text" id="name" placeholder="Full Name" autocomplete="name"></div>
+      <div class="fl"><label for="user">Username</label><input type="text" id="user" placeholder="Username" autocapitalize="none" spellcheck="false" autocomplete="username"></div></div>
+    <div class="fl"><label for="email">Email</label><input type="email" id="email" placeholder="Email Address" autocomplete="email"></div>
+    <div class="fl"><label for="pw">Password <small>(at least 8 characters)</small></label><input type="password" id="pw" placeholder="Password (min 8 chars)" autocomplete="new-password"></div>
     <div class="err" id="err" role="alert"></div>
-    <button class="go" id="go" type="submit">Create my workspace</button>
+    <button class="go" id="go" type="submit">Sign Up</button>
     <ul class="pts" id="pts">
       <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="trialPt">Free trial, full features</span></li>
       <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Your own private data, separate from every other hospital</li>
       <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Start with sample data or a blank workspace</li>
     </ul>
-    <p class="foot">Already have a workspace? <a href="/app">Sign in</a></p>
+    <p class="foot">Already have a workspace? <a href="/login">Sign in &rarr;</a></p>
     <p class="legal">By creating a workspace you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
-  </form>
+  </form><aside class="su-side"><h2>Welcome Back!</h2><p>Already have a hospital workspace? Sign in with your account details.</p><a class="su-ghost" href="/login">Sign In</a></aside></div>
   <div class="links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
 </div>
 <script>
@@ -111,7 +144,7 @@
     fetch('/api/signup/google', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ credential: credential, hospital: $('hospital').value.trim(), workspace: ws, sample: $('sample').checked }), credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Could not create the workspace.'); return j; }); })
       .then(function (j) { try { localStorage.setItem('nx_ws', j.workspace); } catch (x) { /* storage blocked */ } location.href = '/app'; })
-      .catch(function (x) { er.textContent = x.message; $('f').classList.remove('busy'); $('go').textContent = 'Create my workspace'; });
+      .catch(function (x) { er.textContent = x.message; $('f').classList.remove('busy'); $('go').textContent = 'Sign Up'; });
   }
   fetch('/api/hub/config').then(function (r) { return r.json(); }).then(function (cfg) {
     if (!cfg.enabled) return;
@@ -134,7 +167,7 @@
     fetch('/api/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b), credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Could not create the workspace.'); return j; }); })
       .then(function (j) { try { localStorage.setItem('nx_ws', j.workspace); } catch (x) { /* storage blocked */ } location.href = '/app'; })
-      .catch(function (x) { er.textContent = x.message; $('go').disabled = false; $('go').textContent = 'Create my workspace'; });
+      .catch(function (x) { er.textContent = x.message; $('go').disabled = false; $('go').textContent = 'Sign Up'; });
   });
 })();
 </script>

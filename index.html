@@ -799,6 +799,41 @@
   .gnote-b .lnk { border: 0; background: none; color: var(--ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .lg-err { color: var(--bad); font-size: 12px; min-height: 18px; margin: 0 0 6px; }
   @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-side { display: none; } .lg-main .lg-brand { display: flex; } }
+  
+  
+
+  
+  /* compact-login-shell */
+  .login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: 1fr 1fr; width: min(860px, calc(100vw - 32px)); min-height: 510px; height: fit-content; max-height: calc(100vh - 32px); margin: auto; border-radius: 26px; border: 0; box-shadow: 0 32px 72px -18px rgba(8,28,26,.34), 0 8px 24px -8px rgba(8,28,26,.14); overflow: hidden; background: #f9fbfb; }
+  body.locked { background: linear-gradient(90deg, #f3f7f6 50%, #21524e 50%) !important; }
+  .lg-main { order: 1; background: #f9fbfb; padding: 38px 34px !important; display: flex !important; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .lg-side { order: 2; position: relative; isolation: isolate; background: #0b1718 !important; padding: 38px 34px !important; display: flex !important; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+  .lg-side::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: radial-gradient(circle at 62% 52%, #ff3b00 0%, #e0351b 24%, transparent 54%), radial-gradient(circle at 42% 35%, #ff9e2c 0%, transparent 42%), radial-gradient(circle at 48% 25%, #38bdf8 0%, transparent 32%), radial-gradient(circle at 38% 78%, #ec4899 0%, transparent 40%), linear-gradient(145deg, #071314 0%, #0f292a 50%, #091617 100%); filter: blur(26px) saturate(1.25); transform: scale(1.08); }
+  .lg-side .lg-brand, .lg-side .lg-points, .lg-side .lg-orb { display: none !important; }
+  .lg-side h1 { font-size: 30px !important; font-weight: 700 !important; color: #fff !important; margin: 0 0 12px !important; max-width: none !important; text-align: center; }
+  .lg-side p { font-size: 12.5px !important; color: rgba(255,255,255,.9) !important; max-width: 250px !important; margin: 0 auto 22px !important; text-align: center; }
+  .lg-ghost-btn { display: inline-flex; align-items: center; justify-content: center; width: 150px; height: 41px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.85); background: rgba(255,255,255,.1); backdrop-filter: blur(8px); color: #fff !important; font-size: 12.5px; font-weight: 600; text-decoration: none !important; transition: all .18s; margin: 0 auto; }
+  .lg-ghost-btn:hover { background: rgba(255,255,255,.22); transform: translateY(-1px); }
+  .lg-card { width: 100% !important; max-width: 300px !important; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+  .lg-card h2 { font-size: 27px !important; font-weight: 800 !important; color: #111827 !important; margin: 0 0 14px !important; text-align: center; }
+  .lg-socials { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+  .lg-soc { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #dde6e5; background: #fff; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+  .lg-card p.sub { font-size: 12px !important; color: #7c8b89 !important; margin: 0 0 12px !important; text-align: center; }
+  .lg-card .fl { width: 100%; margin-bottom: 10px !important; text-align: left; }
+  .lg-card .lb { display: none !important; }
+  .lg-card .in { width: 100%; height: 42px !important; font-size: 12.5px !important; border-radius: 999px !important; padding: 0 18px !important; background: #edf3f2 !important; border: 1px solid #d8e3e1 !important; color: #1f2937 !important; }
+  .lg-card .in:focus { background: #fff !important; border-color: #21524e !important; box-shadow: 0 0 0 3px rgba(33,82,78,.14) !important; outline: none; }
+  .lg-card .pri { width: 150px !important; height: 41px !important; font-size: 12.5px !important; font-weight: 600 !important; border-radius: 999px !important; background: #21524e !important; color: #fff !important; margin: 8px auto 0 !important; box-shadow: 0 10px 22px -6px rgba(33,82,78,.48); }
+  .lg-card .pri:hover:not(:disabled) { background: #183f3c !important; }
+  .lg-foot { margin-top: 10px !important; font-size: 11.5px !important; text-align: center; }
+  .lg-links { margin-top: 10px !important; font-size: 11px !important; gap: 14px !important; justify-content: center !important; }
+  @media (max-width: 760px) { .login { grid-template-columns: 1fr; width: min(400px, calc(100vw - 24px)); } .lg-side { display: none !important; } }
+
+  
+.soc-btn, .lg-soc { position: relative !important; overflow: hidden !important; cursor: pointer !important; }
+.soc-g-hit { position: absolute !important; inset: -3px !important; opacity: 0.015 !important; z-index: 20 !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; cursor: pointer !important; }
+.soc-g-hit iframe { cursor: pointer !important; transform: scale(1.35) !important; }
+
   #userKw { position: relative; display: inline-block; }
   #userKw .menu { top: 56px; right: 0; min-width: 190px; }
 
@@ -1747,20 +1782,25 @@
 <div class="login" id="login" hidden>
   <aside class="lg-side">
     <div class="lg-brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><b>Optix</b><span class="brand-s">Medical Sync</span></div>
-    <div><h1>Every patient, doctor and payment, <em>in sync.</em></h1><p>Appointments, calendars, records, billing and stock in one secure hospital system.</p>
+    <div><h1>Hey There!</h1><p>Create your account now and step into an amazing new journey.</p><a class="lg-ghost-btn" href="/signup">Sign Up</a>
       <ul class="lg-points"><li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>No double-booked doctors</li><li><i><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6z"/></svg></i>Access by role, enforced on the server</li><li><i><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></i>Every change written to an audit log</li></ul></div>
     <div class="lg-orb" aria-hidden="true"></div>
   </aside>
   <div class="lg-main">
     <form class="lg-card" id="lgForm" novalidate>
       <div class="lg-brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><b>Optix</b><span class="brand-s">Medical Sync</span></div>
-      <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Enter your workspace code and your account details.</p>
-      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs" id="lgWsL">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="e.g. alpha-clinic"></div>
-      <div class="fl" id="lgUserBox"><label class="lb" for="lgUser" id="lgUserL">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-      <div class="fl" id="lgPassBox"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <h2 id="lgTitle">Sign In</h2><div class="auth-socials lg-socials" aria-label="Social sign in">
+        <div class="soc-btn lg-soc" title="Continue with Facebook"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="#1877F2"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with Google"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/><path fill="#4285F4" d="M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.3h6c-.3 1.4-1.1 2.6-2.3 3.4l3.6 2.8c2.1-2 3.3-4.9 3.3-8.3z"/><path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-3.1 0-5.8-2.1-6.7-5l-3.7 2.9C3.5 20.4 7.4 23 12 23z"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with Instagram"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#E1306C" stroke="none"/></svg></div>
+        <div class="soc-btn lg-soc" title="Continue with LinkedIn"><span class="soc-g-hit"></span><svg viewBox="0 0 24 24" width="15" height="15" fill="#0A66C2"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z"/></svg></div>
+      </div><p class="sub" id="lgSub">Enter your workspace code and your account details.</p>
+      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs" id="lgWsL">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="Workspace Code"></div>
+      <div class="fl" id="lgUserBox"><label class="lb" for="lgUser" id="lgUserL">Username</label><input class="in" id="lgUser" placeholder="Username or Email Address" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div class="fl" id="lgPassBox"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" placeholder="Password" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
       <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
       <div class="lg-err" id="lgErr" role="alert"></div>
-      <button class="pri" id="lgBtn" type="submit">Sign in</button>
+      <button class="pri" id="lgBtn" type="submit">Sign In</button>
       <div id="lgGoogleWsWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogleWs" hidden></div></div>
       <div id="lgGoogleWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogle" hidden></div></div>
       <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
@@ -5025,12 +5065,12 @@ window.bootApp = function () {
     mode = m; var login = m === 'login' || m === 'hub', forgot = m === 'forgot', tok = m === 'token', hubm = m === 'hub';
     $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login || hubm; $('lgBack').hidden = login;
     $('lgGoogleWrap').hidden = !hubm; if (hubm) googleOnce();
-    $('lgGoogleWsWrap').hidden = m !== 'login'; if (m === 'login') googleWsOnce();
+    $('lgGoogleWsWrap').hidden = true; googleWsOnce();
     $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (leave empty if you have one business)' : 'Workspace code';
-    $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
+    $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign In' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
     $('lgSub').textContent = hubm ? 'The same username and password you use in your other Optix apps.' : login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
     $('lgUserL').textContent = forgot ? 'Username or email' : 'Username';
-    $('lgBtn').textContent = login ? 'Sign in' : forgot ? 'Send reset link' : 'Save password and sign in';
+    $('lgBtn').textContent = login ? 'Sign In' : forgot ? 'Send reset link' : 'Save password and sign in';
     $('lgPass').autocomplete = tok ? 'new-password' : 'current-password'; $('lgErr').textContent = '';
   }
   function showLogin(msg) { $('login').hidden = false; document.body.classList.add('locked'); if (msg) $('lgErr').textContent = msg; var f = mode === 'token' ? $('lgPass') : !$('lgWs').value ? $('lgWs') : !$('lgUser').value ? $('lgUser') : $('lgPass'); f.focus(); }
