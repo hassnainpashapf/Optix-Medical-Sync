@@ -642,7 +642,7 @@ function serveStatic(req, res, url) {
   const p = url.pathname; let rel = null;
   if (p === '/ads.txt') return sendAdsTxt(req, res);
   if (p === '/ads-config.js') return send(res, 200, req.method === 'HEAD' ? undefined : `window.OPTIX_ADS=${JSON.stringify(ADS).replace(/</g, '\\u003c')};`, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-cache' });
-  if (p === '/') rel = 'site/index.html'; else if (p === '/app' || p === '/app/') rel = 'index.html'; else if (p === '/signup') rel = 'site/signup.html'; else if (p === '/platform' || p === '/platform/') rel = 'site/platform.html';
+  if (p === '/') rel = 'site/index.html'; else if (p === '/app' || p === '/app/' || p === '/login' || p === '/login/') rel = 'index.html'; else if (p === '/signup' || p === '/signup/') rel = 'site/signup.html'; else if (p === '/platform' || p === '/platform/') rel = 'site/platform.html';
   else if (p === '/privacy' || p === '/privacy/') rel = 'site/privacy.html'; else if (p === '/terms' || p === '/terms/') rel = 'site/terms.html';
   else if (/^\/assets\/[\w.-]+$/.test(p)) rel = p.slice(1); else if (/^\/site\/[\w./-]+$/.test(p) && !p.includes('..')) rel = p.slice(1);
   if (!rel) return send(res, 404, 'Not found', { 'Content-Type': 'text/plain' });
