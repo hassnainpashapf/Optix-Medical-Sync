@@ -754,42 +754,6 @@
 
   /* sign-in + user menu */
   .locked .frame { visibility: hidden; }
-  .login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); background: var(--card); }
-  .login[hidden] { display: none; }
-  .lg-side { position: relative; overflow: hidden; color: #e9efff; padding: 44px 52px; display: flex; flex-direction: column; justify-content: space-between; background: radial-gradient(700px 500px at 85% 10%, #1f46b0 0%, transparent 65%), radial-gradient(500px 400px at 0% 100%, rgba(54,209,196,.22), transparent 65%), linear-gradient(160deg, #070d27, #0b1744); }
-  .lg-side .lg-brand { margin: 0; color: #fff; font-size: 19px; }
-  .lg-side h1 { margin: 0 0 14px; font-size: 38px; line-height: 1.12; font-weight: 600; letter-spacing: -.02em; max-width: 12em; }
-  .lg-side h1 em { font-style: normal; background: linear-gradient(100deg, #6aa0ff, #36d1c4); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .lg-side p { margin: 0; color: #a9b8e3; font-size: 15px; max-width: 28em; line-height: 1.55; }
-  .lg-points { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 12px; font-size: 14px; color: #cfdcff; }
-  .lg-points li { display: flex; gap: 12px; align-items: center; }
-  .lg-points i { width: 28px; height: 28px; border-radius: 9px; background: rgba(255,255,255,.1); display: grid; place-items: center; flex: none; }
-  .lg-points svg { width: 15px; height: 15px; fill: none; stroke: #7fb0ff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .lg-orb { position: absolute; right: -120px; bottom: -120px; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(110,160,255,.3); box-shadow: 0 0 0 60px rgba(110,160,255,.05), 0 0 0 130px rgba(110,160,255,.04); animation: orb 14s ease-in-out infinite; }
-  @keyframes orb { 50% { transform: translate(-18px, -14px) scale(1.04); } }
-  .lg-main { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 32px 24px; overflow-y: auto; }
-  .lg-card { width: min(380px, 100%); }
-  .lg-brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; margin-bottom: 22px; }
-  .lg-brand svg { width: 26px; height: 30px; }
-  .lg-main .lg-brand { display: none; }
-  .lg-card h2 { margin: 0 0 4px; font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
-  .lg-card p.sub { margin: 0 0 22px; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
-  .lg-card .fl[hidden], .lg-foot[hidden] { display: none; }
-  .lg-role { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 11px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-size: 11.5px; font-weight: 600; margin-bottom: 14px; }
-  .lg-role svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .lg-pw { position: relative; }
-  .lg-pw .in { padding-right: 46px; }
-  .lg-eye { position: absolute; right: 4px; top: 4px; width: 34px; height: 34px; border: 0; background: none; border-radius: 8px; color: var(--ink-3); display: grid; place-items: center; padding: 0; }
-  .lg-eye:hover { background: var(--hov); color: var(--ink); }
-  .lg-eye svg { width: 18px; height: 18px; }
-  .lg-card .pri { width: 100%; height: 46px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font-size: 13.5px; font-weight: 500; margin-top: 4px; }
-  .lg-card .pri:disabled { opacity: .6; cursor: default; }
-  .lg-card .pri:hover:not(:disabled) { background: var(--blue-d); }
-  .lg-foot { margin-top: 22px; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
-  .lg-foot a { color: var(--blue-t); text-decoration: none; }
-  .lg-foot a:hover { text-decoration: underline; }
-  .lg-foot + .lg-foot { margin-top: 8px; }
-  .lg-gwrap:has(> div[hidden]) { display: none; }
   .gnote { position: fixed; right: 20px; bottom: 20px; width: min(340px, calc(100vw - 32px)); background: #fff; border: 1px solid var(--line, #e2e8f1); border-radius: 18px; box-shadow: 0 24px 60px -20px rgba(27,42,74,.35); padding: 16px 18px; z-index: 60; }
   .gnote[hidden] { display: none; }
   .gnote b { font-size: 14px; font-weight: 800; color: var(--ink); }
@@ -797,8 +761,6 @@
   .gnote-b { display: flex; align-items: center; gap: 14px; }
   .gnote-b .pri { height: 36px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--blue); color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer; }
   .gnote-b .lnk { border: 0; background: none; color: var(--ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  .lg-err { color: var(--bad); font-size: 12px; min-height: 18px; margin: 0 0 6px; }
-  @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-side { display: none; } .lg-main .lg-brand { display: flex; } }
   #userKw { position: relative; display: inline-block; }
   #userKw .menu { top: 56px; right: 0; min-width: 190px; }
 
@@ -918,20 +880,6 @@
   .brand .bt .brand-s { font-size: 11.5px; letter-spacing: 0; margin-top: 1px; }
   .mk { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #1d2a66, #101a3d); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(16,26,61,.3); flex: none; }
   .brand .mk svg, .lg-brand .mk svg { width: 22px; height: 22px; }
-  .lg-side .lg-brand .brand-s { color: #b4c0e0; }
-  .lg-side { background: var(--grad-hero); }
-  .lg-side::before { content: ""; position: absolute; inset: -20%; background: radial-gradient(40% 40% at 20% 30%, #3d6fff33, transparent 70%), radial-gradient(35% 35% at 80% 70%, #7be0d433, transparent 70%); animation: lgmesh 14s ease-in-out infinite alternate; pointer-events: none; }
-  .lg-side > * { position: relative; }
-  .lg-side .lg-orb { position: absolute; }
-  @keyframes lgmesh { to { transform: translate3d(4%, -3%, 0) scale(1.08); } }
-  .lg-side h1 { font-weight: 800; }
-  .lg-side h1 em { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .lg-main { position: relative; background: var(--bg); }
-  .lg-card h2 { font-weight: 800; letter-spacing: -.02em; }
-  .lg-card .pri { border: 1.5px solid var(--blue); border-radius: 14px; background: var(--blue); font-weight: 700; transition: transform .15s, box-shadow .15s; }
-  .lg-card .pri:hover:not(:disabled) { background: var(--blue); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(47,109,246,.28); }
-  .lg-legal { margin-top: 18px; }
-  .lg-legal a { color: var(--muted); }
   /* top bar */
   .top .sq { width: 38px; height: 38px; border-radius: 12px; }
   .iconbtn { color: var(--ink); border-radius: 10px; }
@@ -953,6 +901,7 @@
 .hubch .err{margin-top:10px;color:#b42318;font-size:12.5px}
 </style>
 <link rel="stylesheet" href="/assets/optix-app.css">
+<link rel="stylesheet" href="/assets/optix-auth.css">
 <link rel="stylesheet" href="/assets/optix-hospital.css">
 <link rel="stylesheet" href="/assets/optix-mobile.css">
 </head>
@@ -1744,31 +1693,28 @@
   <div class="tv-grid" id="tvGrid"></div>
   <div class="tv-foot" id="tvFoot">Please wait for your number to be called.</div>
 </div>
-<div class="login" id="login" hidden>
-  <aside class="lg-side">
-    <div class="lg-brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><b>Optix</b><span class="brand-s">Medical Sync</span></div>
-    <div><h1>Every patient, doctor and payment, <em>in sync.</em></h1><p>Appointments, calendars, records, billing and stock in one secure hospital system.</p>
-      <ul class="lg-points"><li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>No double-booked doctors</li><li><i><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6z"/></svg></i>Access by role, enforced on the server</li><li><i><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></i>Every change written to an audit log</li></ul></div>
-    <div class="lg-orb" aria-hidden="true"></div>
-  </aside>
-  <div class="lg-main">
-    <form class="lg-card" id="lgForm" novalidate>
-      <div class="lg-brand"><span class="mk"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M16 6.5a9.5 9.5 0 1 0 9.5 9.5" stroke-linecap="round"/><path d="M16 11.5a4.5 4.5 0 1 1-4.5 4.5" stroke-linecap="round"/></svg></span><b>Optix</b><span class="brand-s">Medical Sync</span></div>
-      <h2 id="lgTitle">Sign in</h2><p class="sub" id="lgSub">Enter your workspace code and your account details.</p>
-      <div class="fl" id="lgWsBox"><label class="lb" for="lgWs" id="lgWsL">Workspace code</label><input class="in" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="e.g. alpha-clinic"></div>
-      <div class="fl" id="lgUserBox"><label class="lb" for="lgUser" id="lgUserL">Username</label><input class="in" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-      <div class="fl" id="lgPassBox"><label class="lb" for="lgPass">Password</label><div class="lg-pw"><input class="in" id="lgPass" type="password" autocomplete="current-password"><button type="button" class="lg-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <div class="fl" id="lgPass2Box" hidden><label class="lb" for="lgPass2">Repeat password</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
-      <div class="lg-err" id="lgErr" role="alert"></div>
-      <button class="pri" id="lgBtn" type="submit">Sign in</button>
-      <div id="lgGoogleWsWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogleWs" hidden></div></div>
-      <div id="lgGoogleWrap" class="lg-gwrap" hidden><div class="lg-or"><span>or</span></div><div id="lgGoogle" hidden></div></div>
-      <p class="lg-foot" id="lgFoot"><a href="#" id="lgForgot">Forgot your password?</a> · <a href="/signup">Start a free trial</a></p>
-      <p class="lg-foot" id="lgHubRow"><a href="#" id="lgHub">Sign in with your Optix account</a> <span style="color:var(--muted)">(one login for all your apps)</span></p>
-      <div class="lg-links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
-      <p class="lg-foot lg-legal"><a href="/privacy" target="_blank" rel="noopener">Privacy</a> · <a href="/terms" target="_blank" rel="noopener">Terms</a></p>
-      <p class="lg-foot" id="lgBack" hidden><a href="#" id="lgBackA">Back to sign in</a></p>
-    </form>
+<div class="oa-page oa-overlay" id="login" hidden>
+  <a class="oa-back" href="/">&larr; Optix Medical Sync</a>
+  <div class="oa-card">
+    <div class="oa-form"><div class="oa-in">
+      <h1 class="oa-title" id="lgTitle">Sign in</h1>
+      <p class="oa-sub" id="lgSub">Enter your workspace code and your account details.</p>
+      <div id="lgGoogleWsWrap" class="oa-gwrap" hidden><div class="oa-google" id="lgGoogleWs" hidden></div><p class="oa-or">Or use your account</p></div>
+      <div id="lgGoogleWrap" class="oa-gwrap" hidden><div class="oa-google" id="lgGoogle" hidden></div><p class="oa-or">Or use your account</p></div>
+      <form class="oa-fields" id="lgForm" novalidate>
+        <div class="oa-field" id="lgWsBox"><label class="oa-sr" for="lgWs" id="lgWsL">Workspace code</label><input class="oa-input" id="lgWs" autocomplete="organization" autocapitalize="none" spellcheck="false" placeholder="Workspace code"></div>
+        <div class="oa-field" id="lgUserBox"><label class="oa-sr" for="lgUser" id="lgUserL">Username</label><input class="oa-input" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Username"></div>
+        <div class="oa-field oa-pw" id="lgPassBox"><label class="oa-sr" for="lgPass">Password</label><input class="oa-input" id="lgPass" type="password" autocomplete="current-password" placeholder="Password"><button type="button" class="oa-eye" id="lgEye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+        <div class="oa-field" id="lgPass2Box" hidden><label class="oa-sr" for="lgPass2">Repeat password</label><input class="oa-input" id="lgPass2" type="password" autocomplete="new-password" placeholder="Repeat password"></div>
+        <div class="oa-err" id="lgErr" role="alert"></div>
+        <p class="oa-links" id="lgFoot" style="margin:0"><a class="oa-link" href="#" id="lgForgot">Forgot your password?</a></p>
+        <p class="oa-links" id="lgHubRow" style="margin:0"><a class="oa-link" href="#" id="lgHub">Sign in with your Optix account</a></p>
+        <button class="oa-btn" id="lgBtn" type="submit" style="align-self:center;margin-top:6px">Sign in</button>
+        <p class="oa-links" id="lgBack" style="margin:0" hidden><a class="oa-link" href="#" id="lgBackA">Back to sign in</a></p>
+      </form>
+      <p class="oa-fine"><a href="/privacy" target="_blank" rel="noopener">Privacy</a> &middot; <a href="/terms" target="_blank" rel="noopener">Terms</a> &middot; <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></p>
+    </div></div>
+    <aside class="oa-side"><h2>Hey There!</h2><p>Start a free trial of your own hospital workspace and step into an amazing new journey.</p><a class="oa-ghost" href="/signup">Sign Up</a></aside>
   </div>
 </div>
 </div>
@@ -4984,7 +4930,7 @@ window.bootApp = function () {
     Promise.all([hubLoad(), import('/assets/optix-suite-sdk.js')]).then(function (r) {
       var h = r[0], m = r[1];
       m.mountGoogleButton($('lgGoogleWs'), {
-        hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (credential) { return Promise.resolve(credential); } }, text: 'continue_with', width: (function () { var f = $('lgForm'), cs = getComputedStyle(f); return Math.max(240, Math.min(400, f.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) || 320)); })(),
+        hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (credential) { return Promise.resolve(credential); } }, text: 'continue_with', width: Math.max(240, Math.min(320, $('lgGoogleWs').parentNode.clientWidth || 320)),
         onResult: function (credential) { $('lgErr').textContent = ''; api('POST', '/api/login/google', { workspace: $('lgWs').value.trim().toLowerCase(), credential: credential }).then(function (res) { start(res); }).catch(function (err) { $('lgErr').textContent = err.message; }); },
         onError: function (err) { $('lgErr').textContent = err.message; },
       });
@@ -5026,10 +4972,10 @@ window.bootApp = function () {
     $('lgWsBox').hidden = tok; $('lgUserBox').hidden = tok; $('lgPassBox').hidden = forgot; $('lgPass2Box').hidden = !tok; $('lgFoot').hidden = !login || hubm; $('lgBack').hidden = login;
     $('lgGoogleWrap').hidden = !hubm; if (hubm) googleOnce();
     $('lgGoogleWsWrap').hidden = m !== 'login'; if (m === 'login') googleWsOnce();
-    $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (leave empty if you have one business)' : 'Workspace code';
+    $('lgHubRow').hidden = !login; $('lgHub').textContent = hubm ? 'Use a workspace code instead' : 'Sign in with your Optix account'; $('lgWsL').textContent = hubm ? 'Business ID (optional, leave empty if you have one business)' : 'Workspace code'; $('lgWs').placeholder = hubm ? 'Business ID (optional)' : 'Workspace code';
     $('lgTitle').textContent = hubm ? 'Sign in with your Optix account' : login ? 'Sign in' : forgot ? 'Reset your password' : (tokenInfo && tokenInfo.kind === 'invite' ? 'Welcome, set your password' : 'Choose a new password');
     $('lgSub').textContent = hubm ? 'The same username and password you use in your other Optix apps.' : login ? 'Enter your workspace code and your account details.' : forgot ? 'We will email you a link if the account has an email address.' : (tokenInfo ? tokenInfo.workspaceName + ' · username ' + tokenInfo.username : '');
-    $('lgUserL').textContent = forgot ? 'Username or email' : 'Username';
+    $('lgUserL').textContent = forgot ? 'Username or email' : 'Username'; $('lgUser').placeholder = $('lgUserL').textContent;
     $('lgBtn').textContent = login ? 'Sign in' : forgot ? 'Send reset link' : 'Save password and sign in';
     $('lgPass').autocomplete = tok ? 'new-password' : 'current-password'; $('lgErr').textContent = '';
   }

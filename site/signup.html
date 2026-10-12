@@ -10,83 +10,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/css/family.css">
-<style>
-  /* Sign-up screen: no ads here (it is a gated form). Same card as the Pharmacy sign-in: soft page, white 28px card, big blue pill button. */
-  * { box-sizing: border-box; }
-  body { min-height: 100vh; display: grid; place-items: center; padding: 40px 16px; position: relative; overflow-x: hidden; }
-  body::before, body::after { content: ""; position: fixed; border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: -1; }
-  body::before { top: 0; left: 25%; width: 500px; height: 500px; background: linear-gradient(135deg, rgba(47,109,246,.10), transparent); }
-  body::after { bottom: 0; right: 25%; width: 450px; height: 450px; background: linear-gradient(315deg, rgba(56,168,157,.10), transparent); }
-  .wrapc { width: 100%; max-width: 480px; }
-  .brandc { display: flex; justify-content: center; margin-bottom: 18px; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 30px 80px -25px rgba(27,42,74,.18); padding: 36px 40px 30px; }
-  h1 { margin: 0; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
-  .sub { margin: 8px 0 22px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 500; line-height: 1.5; }
-  .fl { margin-bottom: 14px; }
-  label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
-  label small { color: var(--muted); font-weight: 500; }
-  input[type=text], input[type=email], input[type=password] { width: 100%; height: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; font: inherit; font-size: 14px; color: var(--navy); background: #f8fafc; box-shadow: 0 1px 2px rgba(27,42,74,.04); transition: border-color .2s, box-shadow .2s, background .2s; }
-  input::placeholder { color: var(--muted); }
-  input:focus { outline: 0; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(47,109,246,.15); background: #fff; }
-  .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-  .hint { font-size: 12px; margin-top: 6px; min-height: 16px; color: var(--muted); font-weight: 500; } .hint.ok { color: #0a7a4f; } .hint.bad { color: #c2373a; }
-  .chk { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink); margin: 4px 0 18px; font-weight: 600; }
-  .chk input { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--blue); flex: none; }
-  .chk small { display: block; color: var(--muted); margin-top: 2px; font-weight: 500; }
-  .err { color: #be123c; font-size: 13px; font-weight: 600; min-height: 20px; margin-bottom: 8px; }
-  .err:not(:empty) { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 12px 14px; }
-  button.go { width: 100%; height: 52px; border: 0; border-radius: 16px; background: var(--blue); color: #fff; font: inherit; font-weight: 800; font-size: 14.5px; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(47,109,246,.5); transition: background .2s, transform .1s, box-shadow .2s; }
-  button.go:hover:not(:disabled) { background: var(--blue-d); box-shadow: 0 18px 36px -10px rgba(47,109,246,.6); }
-  button.go:active:not(:disabled) { transform: scale(.98); }
-  button.go:disabled { opacity: .6; cursor: default; }
-  .pts { list-style: none; margin: 18px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
-  .pts li { display: flex; gap: 10px; align-items: center; }
-  .pts i { width: 20px; height: 20px; border-radius: 50%; background: rgba(56,168,157,.14); display: grid; place-items: center; flex: none; }
-  .pts svg { width: 11px; height: 11px; fill: none; stroke: var(--teal); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-  .foot { margin-top: 18px; font-size: 13px; color: var(--muted); text-align: center; font-weight: 500; } .foot a { color: var(--blue-d); font-weight: 700; text-decoration: none; } .foot a:hover { text-decoration: underline; }
-  .legal { margin-top: 10px; font-size: 12px; color: var(--muted); text-align: center; font-weight: 500; } .legal a { text-decoration: underline; text-underline-offset: 3px; }
-  .links { margin-top: 18px; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 700; padding: 0 6px; }
-  .links a { color: var(--ink); text-decoration: none; } .links a:hover { color: var(--blue); }
-  .gwrap:has(> .gbtn[hidden]) { display: none; }
-  .gbtn { display: flex; justify-content: center; min-height: 44px; margin-top: 6px; } .gbtn[hidden] { display: none; }
-  .gnote2 { margin: 10px 0 0; text-align: center; font-size: 12px; color: var(--muted); font-weight: 500; line-height: 1.45; }
-  .or { display: flex; align-items: center; gap: 12px; margin: 16px 0 18px; color: var(--muted); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
-  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-  .card.busy { opacity: .7; pointer-events: none; }
-  @media (max-width: 520px) { .card { padding: 28px 22px 24px; border-radius: 24px; } .row { grid-template-columns: minmax(0, 1fr); gap: 0; } }
-</style>
+<link rel="stylesheet" href="/assets/optix-auth.css">
 </head>
-<body>
-<div class="wrapc">
-  <a class="brandc fx-logo" href="/" aria-label="Optix Medical Sync home"><svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#2f6df6"/><path d="M20 8a12 12 0 1 0 12 12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M20 14a6 6 0 1 1-6 6" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>Optix Medical Sync</a>
-  <form class="card" id="f" novalidate>
-    <h1>Start your free trial</h1>
-    <p class="sub">Tell us about your hospital and create your Super Admin account. No card needed.</p>
-    <div class="fl"><label for="hospital">Hospital or clinic name</label><input type="text" id="hospital" autocomplete="organization" placeholder="e.g. City Care Hospital"></div>
-    <div class="fl"><label for="ws">Workspace code <small>(you will use it to sign in)</small></label>
-      <input type="text" id="ws" autocapitalize="none" spellcheck="false" autocomplete="off" placeholder="e.g. city-care"><div class="hint" id="wsHint"></div></div>
-    <label class="chk"><input type="checkbox" id="sample" checked><span>Fill the workspace with sample data<small>Good for looking around. Uncheck to start blank with your own records.</small></span></label>
-    <div id="gWrap" class="gwrap" hidden>
-      <div id="gBtn" class="gbtn" hidden></div>
-      <p class="gnote2">Google is used only to confirm your Gmail address and name. No password is needed.</p>
-      <div class="or"><span>or create it with your email</span></div>
-    </div>
-    <div class="row"><div class="fl"><label for="name">Your full name</label><input type="text" id="name" autocomplete="name"></div>
-      <div class="fl"><label for="user">Username</label><input type="text" id="user" autocapitalize="none" spellcheck="false" autocomplete="username"></div></div>
-    <div class="fl"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
-    <div class="fl"><label for="pw">Password <small>(at least 8 characters)</small></label><input type="password" id="pw" autocomplete="new-password"></div>
-    <div class="err" id="err" role="alert"></div>
-    <button class="go" id="go" type="submit">Create my workspace</button>
-    <ul class="pts" id="pts">
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="trialPt">Free trial, full features</span></li>
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Your own private data, separate from every other hospital</li>
-      <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Start with sample data or a blank workspace</li>
-    </ul>
-    <p class="foot">Already have a workspace? <a href="/app">Sign in</a></p>
-    <p class="legal">By creating a workspace you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
+<body style="margin:0">
+<div class="oa-page">
+  <a class="oa-back" href="/">&larr; Optix Medical Sync</a>
+  <form class="oa-card" id="f" novalidate>
+    <div class="oa-form"><div class="oa-in">
+      <h1 class="oa-title">Start your free trial</h1>
+      <p class="oa-sub">Tell us about your hospital and create your Super Admin account. No card needed.</p>
+      <div class="oa-fields">
+        <div class="oa-field"><label class="oa-sr" for="hospital">Hospital or clinic name</label><input class="oa-input" type="text" id="hospital" autocomplete="organization" placeholder="Hospital or clinic name"></div>
+        <div class="oa-field"><label class="oa-sr" for="ws">Workspace code (you will use it to sign in)</label><input class="oa-input" type="text" id="ws" autocapitalize="none" spellcheck="false" autocomplete="off" placeholder="Workspace code, e.g. city-care"><div class="oa-hint" id="wsHint"></div></div>
+        <label class="oa-chk"><input type="checkbox" id="sample" checked><span>Fill the workspace with sample data<small>Good for looking around. Uncheck to start blank with your own records.</small></span></label>
+      </div>
+      <div id="gWrap" class="oa-gwrap" hidden style="margin-top:14px">
+        <div id="gBtn" class="oa-google" hidden></div>
+        <p class="oa-fine" style="margin:8px 0 0">Google is used only to confirm your Gmail address and name. No password is needed.</p>
+        <p class="oa-or">Or create it with your email</p>
+      </div>
+      <div class="oa-fields" style="margin-top:11px">
+        <div class="oa-field"><label class="oa-sr" for="name">Your full name</label><input class="oa-input" type="text" id="name" autocomplete="name" placeholder="Your full name"></div>
+        <div class="oa-field"><label class="oa-sr" for="user">Username</label><input class="oa-input" type="text" id="user" autocapitalize="none" spellcheck="false" autocomplete="username" placeholder="Username"></div>
+        <div class="oa-field"><label class="oa-sr" for="email">Email</label><input class="oa-input" type="email" id="email" autocomplete="email" placeholder="Email address"></div>
+        <div class="oa-field"><label class="oa-sr" for="pw">Password (at least 8 characters)</label><input class="oa-input" type="password" id="pw" autocomplete="new-password" placeholder="Password (at least 8 characters)"></div>
+        <div class="oa-err" id="err" role="alert"></div>
+        <button class="oa-btn" id="go" type="submit" style="align-self:center">Create my workspace</button>
+      </div>
+      <ul class="oa-pts" id="pts">
+        <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span id="trialPt">Free trial, full features</span></li>
+        <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Your own private data, separate from every other hospital</li>
+        <li><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Start with sample data or a blank workspace</li>
+      </ul>
+      <p class="oa-fine">By creating a workspace you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>. &middot; <a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></p>
+    </div></div>
+    <aside class="oa-side"><h2>Welcome Back!</h2><p>Already have a workspace? Sign in with your workspace code and account to pick up where you left off.</p><a class="oa-ghost" href="/app">Sign In</a></aside>
   </form>
-  <div class="links"><a href="/">&larr; Optix Medical Sync Website</a><a href="https://optix-suite.ellahabad.workers.dev" rel="noopener">All Optix apps</a></div>
 </div>
 <script>
 (function () {
@@ -94,10 +53,10 @@
   function slugify(s) { return s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30).replace(/-+$/g, ''); }
   function check() {
     var s = $('ws').value.trim(), h = $('wsHint'); clearTimeout(timer);
-    if (!s) { h.textContent = ''; h.className = 'hint'; return; }
-    if (!/^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(s)) { h.textContent = '3 to 30 lowercase letters, numbers or dashes.'; h.className = 'hint bad'; return; }
-    h.textContent = 'Checking...'; h.className = 'hint';
-    timer = setTimeout(function () { fetch('/api/signup/check?slug=' + encodeURIComponent(s)).then(function (r) { return r.json(); }).then(function (r) { if ($('ws').value.trim() !== s) return; h.textContent = r.available ? 'Available' : (r.valid ? 'That code is taken. Try another.' : 'That code is reserved.'); h.className = 'hint ' + (r.available ? 'ok' : 'bad'); }).catch(function () { h.textContent = ''; }); }, 300);
+    if (!s) { h.textContent = ''; h.className = 'oa-hint'; return; }
+    if (!/^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(s)) { h.textContent = '3 to 30 lowercase letters, numbers or dashes.'; h.className = 'oa-hint bad'; return; }
+    h.textContent = 'Checking...'; h.className = 'oa-hint';
+    timer = setTimeout(function () { fetch('/api/signup/check?slug=' + encodeURIComponent(s)).then(function (r) { return r.json(); }).then(function (r) { if ($('ws').value.trim() !== s) return; h.textContent = r.available ? 'Available' : (r.valid ? 'That code is taken. Try another.' : 'That code is reserved.'); h.className = 'oa-hint ' + (r.available ? 'ok' : 'bad'); }).catch(function () { h.textContent = ''; }); }, 300);
   }
   $('hospital').addEventListener('input', function () { if (!slugTouched) { $('ws').value = slugify(this.value); check(); } });
   $('ws').addEventListener('input', function () { slugTouched = true; this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, ''); check(); });
@@ -107,18 +66,18 @@
     var er = $('err'); er.textContent = '';
     var ws = $('ws').value.trim();
     if (ws && !/^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(ws)) { er.textContent = 'Workspace code: 3 to 30 lowercase letters, numbers or dashes.'; $('ws').focus(); return; }
-    $('f').classList.add('busy'); $('go').textContent = 'Creating your workspace...';
+    $('f').classList.add('oa-busy'); $('go').textContent = 'Creating your workspace...';
     fetch('/api/signup/google', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ credential: credential, hospital: $('hospital').value.trim(), workspace: ws, sample: $('sample').checked }), credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Could not create the workspace.'); return j; }); })
       .then(function (j) { try { localStorage.setItem('nx_ws', j.workspace); } catch (x) { /* storage blocked */ } location.href = '/app'; })
-      .catch(function (x) { er.textContent = x.message; $('f').classList.remove('busy'); $('go').textContent = 'Create my workspace'; });
+      .catch(function (x) { er.textContent = x.message; $('f').classList.remove('oa-busy'); $('go').textContent = 'Create my workspace'; });
   }
   fetch('/api/hub/config').then(function (r) { return r.json(); }).then(function (cfg) {
     if (!cfg.enabled) return;
     return import('/assets/optix-suite-sdk.js').then(function (m) {
       var h = m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: 'optix_hospital_hub' });
       $('gWrap').hidden = false;
-      m.mountGoogleButton($('gBtn'), { hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (c) { return Promise.resolve(c); } }, text: 'signup_with', width: Math.max(240, Math.min(400, $('f').clientWidth - 2 * parseFloat(getComputedStyle($('f')).paddingLeft))), onResult: googleSignup, onError: function (e) { $('err').textContent = e.message; } });
+      m.mountGoogleButton($('gBtn'), { hub: { googleClientId: function () { return h.googleClientId(); }, loginWithGoogle: function (c) { return Promise.resolve(c); } }, text: 'signup_with', width: Math.max(240, Math.min(320, $('gWrap').clientWidth || 320)), onResult: googleSignup, onError: function (e) { $('err').textContent = e.message; } });
     });
   }).catch(function () { $('gWrap').hidden = true; });
   $('f').addEventListener('submit', function (e) {

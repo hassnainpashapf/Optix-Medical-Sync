@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/optix-tokens.css">
+<link rel="stylesheet" href="/assets/optix-auth.css">
 <style>
   /* Platform owner console: colours, radius and type are the shared Optix tokens (assets/optix-tokens.css). No ads here. */
   :root { --card: var(--surface); --ink2: var(--text-2); --ink3: var(--muted); --soft: var(--tint); --th: #f3f6fd; --hov: #f3f7ff; --good: #0a7a4f; --good-bg: #e2f7ef; --warn: #9a6200; --warn-bg: #fff0d1; --bad: #b42318; --bad-bg: #fde9e9; --lnk: #2a4fa8; --cred-bg: #fff9e8; --cred-ln: #f0dca0; --d: var(--font); --b: var(--font); }
@@ -18,10 +19,6 @@
   body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--b); -webkit-font-smoothing: antialiased; }
   button { font: inherit; color: inherit; cursor: pointer; } [hidden] { display: none !important; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--blue-2); outline-offset: 2px; }
-  .gate { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(700px 400px at 80% 0%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 70%), var(--bg); }
-  .gcard { width: min(400px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 28px; box-shadow: var(--shadow-2); }
-  .gcard h1 { font-family: var(--d); font-size: 22px; margin: 6px 0 4px; } .gcard p { margin: 0 0 18px; color: var(--ink2); font-size: 13.5px; }
-  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--soft); color: var(--lnk); letter-spacing: .04em; text-transform: uppercase; }
   .fl { margin-bottom: 13px; } .fl label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 5px; }
   input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: var(--r-xs); background: var(--surface-2); padding: 0 12px; height: 42px; font: inherit; color: var(--ink); } textarea { height: 76px; padding: 10px 12px; resize: vertical; }
   input:focus, select:focus, textarea:focus { border-color: var(--blue); outline: 0; box-shadow: 0 0 0 4px rgba(47,109,246,.14); background: var(--surface); }
@@ -30,12 +27,12 @@
   .btn.sm { height: 34px; padding: 0 12px; font-size: 13px; }
   .err { color: var(--bad); font-size: 13px; min-height: 18px; margin: 4px 0 8px; }
   .app { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
-  aside { background: linear-gradient(180deg, #0e1736, #101a3d); color: #cfdcff; padding: 22px 14px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
-  aside .brand { font-family: var(--d); font-weight: 600; color: #fff; padding: 4px 10px 18px; font-size: 16px; display: flex; align-items: center; gap: 9px; } aside .brand small { display: block; font-family: var(--b); font-weight: 400; color: #8fa3d8; font-size: 11px; }
-  aside button.nav { text-align: left; border: 0; background: none; border-radius: 10px; padding: 10px 12px; color: #b9c8ee; font-size: 14px; } aside button.nav:hover { background: rgba(255,255,255,.07); } aside button.nav.on { background: rgba(79,140,255,.22); color: #fff; }
-  aside .who { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; } aside .who button { margin-top: 8px; width: 100%; border: 1px solid rgba(255,255,255,.2); background: none; color: #cfdcff; border-radius: 8px; height: 34px; }
+  .app > aside { background: linear-gradient(180deg, #0e1736, #101a3d); color: #cfdcff; padding: 22px 14px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+  .app > aside .brand { font-family: var(--d); font-weight: 600; color: #fff; padding: 4px 10px 18px; font-size: 16px; display: flex; align-items: center; gap: 9px; } aside .brand small { display: block; font-family: var(--b); font-weight: 400; color: #8fa3d8; font-size: 11px; }
+  .app > aside button.nav { text-align: left; border: 0; background: none; border-radius: 10px; padding: 10px 12px; color: #b9c8ee; font-size: 14px; } aside button.nav:hover { background: rgba(255,255,255,.07); } aside button.nav.on { background: rgba(79,140,255,.22); color: #fff; }
+  .app > aside .who { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; } aside .who button { margin-top: 8px; width: 100%; border: 1px solid rgba(255,255,255,.2); background: none; color: #cfdcff; border-radius: 8px; height: 34px; }
   main { padding: 26px 30px 60px; min-width: 0; }
-  h2 { font-family: var(--d); font-size: 22px; margin: 0 0 4px; } .lead { color: var(--ink2); margin: 0 0 22px; }
+  main h2 { font-family: var(--d); font-size: 22px; margin: 0 0 4px; } .lead { color: var(--ink2); margin: 0 0 22px; }
   .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
   .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; box-shadow: var(--shadow-1); } .kpi small { color: var(--ink3); font-size: 12px; display: block; } .kpi b { font-family: var(--d); font-size: 26px; font-weight: 600; display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow-1); padding: 18px; margin-bottom: 18px; }
@@ -52,44 +49,46 @@
   .cred { background: var(--cred-bg); border: 1px solid var(--cred-ln); border-radius: 12px; padding: 12px 14px; margin-top: 10px; font-size: 13px; } .cred code { font-size: 14px; background: var(--surface); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--cred-ln); user-select: all; }
   .mail { white-space: pre-wrap; font-size: 12.5px; background: var(--th); border-radius: 10px; padding: 10px 12px; margin-top: 8px; max-height: 220px; overflow: auto; word-break: break-all; }
   .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px); background: #121a33; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13px; opacity: 0; transition: .25s; pointer-events: none; z-index: 60; } .toast.show { opacity: 1; transform: translate(-50%, 0); }
-  @media (max-width: 1000px) { .app { grid-template-columns: minmax(0, 1fr); } aside { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; } aside .who { margin: 0 0 0 auto; border: 0; padding: 0; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .plans { grid-template-columns: minmax(0, 1fr); } main { padding: 20px 16px 50px; } }
+  @media (max-width: 1000px) { .app { grid-template-columns: minmax(0, 1fr); } .app > aside { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; } .app > aside .who { margin: 0 0 0 auto; border: 0; padding: 0; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .plans { grid-template-columns: minmax(0, 1fr); } main { padding: 20px 16px 50px; } }
   @media (prefers-reduced-motion: reduce) { .panel { animation: none; } .toast { transition: none; } }
 
   /* ---- Pharmacy look: white sidebar, soft page, big radii, blue pill buttons ---- */
   :root { --th: #f6f8fb; --hov: #f4f6fa; --good: #15803d; --good-bg: #e8f8ef; --warn: #b45309; --warn-bg: #fff4e0; --bad: #c2373a; --bad-bg: #fdecec; --lnk: #1f4fd1; --cred-bg: #fff9e8; --cred-ln: #f0dca0; }
-  .gate { background: #f2f5f9; position: relative; overflow: hidden; }
-  .gate::before { content: ""; position: absolute; top: 0; left: 25%; width: 500px; height: 500px; border-radius: 50%; filter: blur(60px); background: linear-gradient(135deg, rgba(47,109,246,.10), transparent); pointer-events: none; }
-  .gcard { position: relative; width: min(448px, 100%); border-radius: 28px; padding: 40px; box-shadow: 0 30px 80px -25px rgba(27,42,74,.18); }
-  .gcard h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; text-align: center; color: var(--navy); } .gcard p { text-align: center; color: var(--muted); font-weight: 500; font-size: 13px; }
-  .badge { background: #eaf1ff; color: var(--lnk); font-weight: 700; }
   .fl label { font-weight: 700; color: var(--text-2); }
   input, select, textarea { border-radius: 14px; height: 46px; padding: 0 16px; background: #f8fafc; }
   textarea { height: 80px; }
   .btn { height: 44px; border-radius: 999px; padding: 0 22px; font-weight: 700; border-color: var(--line); color: var(--navy); }
   .btn.pri { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 12px 26px -10px rgba(47,109,246,.5); } .btn.pri:hover { background: var(--blue-d); }
   .btn.sm { height: 36px; padding: 0 16px; }
-  aside { background: #fff; color: var(--text-2); border-right: 1px solid var(--line); padding: 0 14px 18px; }
-  aside .brand { color: var(--navy); font-weight: 800; padding: 22px 10px 18px; margin: 0 -14px 12px; padding-left: 24px; border-bottom: 1px solid var(--line); font-size: 18px; letter-spacing: -.02em; } aside .brand small { color: var(--text-2); font-weight: 500; font-size: 13px; }
-  aside button.nav { color: var(--navy); border-radius: 12px; font-weight: 500; border: 1px solid transparent; } aside button.nav:hover { background: #f5f6f8; } aside button.nav.on { background: #e9f5f2; color: #006d69; border-color: #d5eae4; font-weight: 600; }
-  aside .who { border-top: 1px solid var(--line); color: var(--text-2); } aside .who button { border: 1px solid var(--line); color: var(--navy); border-radius: 999px; font-weight: 700; }
+  .app > aside { background: #fff; color: var(--text-2); border-right: 1px solid var(--line); padding: 0 14px 18px; }
+  .app > aside .brand { color: var(--navy); font-weight: 800; padding: 22px 10px 18px; margin: 0 -14px 12px; padding-left: 24px; border-bottom: 1px solid var(--line); font-size: 18px; letter-spacing: -.02em; } aside .brand small { color: var(--text-2); font-weight: 500; font-size: 13px; }
+  .app > aside button.nav { color: var(--navy); border-radius: 12px; font-weight: 500; border: 1px solid transparent; } aside button.nav:hover { background: #f5f6f8; } aside button.nav.on { background: #e9f5f2; color: #006d69; border-color: #d5eae4; font-weight: 600; }
+  .app > aside .who { border-top: 1px solid var(--line); color: var(--text-2); } .app > aside .who button { border: 1px solid var(--line); color: var(--navy); border-radius: 999px; font-weight: 700; }
   main { padding: 28px 32px 60px; }
-  h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
+  main h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
   .kpi { border-radius: 22px; box-shadow: 0 1px 3px rgba(27,42,74,.04); } .kpi b { font-weight: 800; }
 </style>
 </head>
 <body>
 
-<div class="gate" id="gate" hidden>
-  <form class="gcard" id="gf" novalidate>
-    <span class="badge" id="gBadge">Platform owner</span>
-    <h1 id="gTitle">Sign in</h1><p id="gSub">This area is for the owner of the Optix Medical Sync platform.</p>
-    <div class="fl" id="gNameB" hidden><label for="gName">Full name</label><input id="gName" autocomplete="name"></div>
-    <div class="fl"><label for="gUser">Username</label><input id="gUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-    <div class="fl"><label for="gPass">Password</label><input id="gPass" type="password" autocomplete="current-password"></div>
-    <div class="fl" id="gPass2B" hidden><label for="gPass2">Repeat password <span class="hint">(at least 10 characters)</span></label><input id="gPass2" type="password" autocomplete="new-password"></div>
-    <div class="err" id="gErr" role="alert"></div>
-    <button class="btn pri" id="gBtn" style="width:100%" type="submit">Sign in</button>
-  </form>
+<div class="oa-page" id="gate" hidden>
+  <a class="oa-back" href="/">&larr; Optix Medical Sync</a>
+  <div class="oa-card">
+    <div class="oa-form"><div class="oa-in">
+      <span class="oa-badge" id="gBadge">Platform owner</span>
+      <h1 class="oa-title" id="gTitle">Sign in</h1>
+      <p class="oa-sub" id="gSub">This area is for the owner of the Optix Medical Sync platform.</p>
+      <form class="oa-fields" id="gf" novalidate>
+        <div class="oa-field" id="gNameB" hidden><label class="oa-sr" for="gName">Full name</label><input class="oa-input" id="gName" autocomplete="name" placeholder="Full name"></div>
+        <div class="oa-field"><label class="oa-sr" for="gUser">Username</label><input class="oa-input" id="gUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Username"></div>
+        <div class="oa-field"><label class="oa-sr" for="gPass">Password</label><input class="oa-input" id="gPass" type="password" autocomplete="current-password" placeholder="Password"></div>
+        <div class="oa-field" id="gPass2B" hidden><label class="oa-sr" for="gPass2">Repeat password (at least 10 characters)</label><input class="oa-input" id="gPass2" type="password" autocomplete="new-password" placeholder="Repeat password (at least 10 characters)"></div>
+        <div class="oa-err" id="gErr" role="alert"></div>
+        <button class="oa-btn" id="gBtn" type="submit" style="align-self:center">Sign in</button>
+      </form>
+    </div></div>
+    <aside class="oa-side"><h2>Optix Medical Sync</h2><p>The platform owner console: workspaces, plans and pricing for every hospital.</p><a class="oa-ghost" href="/">Back to website</a></aside>
+  </div>
 </div>
 
 <div class="app" id="app" hidden>
@@ -160,7 +159,7 @@
   api('GET', '/api/platform/state').then(function (s) { if (s.owner) enter(s.owner); else gate(s.needsSetup); }).catch(function () { gate(false); $('gErr').textContent = 'Cannot reach the server.'; });
 
   /* ---- nav ---- */
-  document.querySelectorAll('aside .nav').forEach(function (b) { b.addEventListener('click', function () { document.querySelectorAll('aside .nav').forEach(function (x) { x.classList.toggle('on', x === b); }); ['ws', 'plans', 'mail', 'audit'].forEach(function (v) { $('v-' + v).hidden = v !== b.dataset.v; }); if (b.dataset.v === 'mail') loadMail(); if (b.dataset.v === 'audit') loadAudit(); }); });
+  document.querySelectorAll('.app > aside .nav').forEach(function (b) { b.addEventListener('click', function () { document.querySelectorAll('.app > aside .nav').forEach(function (x) { x.classList.toggle('on', x === b); }); ['ws', 'plans', 'mail', 'audit'].forEach(function (v) { $('v-' + v).hidden = v !== b.dataset.v; }); if (b.dataset.v === 'mail') loadMail(); if (b.dataset.v === 'audit') loadAudit(); }); });
 
   /* ---- workspaces ---- */
   function load() { api('GET', '/api/platform/overview').then(function (d) { DATA = d; renderOverview(); renderPlans(); }).catch(function (e) { if (e.status === 401) location.reload(); else toast(e.message); }); }
