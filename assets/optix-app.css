@@ -4,7 +4,7 @@
 :root {
   --page: #f2f5f9; --page-2: #f2f5f9; --shell: #fff; --ring: transparent; --ring-ln: transparent;
   --canvas: #f6f8fb; --card: #fff;
-  --ink: #1b2a4a; --ink-2: #3c4761; --ink-3: #8b94a7; --faint: #a7b1c4;
+  --ink: #1b2a4a; --ink-2: #3c4761; --ink-3: #636f89; --faint: #a7b1c4;
   --blue-soft: #e9f5f2; --blue-chip: #eef3ff; --blue-t: #2f6df6; --blue-d: #1f4fd1; --lnk: #1f4fd1;
   --sub: #f6f8fb; --hov: #f4f6fa; --trk: #e8edf5; --tintb: #eaf1ff; --tint2: #dce8ff;
   --good: #15803d; --good-bg: #e8f8ef; --good-ln: #c5ecd5;
@@ -23,7 +23,7 @@ body {
 button, input, select, textarea { font-family: inherit; }
 
 /* ---------- shell: no outer ring, white sidebar full height ---------- */
-.frame { border: 0; border-radius: 0; box-shadow: none; background: #fff; grid-template-columns: 256px minmax(0, 1fr); }
+.frame { border: 0; border-radius: 0; box-shadow: none; background: #fff; grid-template-columns: 256px minmax(0, 1fr); zoom: .9; }
 .side { background: #fff; border-right: 1px solid var(--line); padding: 0 14px 16px; gap: 0; }
 .brand { height: 80px; margin: 0 -14px 14px; padding: 0 20px; gap: 11px; border-bottom: 1px solid var(--line); flex: none; }
 .brand .bt b { font-size: 19px; font-weight: 800; letter-spacing: -.03em; color: var(--ink); line-height: 1.15; }
