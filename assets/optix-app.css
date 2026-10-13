@@ -41,6 +41,9 @@ button, input, select, textarea { font-family: inherit; }
 .nav a:hover { background: #f5f6f8; }
 .nav a.on { background: #e9f5f2; border-color: #d5eae4; color: #006d69; font-weight: 600; }
 .nav a.on svg { color: #0d8f89; }
+.nav-tog { height: 38px; border-radius: 12px; border: 1px solid transparent; font-size: 13.5px; font-weight: 500; color: var(--ink); padding: 0 12px; gap: 12px; }
+.nav-tog svg { width: 17px; height: 17px; color: var(--ink-2); }
+.nav-tog:hover { background: #f5f6f8; }
 
 /* ---------- top bar ---------- */
 .right { background: var(--canvas); }

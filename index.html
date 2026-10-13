@@ -99,6 +99,13 @@
   .nav a.on { background: var(--blue-soft); }
   .nav a.on svg { color: var(--blue-t); }
   .nav a:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .nav-tog { display: flex; align-items: center; gap: 11px; height: 40px; padding: 0 12px; border-radius: 9px; color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 450; width: 100%; background: none; border: 0; text-align: left; cursor: pointer; }
+  .nav-tog svg { color: var(--muted); width: 15px; height: 15px; flex: none; }
+  .nav-tog:hover { background: var(--hov); }
+  .nav-tog-lb { flex: 1; }
+  .nav-tog-ch { transition: transform .15s; }
+  .nav-tog[aria-expanded="true"] .nav-tog-ch { transform: rotate(180deg); }
+  .nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 2px 14px; padding-left: 13px; border-left: 1px solid var(--line); }
 
   /* right column */
   .right { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 0 0 0 0; }
@@ -945,6 +952,16 @@
     <nav class="nav">
       <a href="#reports" data-ic="chart">Reports</a>
     </nav>
+    <div class="group">TOOLS</div>
+    <nav class="nav">
+      <button type="button" class="nav-tog" id="waTog" aria-expanded="false" aria-controls="waSub"><span data-ic="wa"></span><span class="nav-tog-lb">WhatsApp</span><span class="nav-tog-ch" data-ic="chevd"></span></button>
+      <div class="nav-sub" id="waSub" hidden>
+        <a href="#wa-ready" data-ic="ticket">Ready to send</a>
+        <a href="#wa-log" data-ic="doc">Message log</a>
+        <a href="#wa-tpl" data-ic="rx">Templates &amp; rules</a>
+        <a href="#wa-settings" data-ic="cog">Settings</a>
+      </div>
+    </nav>
     <div class="group">ADMIN</div>
     <nav class="nav">
       <a href="#users" data-ic="pts">Users</a>
@@ -1110,6 +1127,43 @@
           <div class="tbl-wrap"><table><thead><tr><th>When</th><th>User</th><th>Action</th><th>Area</th><th>Details</th></tr></thead><tbody id="auRows"></tbody></table></div>
           <div class="empty" id="auEmpty" hidden>No entries match.</div>
           <nav class="pager" id="auPager" aria-label="Pages"></nav>
+        </section>
+      </div>
+
+      <div class="view" id="view-wa-ready" hidden>
+        <div class="head"><div><h1>Ready to send</h1><p>Approved appointments in the next 2 days that have no reminder sent yet</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="tbl-wrap"><table><thead><tr><th>Patient</th><th>Doctor</th><th>Appointment</th><th>Phone</th><th></th></tr></thead><tbody id="waReadyRows"></tbody></table></div>
+          <div class="empty" id="waReadyEmpty" hidden>Nothing waiting. Every upcoming appointment already has a reminder on file.</div>
+        </section>
+      </div>
+
+      <div class="view" id="view-wa-log" hidden>
+        <div class="head"><div><h1>Message log</h1><p>Every WhatsApp, SMS and email reminder sent from this workspace, newest first</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="tools" style="margin-top:0">
+            <label class="sbox"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="waLogQ" type="search" placeholder="Search patient or number" aria-label="Search the message log"></label>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>When</th><th>Patient</th><th>Channel</th><th>To</th><th>Sent by</th><th>Message</th></tr></thead><tbody id="waLogRows"></tbody></table></div>
+          <div class="empty" id="waLogEmpty" hidden>No messages sent yet.</div>
+        </section>
+      </div>
+
+      <div class="view" id="view-wa-tpl" hidden>
+        <div class="head"><div><h1>Templates &amp; rules</h1><p>Reusable reminder text with {name}, {doctor}, {date}, {time} and {hospital} placeholders. Nothing here is ever sent on its own, a person always presses Send.</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="tools" style="margin-top:0;justify-content:flex-end">
+            <button class="addbtn" id="waTplAdd">Add Template <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Message</th><th></th></tr></thead><tbody id="waTplRows"></tbody></table></div>
+          <div class="empty" id="waTplEmpty" hidden>No templates yet.</div>
+        </section>
+      </div>
+
+      <div class="view" id="view-wa-settings" hidden>
+        <div class="head"><div><h1>Settings</h1><p>Messages are sent through your Optix account hub, the same sign-in used across the suite</p></div></div>
+        <section class="card ap-card" style="padding-top:18px;max-width:460px">
+          <div id="waStBody" class="hm-note">Checking your messaging channels&hellip;</div>
         </section>
       </div>
 
@@ -1784,7 +1838,9 @@ window.bootApp = function () {
     flask: '<path d="M9 3h6M10 3v6.3L4.6 18.1A1.5 1.5 0 005.9 20.3h12.2a1.5 1.5 0 001.3-2.2L14 9.3V3"/><path d="M8 14h8"/>',
     tv: '<rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M8 20h8M12 16v4"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
-    wa: '<path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/>'
+    wa: '<path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/>',
+    cog: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.3M12 18.7V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.3M18.7 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>',
+    chevd: '<path d="M6 9l6 6 6-6"/>'
   };
   function svg(name) { return '<svg class="ic" viewBox="0 0 24 24">' + P[name] + '</svg>'; }
   document.querySelectorAll('[data-ic]').forEach(function (el) { el.insertAdjacentHTML('afterbegin', svg(el.dataset.ic)); });
@@ -1955,7 +2011,11 @@ window.bootApp = function () {
     'Wards & Beds': [['bed', 'Wards & Beds']],
     Consultations: [['rx', 'Consultations']],
     'OPD Queue': [['ticket', 'OPD Queue']],
-    'Lab & Radiology': [['flask', 'Lab & Radiology']]
+    'Lab & Radiology': [['flask', 'Lab & Radiology']],
+    'Ready to send': [['wa', 'WhatsApp'], [null, 'Ready to send']],
+    'Message log': [['wa', 'WhatsApp'], [null, 'Message log']],
+    'Templates & rules': [['wa', 'WhatsApp'], [null, 'Templates & rules']],
+    Settings: [['wa', 'WhatsApp'], [null, 'Settings']]
   };
   var hist = ['Dashboard'], hi = 0;
   function renderCrumb(key) {
@@ -1966,8 +2026,10 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calendar: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calendar: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab', 'Ready to send': 'view-wa-ready', 'Message log': 'view-wa-log', 'Templates & rules': 'view-wa-tpl', Settings: 'view-wa-settings' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab', 'view-wa-ready', 'view-wa-log', 'view-wa-tpl', 'view-wa-settings'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var waSub = document.getElementById('waSub'), waTog = document.getElementById('waTog');
+    if (vid.indexOf('view-wa-') === 0) { waSub.hidden = false; waTog.setAttribute('aria-expanded', 'true'); }
     document.getElementById('main').classList.toggle('plain', pv);
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.toggle('on', x.textContent === navKey); });
     if (vid === 'view-dash') renderDash();
@@ -1985,6 +2047,10 @@ window.bootApp = function () {
     if (vid === 'view-visits') renderVisits();
     if (vid === 'view-lab') renderLab();
     if (vid === 'view-opd') { renderQueue(); syncQueue().then(renderQueue); }
+    if (vid === 'view-wa-ready') renderWaReady();
+    if (vid === 'view-wa-log') renderWaLog();
+    if (vid === 'view-wa-tpl') renderWaTpl();
+    if (vid === 'view-wa-settings') loadWaSettings();
     renderCrumb(key); if (window.__closeNav) window.__closeNav();
     document.getElementById('back').disabled = hi === 0;
     document.getElementById('fwd').disabled = hi === hist.length - 1;
@@ -3414,7 +3480,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS && !!PERMS[c]; } function canW(c) { return !!PERMS && PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calendar: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calendar: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); }, 'Ready to send': function () { return canR('walog'); }, 'Message log': function () { return canR('walog'); }, 'Templates & rules': function () { return canR('wtpl'); }, Settings: function () { return canR('walog') || canR('wtpl'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3629,7 +3695,7 @@ window.bootApp = function () {
      HOSPITAL MODULES: wards and beds, consultations, OPD queue, lab and radiology, invoices.
      Same pattern as the rest of the app: arrays in memory, persist(col, record) after every change, server enforces the role matrix.
      ===================================================================== */
-  var WARDS = [], BEDS = [], ADMS = [], VISITS = [], OPDQ = [], LABT = [], LABS = [];
+  var WARDS = [], BEDS = [], ADMS = [], VISITS = [], OPDQ = [], LABT = [], LABS = [], WALOG = [], WTPL = [];
   function newId(p) { return p + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36); }
   function stampNow() { var d = new Date(); return isoToday() + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
   function fmtStamp(s) { return s ? fmtDate(s.slice(0, 10)) + (s.length > 10 ? ', ' + fmtTime(s.slice(11, 16)) : '') : '—'; }
@@ -4736,11 +4802,18 @@ window.bootApp = function () {
   /* ===== reminders ===== */
 
   /* ---------- appointment reminders through the Optix hub (WhatsApp, SMS, email). Never sent by itself: a person presses Send. ---------- */
-  var REM_TPL = [
+  var REM_TPL_DEFAULT = [
     ['appt', 'Appointment reminder', 'Dear {name}, this is a reminder of your appointment with {doctor} on {date} at {time} at {hospital}. Please arrive 10 minutes early. Reply to this message if you need to change it.'],
     ['docs', 'Bring documents', 'Dear {name}, your appointment with {doctor} is on {date} at {time} at {hospital}. Please bring your ID, insurance card and any earlier reports.'],
     ['move', 'Reschedule request', 'Dear {name}, we need to move your appointment with {doctor} ({date}, {time}) at {hospital}. Please call us to choose a new time. We are sorry for the trouble.']
   ];
+  /* the 3 built-ins, each overridden by a saved WTPL record of the same id if one exists, plus any custom templates appended */
+  function tplList() {
+    var out = REM_TPL_DEFAULT.map(function (t) { return [t[0], t[1], t[2]]; });
+    WTPL.forEach(function (t) { var i = out.findIndex(function (o) { return o[0] === t.id; }); if (i !== -1) out[i] = [t.id, t.title, t.text]; else out.push([t.id, t.title, t.text]); });
+    return out;
+  }
+  function isDefaultTpl(id) { return REM_TPL_DEFAULT.some(function (t) { return t[0] === id; }); }
   function hubSess() { try { return JSON.parse(localStorage.getItem('optix_hospital_hub') || 'null'); } catch (e) { return null; } }
   var remMsgP = null;
   function loadMessaging() {
@@ -4768,11 +4841,11 @@ window.bootApp = function () {
         (has ? '<div class="hm-note" id="remSt">Checking your messaging channels…</div>' : '<div class="hm-note warn">You are not signed in with your Optix account, so the message cannot be sent from here. Sign out and use <b>Sign in with your Optix account</b>, or copy the message and send it yourself.</div>') +
         (last ? '<p class="hm-sub" style="margin:10px 0 0">Last reminder: ' + esc(last.ch) + ', ' + fmtStamp(last.at) + (last.by ? ' by ' + esc(last.by) : '') + '</p>' : '') +
         '<div class="row2" style="margin-top:16px"><div class="fl"><label class="lb" for="rmC">Send by</label><select class="in sel" id="rmC">' + optList([['whatsapp', 'WhatsApp'], ['sms', 'SMS'], ['email', 'Email']], 'whatsapp') + '</select></div><div class="fl"><label class="lb" for="rmTo" id="rmToL">Phone number</label><input class="in" id="rmTo" autocomplete="off"></div></div>' +
-        '<div class="fl"><label class="lb" for="rmT">Message template</label><select class="in sel" id="rmT">' + optList(REM_TPL.map(function (t) { return [t[0], t[1]]; }), 'appt') + '</select></div>' +
+        '<div class="fl"><label class="lb" for="rmT">Message template</label><select class="in sel" id="rmT">' + optList(tplList().map(function (t) { return [t[0], t[1]]; }), 'appt') + '</select></div>' +
         '<div class="fl"><div class="lb"><label for="rmM">Message</label><span class="cnt" id="rmCnt">0</span></div><textarea class="in" id="rmM" style="height:128px" maxlength="900"></textarea></div>',
       ready: function (D) {
         function setTo() { var ch = D.$('#rmC').value; D.$('#rmToL').textContent = ch === 'email' ? 'Email address' : 'Phone number (with country code)'; D.$('#rmTo').value = ch === 'email' ? (pt && pt.email || '') : intlPhone(pt && pt.phone); D.$('#rmTo').placeholder = ch === 'email' ? 'name@example.com' : '+20 1xx xxx xxxx'; }
-        function setMsg() { D.$('#rmM').value = remText(REM_TPL.filter(function (t) { return t[0] === D.$('#rmT').value; })[0][2], r); cnt(); }
+        function setMsg() { D.$('#rmM').value = remText(tplList().filter(function (t) { return t[0] === D.$('#rmT').value; })[0][2], r); cnt(); }
         function cnt() { D.$('#rmCnt').textContent = D.$('#rmM').value.length + ' characters'; }
         D.$('#rmC').addEventListener('change', setTo); D.$('#rmT').addEventListener('change', setMsg); D.$('#rmM').addEventListener('input', cnt); setTo(); setMsg();
         if (has) loadMessaging().then(function (m) { return m.status(); }).then(function (s) { D.st = s; var el = D.$('#remSt'); if (el) { el.textContent = 'WhatsApp: ' + (s.whatsapp ? 'ready' : s.whatsappNote || 'not available') + '\nSMS: ' + (s.sms ? 'ready' : s.smsNote || 'not available') + '\nEmail: ready'; } }).catch(function (e) { var el = D.$('#remSt'); if (el) { el.className = 'hm-note warn'; el.textContent = e.message || 'Could not check the messaging channels.'; } });
@@ -4785,11 +4858,84 @@ window.bootApp = function () {
         if (text.length < 10) return D.err('Write the message.', '#rmM');
         to = ch === 'email' ? to : intlPhone(to); D.busy(true); D.err('');
         loadMessaging().then(function (m) { return ch === 'whatsapp' ? m.sendWhatsApp(to, text) : ch === 'sms' ? m.sendSms(to, text, { toName: r.patient }) : m.sendEmail(to, 'Appointment reminder, ' + wsName(), text); })
-          .then(function () { (r.reminded = r.reminded || []).push({ at: stampNow(), ch: ch === 'whatsapp' ? 'WhatsApp' : ch === 'sms' ? 'SMS' : 'Email', by: ME.name || '' }); saveAppt(r, r.list || 'approved'); D.close(); toast('Reminder sent to ' + r.patient + ' by ' + r.reminded[r.reminded.length - 1].ch); })
+          .then(function () {
+            var chName = ch === 'whatsapp' ? 'WhatsApp' : ch === 'sms' ? 'SMS' : 'Email';
+            (r.reminded = r.reminded || []).push({ at: stampNow(), ch: chName, by: ME.name || '' }); saveAppt(r, r.list || 'approved');
+            var log = { id: 'wl' + Date.now(), ord: Date.now(), at: stampNow(), ch: chName, to: to, patient: r.patient, apptId: r.id, by: ME.name || '', text: text };
+            WALOG.unshift(log); persist('walog', log); renderWaLog(); renderWaReady();
+            D.close(); toast('Reminder sent to ' + r.patient + ' by ' + chName);
+          })
           .catch(function (e) { D.busy(false); D.err(e.message || 'The message could not be sent.'); });
       } });
   }
   function fmtShort(iso) { return shortLong(iso).slice(0, -5); }
+  /* ===== WhatsApp tools: ready-to-send queue, message log, templates ===== */
+  function waPending() {
+    var end = addDays(TODAY, 2);
+    return approved.filter(function (r) { return r.status !== 'can' && r.date >= TODAY && r.date <= end && (!r.reminded || !r.reminded.length); })
+      .sort(function (a, b) { return a.date === b.date ? toMin(a.time) - toMin(b.time) : (a.date < b.date ? -1 : 1); });
+  }
+  function renderWaReady() {
+    var rows = document.getElementById('waReadyRows'); if (!rows) return;
+    var list = waPending();
+    rows.innerHTML = list.map(function (r) {
+      var d = dirOf(r), pt = r.pid ? patientById(r.pid) : null;
+      return '<tr><td>' + esc(r.patient) + '</td><td>' + esc(d[0]) + '</td><td>' + fmtShort(r.date) + ', ' + fmtTime(r.time) + '</td><td>' + esc((pt && pt.phone) || '') + '</td><td><button class="lk" data-wa-send="' + r.id + '">Send reminder</button></td></tr>';
+    }).join('');
+    document.getElementById('waReadyEmpty').hidden = list.length > 0;
+  }
+  document.addEventListener('click', function (e) { var b = e.target.closest('[data-wa-send]'); if (!b) return; var r = approved.filter(function (x) { return String(x.id) === b.dataset.waSend; })[0]; if (r) openReminder(r); });
+  function renderWaLog() {
+    var rows = document.getElementById('waLogRows'); if (!rows) return;
+    var q = (document.getElementById('waLogQ') || {}).value || '', qq = q.trim().toLowerCase();
+    var list = WALOG.slice().sort(byOrd);
+    if (qq) list = list.filter(function (m) { return (m.patient || '').toLowerCase().indexOf(qq) !== -1 || (m.to || '').toLowerCase().indexOf(qq) !== -1; });
+    rows.innerHTML = list.map(function (m) {
+      return '<tr><td>' + fmtStamp(m.at) + '</td><td>' + esc(m.patient || '') + '</td><td>' + esc(m.ch || '') + '</td><td>' + esc(m.to || '') + '</td><td>' + esc(m.by || '') + '</td><td>' + esc((m.text || '').slice(0, 70)) + ((m.text || '').length > 70 ? '…' : '') + '</td></tr>';
+    }).join('');
+    document.getElementById('waLogEmpty').hidden = list.length > 0;
+  }
+  (function () { var q = document.getElementById('waLogQ'); if (q) q.addEventListener('input', renderWaLog); })();
+  function renderWaTpl() {
+    var rows = document.getElementById('waTplRows'); if (!rows) return;
+    var list = tplList(), canE = canWrite('wtpl');
+    rows.innerHTML = list.map(function (t) {
+      var del = !isDefaultTpl(t[0]) && canE ? ' <button class="lk" data-tpl-del="' + esc(t[0]) + '">Delete</button>' : '';
+      return '<tr><td>' + esc(t[1]) + '</td><td>' + esc(t[2].slice(0, 80)) + (t[2].length > 80 ? '…' : '') + '</td><td>' + (canE ? '<button class="lk" data-tpl-edit="' + esc(t[0]) + '">Edit</button>' + del : '') + '</td></tr>';
+    }).join('');
+    document.getElementById('waTplEmpty').hidden = list.length > 0;
+    var add = document.getElementById('waTplAdd'); if (add) add.hidden = !canE;
+  }
+  function openTplForm(t) {
+    hdw('tplW', { title: t ? 'Edit Template' : 'Add Template', mid: true, save: 'Save',
+      body: '<div class="fl"><label class="lb" for="tpTitle">Title</label><input class="in" id="tpTitle" maxlength="60" value="' + (t ? esc(t[1]) : '') + '"></div>' +
+        '<div class="fl"><div class="lb"><label for="tpText">Message</label><span class="cnt" id="tpCnt">0</span></div><textarea class="in" id="tpText" style="height:128px" maxlength="900">' + (t ? esc(t[2]) : '') + '</textarea></div>' +
+        '<p class="hm-sub" style="margin-top:6px">Placeholders: {name}, {doctor}, {date}, {time}, {hospital}</p>',
+      ready: function (D) { function cnt() { D.$('#tpCnt').textContent = D.$('#tpText').value.length + ' characters'; } D.$('#tpText').addEventListener('input', cnt); cnt(); },
+      submit: function (D) {
+        var title = D.$('#tpTitle').value.trim(), text = D.$('#tpText').value.trim();
+        if (!title) return D.err('Enter a title.', '#tpTitle');
+        if (text.length < 10) return D.err('Write the message.', '#tpText');
+        var id = t ? t[0] : 'tpl' + Date.now(), rec = { id: id, title: title, text: text };
+        var i = WTPL.findIndex(function (x) { return x.id === id; }); if (i === -1) WTPL.unshift(rec); else WTPL[i] = rec;
+        persist('wtpl', rec); renderWaTpl(); D.close(); toast('Template saved');
+      } });
+  }
+  function deleteTpl(id) { if (!confirm('Delete this template?')) return; WTPL = WTPL.filter(function (x) { return x.id !== id; }); unpersist('wtpl', id); renderWaTpl(); toast('Template deleted'); }
+  document.addEventListener('click', function (e) {
+    var ea = e.target.closest('[data-tpl-edit]'); if (ea) { var t = tplList().filter(function (x) { return x[0] === ea.dataset.tplEdit; })[0]; openTplForm(t); return; }
+    var da = e.target.closest('[data-tpl-del]'); if (da) deleteTpl(da.dataset.tplDel);
+  });
+  document.getElementById('waTplAdd').addEventListener('click', function () { openTplForm(null); });
+  function loadWaSettings() {
+    var el = document.getElementById('waStBody'); if (!el) return;
+    var sess = hubSess(), has = !!(sess && sess.token);
+    if (!has) { el.className = 'hm-note warn'; el.textContent = 'You are not signed in with your Optix account, so messages cannot be sent from this device. Sign out and use "Sign in with your Optix account" to connect WhatsApp, SMS and email.'; return; }
+    el.className = 'hm-note'; el.textContent = 'Checking your messaging channels…';
+    loadMessaging().then(function (m) { return m.status(); }).then(function (s) {
+      el.textContent = 'WhatsApp: ' + (s.whatsapp ? 'ready' : s.whatsappNote || 'not available') + '\nSMS: ' + (s.sms ? 'ready' : s.smsNote || 'not available') + '\nEmail: ready';
+    }).catch(function (e) { el.className = 'hm-note warn'; el.textContent = e.message || 'Could not check the messaging channels.'; });
+  }
   /* ---------- server sync ---------- */
   function saveFail() { toast('Could not save to the server. Make sure it is still running.'); }
   function persist(col, o) { api('PUT', '/api/records/' + col + '/' + encodeURIComponent(o.id), o).catch(function (e) { if (e.message === 'signed out') return; if (e.status === 402 || e.status === 423) { toast(e.message); setTimeout(function () { location.reload(); }, 2400); } else if (e.status === 403 || e.status === 409) toast(e.message); else saveFail(); }); }
@@ -4808,7 +4954,7 @@ window.bootApp = function () {
     api('POST', '/api/seed', { appts: approved.concat(requests), patients: patients, staff: docStaff.concat(genStaffL), suppliers: num(SUPS), stocks: stocks, txs: TXC.concat(TXS), devices: num(DEVS), wards: WARDS, beds: BEDS, admissions: ADMS, visits: VISITS, opdq: OPDQ, labtests: LABT, labs: LABS }).catch(function (e) { if (e.status !== 409) saveFail(); });
   }
   function rerenderAll() {
-    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits(); renderQueue(); renderLab();
+    refreshBell(); fillCalDocs(); rebuildChart(); renderDocs(); renderPlan(); renderMeds(); renderDash(); renderAppts(); renderStaff(); renderSup(); renderTx(); renderPer(); renderCal(); renderStocks(); renderPts(); renderWards(); renderVisits(); renderQueue(); renderLab(); renderWaReady(); renderWaLog(); renderWaTpl();
   }
   function hydrate(srv) {
     if (!srv) { seedServer(); rerenderAll(); return; }
@@ -4830,6 +4976,7 @@ window.bootApp = function () {
     var tx = C.txs || []; TXC = tx.filter(function (x) { return x.kind === 'customers'; }); TXS = tx.filter(function (x) { return x.kind === 'suppliers'; });
     DEVS = (C.devices || []).slice().sort(byOrd);
     WARDS = (C.wards || []).slice().sort(byOrd); BEDS = (C.beds || []).slice().sort(byOrd); ADMS = (C.admissions || []).slice().sort(byOrd); VISITS = (C.visits || []).slice().sort(byOrd); OPDQ = (C.opdq || []).slice().sort(byOrd); LABT = (C.labtests || []).slice().sort(byOrd); LABS = (C.labs || []).slice().sort(byOrd);
+    WALOG = (C.walog || []).slice().sort(byOrd); WTPL = (C.wtpl || []).slice();
     if (kv.planDone) planDone = kv.planDone; if (kv.medTaken) medTaken = kv.medTaken;
     uid = Math.max(uid, maxId(approved.concat(requests))); sUid = Math.max(sUid, maxId(docStaff.concat(genStaffL))); supUid = Math.max(supUid, maxId(SUPS)); ptUid = Math.max(ptUid, maxId(patients));
     stkUid = Math.max(stkUid, maxId(C.stocks || [])); devUid = Math.max(devUid, maxId(DEVS)); supCur = null; curPid = patients.length ? patients[patients.length - 1].id : 0;
@@ -4886,7 +5033,8 @@ window.bootApp = function () {
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calendar', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology' }[location.hash] || 'Dashboard';
+  (function () { var tog = document.getElementById('waTog'), sub = document.getElementById('waSub'); tog.addEventListener('click', function () { sub.hidden = !sub.hidden; tog.setAttribute('aria-expanded', String(!sub.hidden)); }); })();
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calendar', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology', '#wa-ready': 'Ready to send', '#wa-log': 'Message log', '#wa-tpl': 'Templates & rules', '#wa-settings': 'Settings' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };

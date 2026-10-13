@@ -19,7 +19,7 @@ const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 const SESSION_MS = 7 * 24 * 3600 * 1000;
 const MAX_FILE = 10 * 1024 * 1024;
 const TRIAL_DAYS = 15;
-const COLLECTIONS = new Set(['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs']);
+const COLLECTIONS = new Set(['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs', 'walog', 'wtpl']);
 /* the hospital modules added after the first release: wards and beds (IPD), consultations, OPD queue, lab and radiology */
 const HOSPITAL_COLS = ['wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs'];
 const ALLOWED_HOSTS = new Set((process.env.ALLOWED_HOSTS || `localhost:${PORT},127.0.0.1:${PORT}`).split(',').map((h) => h.trim()));
@@ -64,13 +64,13 @@ const ROLES = ['Super Admin', 'Doctor', 'Receptionist', 'Accountant', 'Pharmacis
 const rw = (...c) => Object.fromEntries(c.map((x) => [x, 'rw']));
 const ro = (...c) => Object.fromEntries(c.map((x) => [x, 'r']));
 const PERMS = {
-  'Super Admin': rw('appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', ...HOSPITAL_COLS),
-  Doctor: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs'), ...ro('staff') },
-  Receptionist: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'opdq', 'labtests', 'labs'), ...ro('staff', 'visits') },
+  'Super Admin': rw('appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices', 'resv', 'kv', ...HOSPITAL_COLS, 'walog', 'wtpl'),
+  Doctor: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'visits', 'opdq', 'labtests', 'labs', 'walog', 'wtpl'), ...ro('staff') },
+  Receptionist: { ...rw('appts', 'patients', 'kv', 'wards', 'beds', 'admissions', 'opdq', 'labtests', 'labs', 'walog', 'wtpl'), ...ro('staff', 'visits') },
   Accountant: { ...rw('txs', 'kv'), ...ro('appts', 'patients', 'staff', 'suppliers', 'stocks', 'wards', 'beds', 'admissions', 'labtests', 'labs') },
   Pharmacist: { ...rw('suppliers', 'stocks', 'kv'), ...ro('devices', 'staff', 'wards', 'beds', 'admissions', 'visits') },
 };
-const AREA = { appts: 'Appointments', patients: 'Patients', staff: 'Staff', suppliers: 'Suppliers', stocks: 'Stocks', txs: 'Transactions', devices: 'Peripherals', resv: 'Reservations', kv: 'Settings', wards: 'Wards', beds: 'Beds', admissions: 'Admissions', visits: 'Consultations', opdq: 'OPD queue', labtests: 'Lab catalog', labs: 'Lab orders' };
+const AREA = { appts: 'Appointments', patients: 'Patients', staff: 'Staff', suppliers: 'Suppliers', stocks: 'Stocks', txs: 'Transactions', devices: 'Peripherals', resv: 'Reservations', kv: 'Settings', wards: 'Wards', beds: 'Beds', admissions: 'Admissions', visits: 'Consultations', opdq: 'OPD queue', labtests: 'Lab catalog', labs: 'Lab orders', walog: 'WhatsApp log', wtpl: 'Message templates' };
 /* Rules the server enforces on top of the role matrix, so two users on two screens cannot break the data. Return an error text or ''. */
 const jget = (db, col, where, ...args) => db.prepare(`SELECT 1 FROM records WHERE col = '${col}' AND ${where}`).get(...args);
 const RULES = {
