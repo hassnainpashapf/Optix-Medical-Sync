@@ -7,7 +7,7 @@ services:
     volumes: ["hospital-data:/data"]
     environment:
       ALLOWED_HOSTS: "${HOSPITAL_HOST:?set HOSPITAL_HOST, e.g. hospital.example.pk}"   # the Host header(s) the server accepts
-      APP_URL: "https://${HOSPITAL_HOST}"
+      APP_URL: "${HOSPITAL_APP_URL:-https://${HOSPITAL_HOST}}"                            # the public address in e-mailed links (invites, resets, welcome): the Cloudflare address when one is in front
       HUB_API: "${HUB_API:-https://labpos-api.150.230.52.29.sslip.io}"                 # the Optix account hub
       HUB_APP_ID: "hospital"
       ADSENSE_CLIENT: "${ADSENSE_CLIENT:-}"                                             # Google AdSense publisher id, ca-pub-XXXXXXXXXXXXXXXX (empty = no ads)
