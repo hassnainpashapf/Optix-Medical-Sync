@@ -967,6 +967,7 @@
       <a href="#users" data-ic="pts">Users</a>
       <a href="#plan" data-ic="cash">Plan &amp; Usage</a>
       <a href="#audit" data-ic="shield">Audit Log</a>
+      <a href="#patient-form" data-ic="apt">Patient Form</a>
     </nav>
   </aside>
   <div class="side-ov" id="sideOv" aria-hidden="true"></div>
@@ -1127,6 +1128,17 @@
           <div class="tbl-wrap"><table><thead><tr><th>When</th><th>User</th><th>Action</th><th>Area</th><th>Details</th></tr></thead><tbody id="auRows"></tbody></table></div>
           <div class="empty" id="auEmpty" hidden>No entries match.</div>
           <nav class="pager" id="auPager" aria-label="Pages"></nav>
+        </section>
+      </div>
+
+      <div class="view" id="view-ptform" hidden>
+        <div class="head"><div><h1>Patient Form</h1><p>Add your own text fields to the Add/Edit Patient form, for whatever this hospital needs to record</p></div></div>
+        <section class="card ap-card" style="padding-top:18px">
+          <div class="tools" style="margin-top:0;justify-content:flex-end">
+            <button class="addbtn" id="pfAdd">Add Field <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Label</th><th></th></tr></thead><tbody id="pfRows"></tbody></table></div>
+          <div class="empty" id="pfEmpty" hidden>No custom fields yet. Every patient form only has the standard fields.</div>
         </section>
       </div>
 
@@ -1562,6 +1574,7 @@
         <div class="fl"><label class="lb" for="ptAd"><span>Address <span class="opt">(Optional)</span></span></label><input class="in" id="ptAd" placeholder="Enter address" autocomplete="off"></div>
         <div class="row2"><div class="fl"><label class="lb" for="ptIns">Insurance</label><select class="in sel" id="ptIns"><option>Not Covered</option><option>Covered (Plan A)</option><option>Covered (Plan B)</option></select></div><div class="fl"><label class="lb" for="ptPr">Insurance Provider</label><select class="in sel" id="ptPr"><option value="">None</option><option>AXA</option><option>MetLife</option><option>Bupa</option><option>Allianz</option><option>GIG</option></select></div></div>
         <div class="row2"><div class="fl"><label class="lb" for="ptCP">Care Plan</label><select class="in sel" id="ptCP"><option>Active</option><option>Inactive</option></select></div><div class="fl"><label class="lb" for="ptTy">Patient Type</label><select class="in sel" id="ptTy"><option>Outpatient</option><option>Inpatient</option></select></div></div>
+        <div id="ptCustomFields"></div>
       </div>
       <div class="dr-err" id="ptErr" role="alert"></div>
       <div class="dr-foot"><button type="button" class="lnk" data-close="ptW">Cancel</button><button type="submit" class="pri">Save</button></div>
@@ -2012,6 +2025,7 @@ window.bootApp = function () {
     Consultations: [['rx', 'Consultations']],
     'OPD Queue': [['ticket', 'OPD Queue']],
     'Lab & Radiology': [['flask', 'Lab & Radiology']],
+    'Patient Form': [['apt', 'Patient Form']],
     'Ready to send': [['wa', 'WhatsApp'], [null, 'Ready to send']],
     'Message log': [['wa', 'WhatsApp'], [null, 'Message log']],
     'Templates & rules': [['wa', 'WhatsApp'], [null, 'Templates & rules']],
@@ -2026,8 +2040,8 @@ window.bootApp = function () {
     }).join('');
   }
   function show(key) {
-    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calendar: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab', 'Ready to send': 'view-wa-ready', 'Message log': 'view-wa-log', 'Templates & rules': 'view-wa-tpl', Settings: 'view-wa-settings' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
-    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab', 'view-wa-ready', 'view-wa-log', 'view-wa-tpl', 'view-wa-settings'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
+    var pv = key === 'Vitals', vid = { Patients: 'view-pts', PatientProfile: 'view-profile', Vitals: 'view-patient', Appointments: 'view-appts', 'Staff List': 'view-staff', Calendar: 'view-cal', Suppliers: 'view-sup', SupplierProfile: 'view-supp', Transactions: 'view-tx', Stocks: 'view-stocks', Peripherals: 'view-per', Reports: 'view-rep', Users: 'view-usr', 'Audit Log': 'view-aud', 'Plan & Usage': 'view-plan', 'Wards & Beds': 'view-wards', Consultations: 'view-visits', 'OPD Queue': 'view-opd', 'Lab & Radiology': 'view-lab', 'Patient Form': 'view-ptform', 'Ready to send': 'view-wa-ready', 'Message log': 'view-wa-log', 'Templates & rules': 'view-wa-tpl', Settings: 'view-wa-settings' }[key] || 'view-dash', navKey = pv || key === 'PatientProfile' ? 'Patients' : key === 'SupplierProfile' ? 'Suppliers' : key;
+    ['view-dash', 'view-pts', 'view-profile', 'view-patient', 'view-appts', 'view-staff', 'view-cal', 'view-sup', 'view-supp', 'view-tx', 'view-stocks', 'view-per', 'view-rep', 'view-usr', 'view-aud', 'view-plan', 'view-wards', 'view-visits', 'view-opd', 'view-lab', 'view-ptform', 'view-wa-ready', 'view-wa-log', 'view-wa-tpl', 'view-wa-settings'].forEach(function (id) { document.getElementById(id).hidden = id !== vid; });
     var waSub = document.getElementById('waSub'), waTog = document.getElementById('waTog');
     if (vid.indexOf('view-wa-') === 0) { waSub.hidden = false; waTog.setAttribute('aria-expanded', 'true'); }
     document.getElementById('main').classList.toggle('plain', pv);
@@ -2047,6 +2061,7 @@ window.bootApp = function () {
     if (vid === 'view-visits') renderVisits();
     if (vid === 'view-lab') renderLab();
     if (vid === 'view-opd') { renderQueue(); syncQueue().then(renderQueue); }
+    if (vid === 'view-ptform') renderPtFields();
     if (vid === 'view-wa-ready') renderWaReady();
     if (vid === 'view-wa-log') renderWaLog();
     if (vid === 'view-wa-tpl') renderWaTpl();
@@ -2608,6 +2623,10 @@ window.bootApp = function () {
     var sp = splitPhone(p ? p.phone : ''); ptCC.set(sp[0]);
     if (p) { $('ptN').value = p.name; $('ptA').value = p.age; $('ptA').classList.remove('ph'); $('ptForm').elements.ptG.value = p.gender; $('ptNat').value = p.nationality || ''; $('ptPh').value = sp[1]; $('ptE').value = p.email || ''; $('ptAd').value = p.address || ''; $('ptIns').value = p.insurance; $('ptPr').value = p.provider || ''; $('ptCP').value = p.carePlan; $('ptTy').value = p.type; }
     else $('ptNat').value = 'Egyptian';
+    var custom = (p && p.custom) || {};
+    $('ptCustomFields').innerHTML = PTFIELDS.map(function (f) {
+      return '<div class="fl"><label class="lb" for="ptc_' + f.id + '">' + esc(f.label) + '</label><input class="in" id="ptc_' + f.id + '" data-field="' + f.id + '" value="' + esc(custom[f.id] || '') + '" autocomplete="off"></div>';
+    }).join('');
     closeDDs(); $('ptW').hidden = false; $('ptN').focus();
   }
   $('ptAdd').addEventListener('click', function (e) { e.stopPropagation(); openPtForm(null); });
@@ -2619,12 +2638,38 @@ window.bootApp = function () {
     if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { er.textContent = 'Enter a valid email address or leave it empty.'; $('ptE').focus(); return; }
     if ($('ptIns').value !== 'Not Covered' && !$('ptPr').value) { er.textContent = 'Choose the insurance provider.'; $('ptPr').focus(); return; }
     var dup = patients.filter(function (x) { return x.id !== editPid && x.name.toLowerCase() === n.toLowerCase(); })[0]; if (dup) { er.textContent = 'A patient with this name already exists (' + dup.code + ').'; $('ptN').focus(); return; }
-    var data = { name: n, age: +$('ptA').value, gender: $('ptForm').elements.ptG.value, nationality: $('ptNat').value.trim(), phone: ptCC.opts.filter(function (c) { return c.value === ptCC.val; })[0].btn + ' ' + $('ptPh').value.trim(), email: em, address: $('ptAd').value.trim(), insurance: $('ptIns').value, provider: $('ptIns').value === 'Not Covered' ? '' : $('ptPr').value, carePlan: $('ptCP').value, type: $('ptTy').value };
+    var custom = {}; document.querySelectorAll('#ptCustomFields [data-field]').forEach(function (el) { custom[el.dataset.field] = el.value.trim(); });
+    var data = { name: n, age: +$('ptA').value, gender: $('ptForm').elements.ptG.value, nationality: $('ptNat').value.trim(), phone: ptCC.opts.filter(function (c) { return c.value === ptCC.val; })[0].btn + ' ' + $('ptPh').value.trim(), email: em, address: $('ptAd').value.trim(), insurance: $('ptIns').value, provider: $('ptIns').value === 'Not Covered' ? '' : $('ptPr').value, carePlan: $('ptCP').value, type: $('ptTy').value, custom: custom };
     var p = editPid ? patientById(editPid) : null;
     if (p) { var renamed = p.name !== n; for (var k in data) p[k] = data[k]; persist('patients', p); if (renamed) approved.concat(requests).forEach(function (a) { if (a.pid === p.id) { a.patient = n; saveAppt(a, a.list || (requests.indexOf(a) > -1 ? 'requests' : 'approved')); } }); toast('Saved: ' + n); }
     else { p = mkPatient(data); patients.unshift(p); p.ord = Date.now(); persist('patients', p); toast('Added: ' + n); }
     $('ptW').hidden = true; ptQ = ''; $('ptQ').value = ''; ptType = 'All'; ptSort = null; ptPage = 1; renderPts(); refreshAppts();
   });
+
+  /* ---------- custom patient fields (Admin > Patient Form) ---------- */
+  function renderPtFields() {
+    var rows = document.getElementById('pfRows'); if (!rows) return;
+    rows.innerHTML = PTFIELDS.map(function (f) {
+      return '<tr><td>' + esc(f.label) + '</td><td><button class="lk" data-pf-edit="' + esc(f.id) + '">Edit</button> <button class="lk" data-pf-del="' + esc(f.id) + '">Delete</button></td></tr>';
+    }).join('');
+    document.getElementById('pfEmpty').hidden = PTFIELDS.length > 0;
+  }
+  function openPtFieldForm(f) {
+    hdw('pfW', { title: f ? 'Edit Field' : 'Add Field', mid: true, save: 'Save',
+      body: '<div class="fl"><label class="lb" for="pfLabel">Field label</label><input class="in" id="pfLabel" maxlength="40" placeholder="e.g. Blood Group" value="' + (f ? esc(f.label) : '') + '"></div>',
+      submit: function (D) {
+        var label = D.$('#pfLabel').value.trim();
+        if (label.length < 2) return D.err('Enter a label.', '#pfLabel');
+        if (f) f.label = label; else PTFIELDS.push({ id: 'pf' + Date.now(), label: label });
+        persistKV('patientFields', PTFIELDS); renderPtFields(); D.close(); toast('Field saved');
+      } });
+  }
+  function deletePtField(id) { if (!confirm('Delete this field? Existing patient data for it is kept but will no longer show on the form.')) return; PTFIELDS = PTFIELDS.filter(function (x) { return x.id !== id; }); persistKV('patientFields', PTFIELDS); renderPtFields(); toast('Field deleted'); }
+  document.addEventListener('click', function (e) {
+    var ea = e.target.closest('[data-pf-edit]'); if (ea) { var f = PTFIELDS.filter(function (x) { return x.id === ea.dataset.pfEdit; })[0]; if (f) openPtFieldForm(f); return; }
+    var da = e.target.closest('[data-pf-del]'); if (da) deletePtField(da.dataset.pfDel);
+  });
+  document.getElementById('pfAdd').addEventListener('click', function () { openPtFieldForm(null); });
 
   /* ---------- patient profile ---------- */
   var rSort = null, rDir = 1, pmCtx = null, cY = +TODAY.slice(0, 4), cM = +TODAY.slice(5, 7) - 1, cSel = TODAY;
@@ -3480,7 +3525,7 @@ window.bootApp = function () {
   /* ---------- roles ---------- */
   var ME = window.__USER || {}, ROLE = ME.role || '', PERMS = ME.perms || {};
   function canR(c) { return !!PERMS && !!PERMS[c]; } function canW(c) { return !!PERMS && PERMS[c] === 'rw'; }
-  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calendar: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); }, 'Ready to send': function () { return canR('walog'); }, 'Message log': function () { return canR('walog'); }, 'Templates & rules': function () { return canR('wtpl'); }, Settings: function () { return canR('walog') || canR('wtpl'); } };
+  var NAVP = { Dashboard: function () { return true; }, Appointments: function () { return canR('appts'); }, Patients: function () { return canR('patients'); }, 'Staff List': function () { return canR('staff'); }, Calendar: function () { return canR('appts'); }, Transactions: function () { return canR('txs'); }, Suppliers: function () { return canR('suppliers'); }, Stocks: function () { return canR('stocks'); }, Peripherals: function () { return canR('devices'); }, Reports: function () { return canR('txs') && canR('appts'); }, Users: function () { return ROLE === 'Super Admin'; }, 'Plan & Usage': function () { return ROLE === 'Super Admin'; }, 'Audit Log': function () { return ROLE === 'Super Admin'; }, 'Patient Form': function () { return ROLE === 'Super Admin'; }, 'Wards & Beds': function () { return canR('wards'); }, Consultations: function () { return canR('visits'); }, 'OPD Queue': function () { return canR('opdq'); }, 'Lab & Radiology': function () { return canR('labs'); }, 'Ready to send': function () { return canR('walog'); }, 'Message log': function () { return canR('walog'); }, 'Templates & rules': function () { return canR('wtpl'); }, Settings: function () { return canR('walog') || canR('wtpl'); } };
   function allowed(key) { var k = { PatientProfile: 'Patients', Vitals: 'Patients', SupplierProfile: 'Suppliers' }[key] || key; return !NAVP[k] || NAVP[k](); }
   (function () {
     ['appts', 'patients', 'staff', 'suppliers', 'stocks', 'txs', 'devices'].forEach(function (c) { document.body.classList.toggle('ro-' + c, canR(c) && !canW(c)); document.body.classList.toggle('no-' + c, !canR(c)); });
@@ -3695,7 +3740,7 @@ window.bootApp = function () {
      HOSPITAL MODULES: wards and beds, consultations, OPD queue, lab and radiology, invoices.
      Same pattern as the rest of the app: arrays in memory, persist(col, record) after every change, server enforces the role matrix.
      ===================================================================== */
-  var WARDS = [], BEDS = [], ADMS = [], VISITS = [], OPDQ = [], LABT = [], LABS = [], WALOG = [], WTPL = [];
+  var WARDS = [], BEDS = [], ADMS = [], VISITS = [], OPDQ = [], LABT = [], LABS = [], WALOG = [], WTPL = [], PTFIELDS = [];
   function newId(p) { return p + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36); }
   function stampNow() { var d = new Date(); return isoToday() + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
   function fmtStamp(s) { return s ? fmtDate(s.slice(0, 10)) + (s.length > 10 ? ', ' + fmtTime(s.slice(11, 16)) : '') : '—'; }
@@ -4977,7 +5022,7 @@ window.bootApp = function () {
     DEVS = (C.devices || []).slice().sort(byOrd);
     WARDS = (C.wards || []).slice().sort(byOrd); BEDS = (C.beds || []).slice().sort(byOrd); ADMS = (C.admissions || []).slice().sort(byOrd); VISITS = (C.visits || []).slice().sort(byOrd); OPDQ = (C.opdq || []).slice().sort(byOrd); LABT = (C.labtests || []).slice().sort(byOrd); LABS = (C.labs || []).slice().sort(byOrd);
     WALOG = (C.walog || []).slice().sort(byOrd); WTPL = (C.wtpl || []).slice();
-    if (kv.planDone) planDone = kv.planDone; if (kv.medTaken) medTaken = kv.medTaken;
+    if (kv.planDone) planDone = kv.planDone; if (kv.medTaken) medTaken = kv.medTaken; if (kv.patientFields) PTFIELDS = kv.patientFields;
     uid = Math.max(uid, maxId(approved.concat(requests))); sUid = Math.max(sUid, maxId(docStaff.concat(genStaffL))); supUid = Math.max(supUid, maxId(SUPS)); ptUid = Math.max(ptUid, maxId(patients));
     stkUid = Math.max(stkUid, maxId(C.stocks || [])); devUid = Math.max(devUid, maxId(DEVS)); supCur = null; curPid = patients.length ? patients[patients.length - 1].id : 0;
     rerenderAll();
@@ -5034,7 +5079,7 @@ window.bootApp = function () {
     a.addEventListener('click', function (e) { e.preventDefault(); go(a.textContent); });
   });
   (function () { var tog = document.getElementById('waTog'), sub = document.getElementById('waSub'); tog.addEventListener('click', function () { sub.hidden = !sub.hidden; tog.setAttribute('aria-expanded', String(!sub.hidden)); }); })();
-  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calendar', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology', '#wa-ready': 'Ready to send', '#wa-log': 'Message log', '#wa-tpl': 'Templates & rules', '#wa-settings': 'Settings' }[location.hash] || 'Dashboard';
+  var startKey = { '#patients': 'Patients', '#patient': 'PatientProfile', '#vitals': 'Vitals', '#appointments': 'Appointments', '#staff': 'Staff List', '#calendar': 'Calendar', '#suppliers': 'Suppliers', '#supplier': 'SupplierProfile', '#transactions': 'Transactions', '#stocks': 'Stocks', '#peripherals': 'Peripherals', '#reports': 'Reports', '#users': 'Users', '#audit': 'Audit Log', '#plan': 'Plan & Usage', '#wards': 'Wards & Beds', '#consultations': 'Consultations', '#queue': 'OPD Queue', '#lab': 'Lab & Radiology', '#patient-form': 'Patient Form', '#wa-ready': 'Ready to send', '#wa-log': 'Message log', '#wa-tpl': 'Templates & rules', '#wa-settings': 'Settings' }[location.hash] || 'Dashboard';
   if (!allowed(startKey)) startKey = 'Dashboard';
   hist = [startKey]; show(startKey);
 };
