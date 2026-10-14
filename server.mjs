@@ -686,6 +686,12 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!ALLOWED_HOSTS.has(req.headers.host || '')) return send(res, 421, 'Misdirected request', { 'Content-Type': 'text/plain' });
     const url = new URL(req.url, 'http://localhost');
+    // Keep browser sign-in on the configured public URL. Pages identifies its proxied requests with X-Forwarded-Host.
+    if (process.env.APP_URL && ['GET', 'HEAD'].includes(req.method) && /^\/(?:login|app|signup)\/?$/.test(url.pathname)) {
+      const publicUrl = new URL(process.env.APP_URL);
+      const visitorHost = String(req.headers['x-forwarded-host'] || req.headers.host || '');
+      if (visitorHost !== publicUrl.host) return send(res, 307, '', { Location: publicUrl.origin + url.pathname + url.search, 'Cache-Control': 'no-store' });
+    }
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     return serveStatic(req, res, url);
   } catch (e) {

@@ -38,7 +38,7 @@ before(async () => {
     });
   });
   await new Promise((r) => hub.listen(HUBPORT, '127.0.0.1', r));
-  srv = spawn(process.execPath, ['server.mjs'], { cwd: root, stdio: 'ignore', env: { ...process.env, PORT: String(PORT), HOST: '127.0.0.1', DATA_DIR: dataDir, ALLOWED_HOSTS: `127.0.0.1:${PORT}`, HUB_API: `http://127.0.0.1:${HUBPORT}`, HUB_APP_ID: 'hospital' } });
+  srv = spawn(process.execPath, ['server.mjs'], { cwd: root, stdio: 'ignore', env: { ...process.env, PORT: String(PORT), HOST: '127.0.0.1', DATA_DIR: dataDir, ALLOWED_HOSTS: `127.0.0.1:${PORT}`, HUB_API: `http://127.0.0.1:${HUBPORT}`, HUB_APP_ID: 'hospital', APP_URL: 'https://optix-medical-sync.pages.dev' } });
   for (let i = 0; i < 60; i++) { try { if ((await fetch(B + '/api/plans')).ok) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 200)); }
 });
 after(() => { srv.kill(); hub.close(); fs.rmSync(dataDir, { recursive: true, force: true }); });
@@ -99,6 +99,14 @@ test('Google config is available on the hospital origin and exposes only the cli
   const r = await fetch(B + '/api/hub/google-config');
   assert.equal(r.status, 200);
   assert.deepEqual(await r.json(), { clientId: 'test-google-client' });
+});
+
+test('direct origin login redirects to the public URL without looping through Pages', async () => {
+  const direct = await fetch(B + '/login/?ws=test', { redirect: 'manual' });
+  assert.equal(direct.status, 307);
+  assert.equal(direct.headers.get('Location'), 'https://optix-medical-sync.pages.dev/login/?ws=test');
+  const proxied = await fetch(B + '/login/', { headers: { 'X-Forwarded-Host': 'optix-medical-sync.pages.dev' }, redirect: 'manual' });
+  assert.equal(proxied.status, 200);
 });
 
 test('the hub being down is a 503, not a way in', async () => {
