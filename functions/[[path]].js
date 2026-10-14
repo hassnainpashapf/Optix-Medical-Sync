@@ -19,6 +19,11 @@ export async function onRequest({ request }) {
   const res = await fetch(upstream, { redirect: 'manual' })
   const out = new Response(res.body, res)
   const loc = out.headers.get('Location')
-  if (loc && loc.startsWith(ORIGIN)) out.headers.set('Location', url.origin + loc.slice(ORIGIN.length))
+  if (loc) {
+    const target = new URL(loc, upstream.url)
+    if (target.hostname === new URL(ORIGIN).hostname && ['http:', 'https:'].includes(target.protocol)) {
+      out.headers.set('Location', url.origin + target.pathname + target.search + target.hash)
+    }
+  }
   return out
 }

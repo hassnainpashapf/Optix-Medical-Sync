@@ -113,3 +113,9 @@ With both empty nothing from Google is loaded and `/ads.txt` returns 404. Ads lo
 - Check the placeholder prices in the platform panel.
 - Keep `data/` backed up off the server.
 - Planned, not built: payment gateway, automatic (scheduled) reminders, per-tenant custom domains.
+
+## Cloudflare public login and Google sign-in
+
+The website Login links use `/app`, keeping navigation on the current public domain. The Pages Function rewrites origin redirects (HTTPS, HTTP, and protocol-relative) back to that public domain. External identity-provider redirects are preserved.
+
+Google sign-in reads the public client ID through `/api/hub/google-config` on the Hospital server; the browser no longer needs a direct connection to the hub just to display the button. Deploy both the Node server and the Pages project when changing this flow. In the Google OAuth client, register `https://optix-medical-sync.pages.dev` as an authorized JavaScript origin. Workspace users must have their Gmail saved in Users for Google sign-in to match their account.

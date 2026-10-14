@@ -31,6 +31,7 @@ before(async () => {
       const send = (s, o) => { res.writeHead(s, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
       const data = body ? JSON.parse(body) : {};
       const tok = (/^Bearer (.+)$/.exec(req.headers.authorization || '') || [])[1];
+      if (req.url === '/api/auth/google-config') return send(200, { clientId: 'test-google-client', privateValue: 'not-public' });
       if (req.url === '/api/sso/exchange') { const t = tickets[data.ticket]; delete tickets[data.ticket]; return t ? send(200, { ok: true, token: t, ...people[t], catalog, app: 'hospital' }) : send(401, { error: 'expired' }); }
       if (req.url === '/api/auth/whoami') return people[tok] ? send(200, { ok: true, ...people[tok], catalog }) : send(401, { error: 'auth' });
       send(404, {});
@@ -94,7 +95,14 @@ test('a second business with the same short name gets its own workspace code', a
   const r = await post({ token: 'tok-other-admin' }); assert.equal(r.s, 200); assert.notEqual(r.j.workspace, 'city-care'); assert.match(r.j.workspace, /^city-care-[0-9a-f]{4}$/);
 });
 
+test('Google config is available on the hospital origin and exposes only the client ID', async () => {
+  const r = await fetch(B + '/api/hub/google-config');
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { clientId: 'test-google-client' });
+});
+
 test('the hub being down is a 503, not a way in', async () => {
   hub.close(); await new Promise((r) => setTimeout(r, 100));
   assert.equal((await post({ token: 'tok-admin' })).s, 503);
 });
+

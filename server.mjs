@@ -367,6 +367,15 @@ async function publicApi(req, res, p, m, url) {
     return startTenantSession(req, res, t, { ...u, google_email: g.email });
   }
   /* ---------- Optix account (one login for the whole suite) ---------- */
+  if (p === '/api/hub/google-config' && m === 'GET') {
+    if (!HUB.enabled) return sendJson(res, 200, { clientId: '' });
+    try {
+      const upstream = await fetch(`${HUB.api}/api/auth/google-config`, { signal: AbortSignal.timeout(5000) });
+      if (!upstream.ok) throw new Error('Google configuration unavailable');
+      const config = await upstream.json();
+      return sendJson(res, 200, { clientId: typeof config.clientId === 'string' ? config.clientId : '' });
+    } catch { return sendJson(res, 503, { error: 'Google sign-in is temporarily unavailable. Please use your username and password.' }); }
+  }
   if (p === '/api/hub/config' && m === 'GET') return sendJson(res, 200, { enabled: HUB.enabled, api: HUB.api, appId: HUB.appId });
   if (p === '/api/hub/session' && m === 'POST') {
     const ip = clientIp(req); if (limited('hub', ip, 30, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
