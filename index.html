@@ -5094,7 +5094,11 @@ window.bootApp = function () {
   function hubLoad() {
     if (!HUBLOAD) HUBLOAD = api('GET', '/api/hub/config').then(function (cfg) {
       if (!cfg.enabled) throw new Error('Sign-in with an Optix account is switched off.');
-      return import('/assets/optix-suite-sdk.js').then(function (m) { return m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: HUBKEY }); });
+      return import('/assets/optix-suite-sdk.js').then(function (m) {
+        var h = m.createHub({ api: cfg.api, appId: cfg.appId, sessionKey: HUBKEY });
+        h.googleClientId = function () { return api('GET', '/api/hub/google-config').then(function (c) { return c.clientId; }); };
+        return h;
+      });
     });
     return HUBLOAD;
   }

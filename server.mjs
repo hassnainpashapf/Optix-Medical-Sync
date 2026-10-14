@@ -367,6 +367,15 @@ async function publicApi(req, res, p, m, url) {
     return startTenantSession(req, res, t, { ...u, google_email: g.email });
   }
   /* ---------- Optix account (one login for the whole suite) ---------- */
+  if (p === '/api/hub/google-config' && m === 'GET') {
+    if (!HUB.enabled) return sendJson(res, 200, { clientId: '' });
+    try {
+      const upstream = await fetch(`${HUB.api}/api/auth/google-config`, { signal: AbortSignal.timeout(5000) });
+      if (!upstream.ok) throw new Error('Google configuration unavailable');
+      const config = await upstream.json();
+      return sendJson(res, 200, { clientId: typeof config.clientId === 'string' ? config.clientId : '' });
+    } catch { return sendJson(res, 503, { error: 'Google sign-in is temporarily unavailable. Please use your username and password.' }); }
+  }
   if (p === '/api/hub/config' && m === 'GET') return sendJson(res, 200, { enabled: HUB.enabled, api: HUB.api, appId: HUB.appId });
   if (p === '/api/hub/session' && m === 'POST') {
     const ip = clientIp(req); if (limited('hub', ip, 30, 600000)) return sendJson(res, 429, { error: 'Too many attempts. Try again in a few minutes.' });
@@ -677,6 +686,12 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!ALLOWED_HOSTS.has(req.headers.host || '')) return send(res, 421, 'Misdirected request', { 'Content-Type': 'text/plain' });
     const url = new URL(req.url, 'http://localhost');
+    // Keep browser sign-in on the configured public URL. Pages identifies its proxied requests with X-Forwarded-Host.
+    if (process.env.APP_URL && ['GET', 'HEAD'].includes(req.method) && /^\/(?:login|app|signup)\/?$/.test(url.pathname)) {
+      const publicUrl = new URL(process.env.APP_URL);
+      const visitorHost = String(req.headers['x-forwarded-host'] || req.headers.host || '');
+      if (visitorHost !== publicUrl.host) return send(res, 307, '', { Location: publicUrl.origin + url.pathname + url.search, 'Cache-Control': 'no-store' });
+    }
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     return serveStatic(req, res, url);
   } catch (e) {
