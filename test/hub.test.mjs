@@ -105,4 +105,3 @@ test('the hub being down is a 503, not a way in', async () => {
   hub.close(); await new Promise((r) => setTimeout(r, 100));
   assert.equal((await post({ token: 'tok-admin' })).s, 503);
 });
-
